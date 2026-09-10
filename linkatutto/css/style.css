@@ -1251,7 +1251,7 @@ main {
   border: 1px solid rgba(26, 115, 232, 0.35);
   padding: 0.18rem 0.65rem;
   border-radius: 9999px;
-  margin-bottom: 0.7rem;
+  margin-bottom: 0.45rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -1295,7 +1295,7 @@ main {
   font-size: 1.25rem !important;
   font-weight: 700 !important;
   color: #ffffff !important;
-  margin-bottom: 0.35rem !important;
+  margin-bottom: 0.45rem !important;
   letter-spacing: -0.2px !important;
   line-height: 1.25 !important;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5) !important;
@@ -1312,7 +1312,7 @@ main {
   display: block;
   left: 0;
   right: 0;
-  margin: 0.35rem auto 0.55rem auto;
+  margin: 0.4rem auto 0.75rem auto;
   box-shadow: 0 0 10px rgba(26, 115, 232, 0.85);
 }
 
