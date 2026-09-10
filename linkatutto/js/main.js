@@ -187,7 +187,7 @@
       const logoUrl = element.logo ? element.logo : "https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/0f58a355856d25a7154482951a3220899ee59d10/assets/icons/svg/rounded_white.svg";
       
       res += `
-        <div class="col" ontouchstart="this.classList.toggle('hover');">
+        <div class="col">
           <div class="flip-card">
             <div class="card-container">
               <div
@@ -204,6 +204,7 @@
               </div>
               <div class="back">
                 <div class="inner">
+                  <div class="back-category-pill">${displayCategory}</div>
                   <h1>${element.title}</h1>
                   <div class="after"></div>
                   ${createButton(element.link)}
@@ -339,8 +340,43 @@ function initMobileMenu() {
   });
 }
 
+/**
+ * ------------------------------
+ * Card Click/Tap to Flip Handler (Mobile & Touch)
+ * ------------------------------
+ */
+function initCardFlip() {
+  document.addEventListener("click", (e) => {
+    // If the click is on an actual link or button inside the card, don't flip!
+    if (e.target.closest("a") || e.target.closest("button") || e.target.closest(".star-button")) {
+      return;
+    }
+
+    const card = e.target.closest(".flip-card");
+    if (card) {
+      const isFlipped = card.classList.toggle("flipped");
+
+      // Unflip other cards so only one card is flipped at a time
+      document.querySelectorAll(".flip-card.flipped").forEach((otherCard) => {
+        if (otherCard !== card) {
+          otherCard.classList.remove("flipped");
+        }
+      });
+    } else {
+      // Tapping outside cards unflips any open cards
+      document.querySelectorAll(".flip-card.flipped").forEach((c) => {
+        c.classList.remove("flipped");
+      });
+    }
+  });
+}
+
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initMobileMenu);
+  document.addEventListener("DOMContentLoaded", () => {
+    initMobileMenu();
+    initCardFlip();
+  });
 } else {
   initMobileMenu();
+  initCardFlip();
 }
