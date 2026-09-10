@@ -152,6 +152,7 @@
       if (strapi.hasOwnProperty(key)) {
         const categoryHeader = key === "Default" ? "" : `
           <div class="category-header">
+            <div class="category-line line-left"></div>
             <h2 class="category-title">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
@@ -160,7 +161,7 @@
               </svg>
               <span>${key}</span>
             </h2>
-            <div class="category-line"></div>
+            <div class="category-line line-right"></div>
           </div>
         `;
 
