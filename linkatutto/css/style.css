@@ -35,9 +35,24 @@
     height: 100%;
   }
 }
+:root {
+  --md-sys-color-background: #0b0c10;
+  --md-sys-color-surface: #14161c;
+  --md-sys-color-surface-container: #1a1d24;
+  --md-sys-color-surface-container-high: #20232b;
+  --md-sys-color-on-surface: #e2e2e6;
+  --md-sys-color-on-surface-variant: #9398a5;
+  --md-sys-color-primary: #1a73e8;
+  --md-sys-color-primary-hover: #1557b0;
+  --md-sys-color-outline: #44474f;
+  --md-sys-color-outline-variant: rgba(255, 255, 255, 0.08);
+}
+
 body,
 html {
-  font-family: "Montserrat", sans-serif !important;
+  font-family: "Figtree", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  background-color: var(--md-sys-color-background) !important;
+  color: var(--md-sys-color-on-surface) !important;
 }
 html {
   line-height: 1.15;
@@ -46,6 +61,13 @@ html {
 }
 body {
   margin: 0;
+  background-color: #0b0c10 !important;
+  background-image: radial-gradient(
+    circle at 50% 0%,
+    rgba(26, 115, 232, 0.08) 0%,
+    transparent 60%
+  ) !important;
+  min-height: 100vh;
 }
 a {
   text-decoration: none !important;
@@ -1009,79 +1031,447 @@ main {
     margin-bottom: 0;
   }
 }
-/* Flip Card */
-.card {
-  perspective: 150rem;
-  position: relative;
-  height: 300px;
-  max-width: 400px;
-  margin: 0rem;
-  box-shadow: none;
-  background: none;
+/* ==============================================================================
+   MATERIAL EXPRESSIVE 3 FLIP CARDS & GRID SYSTEM (MATCHING PROJECT HUB)
+   ============================================================================== */
+
+/* --- WRAPPER E GRIGLIA DINAMICA A 3 CARD PER RIGA --- */
+.wrapper {
+  width: 95%;
+  margin: 0 auto 3.5rem auto;
+  max-width: 85rem;
 }
 
-.card-side {
-  height: 100%;
-  border-radius: 15px;
-  transition: all 0.8s ease;
+.cols {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.col {
+  flex: 0 0 calc(33.333333% - 2rem) !important;
+  max-width: calc(33.333333% - 2rem) !important;
+  width: calc(33.333333% - 2rem) !important;
+  margin: 1rem;
+  cursor: pointer;
+}
+
+.flip-card {
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 100%;
+}
+
+@media (max-width: 992px) {
+  .col {
+    flex: 0 0 calc(50% - 2rem) !important;
+    max-width: calc(50% - 2rem) !important;
+    width: calc(50% - 2rem) !important;
+  }
+  .flip-card {
+    margin-left: -10px !important;
+    margin-right: -10px !important;
+  }
+}
+
+@media screen and (max-width: 576px) {
+  .cols {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center;
+  }
+  .col {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+    margin: 0 0 1.5rem 0 !important;
+    display: flex;
+    justify-content: center;
+  }
+  .flip-card {
+    width: 100% !important;
+    max-width: 360px;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}
+
+/* --- STILI 3D FLIP CARD --- */
+.container.flip-card {
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  -webkit-perspective: 1000px;
+  perspective: 1000px;
+  position: relative;
+  min-height: 340px;
+  padding: 0 !important;
+}
+
+.flip-card .front,
+.flip-card .back {
+  background-size: cover;
+  box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.4);
+  border-radius: 16px;
+  background-position: center;
+  -webkit-transition: -webkit-transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+  transition: -webkit-transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+  -o-transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+  transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+  -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
+  text-align: center;
+  min-height: 340px;
+  height: 100%;
+  color: #fff;
+  border: 0.5px solid rgba(255, 255, 255, 0.12) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.flip-card .back {
+  background: #20232b;
+  background: -webkit-linear-gradient(45deg, #252830 0%, #15171d 100%);
+  background: -o-linear-gradient(45deg, #252830 0%, #15171d 100%);
+  background: linear-gradient(45deg, #252830 0%, #15171d 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  padding: 2rem;
-  color: white;
+  height: 100%;
 }
 
-.card-side.back {
+.flip-card .front:after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  content: "";
+  display: block;
+  opacity: 0.72;
+  background-color: #0b0c0f;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: 16px;
+}
+
+.container.flip-card:hover .front,
+.col.hover .container.flip-card .front {
+  -webkit-transform: rotateY(-180deg);
   transform: rotateY(-180deg);
-  background-color: #4158d0;
-  box-shadow: inset 0 0 0 1000px rgba(0, 0, 0, 0.5);
-  background-image: linear-gradient(
-    43deg,
-    #4158d0 0%,
-    #c850c0 46%,
-    #ffcc70 100%
-  );
 }
 
-.card-side.front {
-  background-color: #0093e9;
-  background-position: center center;
-  background-size: cover;
-  box-shadow: inset 0 0 0 1000px rgba(0, 0, 0, 0.5);
-  background-image: linear-gradient(160deg, #0093e9 0%, #80d0c7 100%);
-}
-
-.card:hover .card-side.front {
-  transform: rotateY(180deg);
-}
-
-.card:hover .card-side.back {
+.container.flip-card:hover .back,
+.col.hover .container.flip-card .back {
+  -webkit-transform: rotateY(0deg);
   transform: rotateY(0deg);
 }
 
-/* Flip Card */
-
-/* =================================== */
-/*  5. Elements
-/* =================================== */
-/*=== 5.1 Featured Box ===*/
-.featured-box {
-  box-sizing: border-box;
-  position: relative;
+.container.flip-card .front {
+  -webkit-transform: rotateY(0deg);
+  transform: rotateY(0deg);
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
 }
 
-.featured-box h3,
-.featured-box h4 {
+.container.flip-card .back {
+  -webkit-transform: rotateY(180deg);
+  transform: rotateY(180deg);
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+.flip-card .inner {
+  -webkit-transform: translateY(-50%) translateZ(60px) scale(0.94);
+  transform: translateY(-50%) translateZ(60px) scale(0.94);
+  top: 50%;
+  position: absolute;
+  left: 0;
+  width: 100%;
+  padding: 1.75rem 1.4rem;
+  box-sizing: border-box;
+  z-index: 2;
+}
+
+.flip-card .front .inner p {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 1.75rem;
+  position: relative;
+  line-height: 1.25;
+  color: #ffffff;
+}
+
+.flip-card .front .inner p:after {
+  content: "";
+  width: 3.5rem;
+  height: 3px;
+  position: absolute;
+  background: #1a73e8;
+  border-radius: 2px;
+  display: block;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  bottom: -0.75rem;
+}
+
+.flip-card .front .inner span {
+  color: rgba(255, 255, 255, 0.85);
+  font-family: "Figtree", sans-serif;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+.flip-card .back .inner h1 {
   font-size: 1.25rem;
-  font-size: 20px;
-  margin-bottom: 10px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.85rem;
+}
+
+/* Action Button (Star Button Style Matching Project Hub) */
+.star-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1a73e8;
+  color: #ffffff !important;
+  font-weight: 600;
+  font-size: 0.82rem;
+  text-decoration: none !important;
+  border-radius: 50rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+  padding: 0.42rem 1.1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+}
+
+.star-button:hover {
+  background-color: #1557b0;
+  color: #ffffff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(26, 115, 232, 0.45);
+}
+
+.action-buttons-group {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+
+/* Category Sections */
+.category-header {
+  width: 95%;
+  max-width: 85rem;
+  margin: 2.5rem auto 1rem auto;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.category-title {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.category-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(26, 115, 232, 0.3), rgba(255, 255, 255, 0.05));
+}
+
+/* Status Pill */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.9rem;
+  background: rgba(46, 125, 50, 0.12);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #81c784;
+  margin-bottom: 1.25rem;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  background-color: #4caf50;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #4caf50;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.85); }
+}
+
+/* Hero Modernization */
+.logo-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 92px;
+  height: 92px;
+  background: linear-gradient(135deg, var(--md-sys-color-surface-container-high), var(--md-sys-color-surface-container));
+  border-radius: 28px;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.logo-container:hover {
+  transform: scale(1.06);
+}
+
+.logo-container img {
+  width: 52px;
+  height: 52px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+/* Action Bar & Pills */
+.action-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.65rem;
+  margin-bottom: 1.75rem;
+}
+
+.action-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 1.05rem;
+  background: var(--md-sys-color-surface-container);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 9999px;
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: var(--md-sys-color-on-surface);
+  text-decoration: none !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.action-pill:hover {
+  background: var(--md-sys-color-surface-container-high);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.action-pill svg {
+  width: 15px;
+  height: 15px;
+  fill: currentColor;
+}
+
+/* Tech Stack Chips */
+.tech-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.45rem;
+  max-width: 48rem;
+  margin: 0 auto 2.5rem auto;
+}
+
+.tech-chip {
+  padding: 0.25rem 0.65rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  font-size: 0.78rem;
+  color: var(--md-sys-color-on-surface-variant);
   font-weight: 500;
 }
-@media (max-width: 780px) {
-  .card {
-    margin-left: -50px;
-    margin-right: -50px;
-  }
+
+.tech-chip:hover {
+  background: rgba(26, 115, 232, 0.12);
+  color: #8ab4f8;
+  border-color: rgba(26, 115, 232, 0.3);
 }
+
+/* Site Header Modern Glassmorphism */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(11, 12, 16, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 0.85rem 0;
+}
+
+/* Modern Footer */
+.site-footer {
+  width: min(95%, 85rem);
+  margin: 3rem auto 2rem auto;
+  padding: 1.5rem 1.6rem 1.2rem;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.95rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(20, 22, 28, 0.98), rgba(15, 16, 20, 0.96));
+  border-radius: 24px;
+}
+
+.footer-top-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 700;
+  color: #ffffff;
+  font-size: 1.15rem;
+}
+
+.footer-brand-logo {
+  width: 32px;
+  height: 32px;
+}
+
+.footer-social-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--md-sys-color-on-surface);
+  transition: all 0.2s ease;
+  text-decoration: none !important;
+}
+
+.footer-social-btn:hover {
+  background: rgba(26, 115, 232, 0.2);
+  color: #8ab4f8;
+  border-color: rgba(26, 115, 232, 0.4);
+  transform: translateY(-2px);
+}
+

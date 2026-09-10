@@ -150,91 +150,139 @@
     dataList.innerHTML = ""; // Pulisce eventuali dati precedenti
     for (const key in strapi) {
       if (strapi.hasOwnProperty(key)) {
-        //dataList.innerHTML += `<li><strong>${key}:</strong> ${data[key]}</li>`;
-        dataList.innerHTML +=
-          `<section class="features section">
-    <div class="container">
-      <div class="features-inner section-inner has-bottom-divider"> ${
-        key == "Default" ? "" : "<h1 class='text-center'>" + key + "</h1>"
-      }
+        const categoryHeader = key === "Default" ? "" : `
+          <div class="category-header">
+            <h2 class="category-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a73e8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                <polyline points="2 17 12 22 22 17"></polyline>
+                <polyline points="2 12 12 17 22 12"></polyline>
+              </svg>
+              <span>${key}</span>
+            </h2>
+            <div class="category-line"></div>
+          </div>
+        `;
 
-        <div class="features-wrap">` + createCard(strapi[key]);
-        +`
-        </div>
-      </div>
-    </div>
-  </section>`;
+        dataList.innerHTML += `
+          <section class="features section">
+            ${categoryHeader}
+            <div class="wrapper">
+              <div class="cols">
+                ${createCard(strapi[key], key)}
+              </div>
+            </div>
+          </section>
+        `;
       }
     }
   }
-  /*
-align-items: cover;
-              background-repeat: no-repeat;
-              background-color: #323232;
-              */
-  function createCard(datas) {
+
+  function createCard(datas, categoryName) {
     let res = "";
+    const displayCategory = (categoryName && categoryName !== "Default") ? categoryName : "Microservice";
     datas.forEach((element) => {
-      res +=
-        `<div class="feature text-center is-revealing">
-    <div class="feature-inner">
-      <div align="center" class="row">
-        <div class="card mx-auto">
-          <div
-            class="card-side front"
-            style="
-              background-image: url(${element.logo});
-              ${
-                element.style_css == null
-                  ? DEFAULT_STYLE_CSS
-                  : element.style_css
-              }
-            "
-          ></div>
-          <div class="card-side back">
-            <div class="">
-              <h4
-                class="text-center text-white fw-bolder text-uppercase"
-              >
-              ${element.title}
-              </h4>
-              <hr />` +
-        createButton(element.link) +
-        `</div>
+      const bgStyle = element.style_css == null ? DEFAULT_STYLE_CSS : element.style_css;
+      const logoUrl = element.logo ? element.logo : "https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/0f58a355856d25a7154482951a3220899ee59d10/assets/icons/svg/rounded_white.svg";
+      
+      res += `
+        <div class="col" ontouchstart="this.classList.toggle('hover');">
+          <div class="container flip-card">
+            <div
+              class="front"
+              style="
+                background-image: url('${logoUrl}');
+                ${bgStyle}
+              "
+            >
+              <div class="inner">
+                <p>${element.title}</p>
+                <span>${displayCategory}</span>
+              </div>
+            </div>
+            <div class="back">
+              <div class="inner">
+                <h1>${element.title}</h1>
+                ${createButton(element.link)}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>`;
+      `;
     });
     return res;
   }
 
   function createButton(datas) {
-    const keys = Object.keys(datas);
-    let res = `<div ${
-      keys.length > 3
-        ? "style='display: inline-grid; grid-template-columns: auto auto; margin-left: -15px;'"
-        : "align='center'"
-    }>`;
+    if (!datas || Object.keys(datas).length === 0) {
+      return `<div style="font-size: 0.8rem; color: #9398a5; margin-top: 0.5rem;">Nessun endpoint disponibile</div>`;
+    }
+    let res = `<div class="action-buttons-group">`;
     for (const key in datas) {
       if (datas.hasOwnProperty(key)) {
-        //dataList.innerHTML += `<li><strong>${key}:</strong> ${data[key]}</li>`;
-        res += `<a
-          href="${datas[key]}"
-          target="_blank"
-          class="btn btn-primary rounded-pill mb-2"
-          style="
-            min-width: 150px;
-            height: 50px;
-            padding-top: auto;
-          "
-          >${key}</a
-        >`;
+        res += `
+          <a
+            href="${datas[key]}"
+            target="_blank"
+            class="star-button"
+            title="${key}"
+          >
+            <span>${key}</span>
+          </a>
+        `;
       }
     }
     res += "</div>";
     return res;
+  }
+
+  // Supporto Demo Mode: Se ?demo=true oppure preview locale
+  if (window.location.search.includes("demo")) {
+    console.log("🚀 Linkatutto Demo Mode Activated");
+    const demoData = {
+      "Core Microservices": [
+        {
+          title: "Portfolio Service",
+          logo: "https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/0f58a355856d25a7154482951a3220899ee59d10/assets/icons/svg/rounded_white.svg",
+          link: { "Swagger": "#", "Actuator": "#", "Repo": "https://github.com/giovannilamarmora" },
+          style_css: DEFAULT_STYLE_CSS
+        },
+        {
+          title: "MoneyStats API",
+          logo: "https://raw.githubusercontent.com/giovannilamarmoraproject/MoneyStats/master/.github/assets/img/MoneyStats.png",
+          link: { "Web App": "https://moneystats.giovannilamarmora.com", "Swagger": "#", "Metrics": "#" },
+          style_css: DEFAULT_STYLE_CSS
+        },
+        {
+          title: "Access Sphere",
+          logo: "https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/0f58a355856d25a7154482951a3220899ee59d10/assets/icons/svg/rounded_white.svg",
+          link: { "Console": "#", "Docs": "#" },
+          style_css: DEFAULT_STYLE_CSS
+        }
+      ],
+      "Gateways & Systems": [
+        {
+          title: "Linkatutto Hub",
+          logo: "https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/0f58a355856d25a7154482951a3220899ee59d10/assets/icons/svg/rounded_white.svg",
+          link: { "Gateway": "#", "Health": "#" },
+          style_css: DEFAULT_STYLE_CSS
+        },
+        {
+          title: "Personal Project Server",
+          logo: "https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/0f58a355856d25a7154482951a3220899ee59d10/assets/icons/svg/rounded_white.svg",
+          link: { "Central Hub": "/", "The Real Marza": "/the-real-marza/" },
+          style_css: DEFAULT_STYLE_CSS
+        },
+        {
+          title: "Home Assistant Proxy",
+          logo: "https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/0f58a355856d25a7154482951a3220899ee59d10/assets/icons/svg/rounded_white.svg",
+          link: { "Dashboard": "#", "Status": "#" },
+          style_css: DEFAULT_STYLE_CSS
+        }
+      ]
+    };
+    displayData(demoData);
+    hideBlankPage();
   }
 })();
 
