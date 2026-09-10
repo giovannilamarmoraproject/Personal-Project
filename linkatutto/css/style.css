@@ -851,18 +851,9 @@ pre {
   background: rgba(0, 191, 251, 0.32);
   transform: rotateZ(-50deg);
 }
-@media (max-width: 640px) {
-  .hero-cta {
-    max-width: 280px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .hero-figure::after,
-  .hero-figure-box-03,
-  .hero-figure-box-04,
-  .hero-figure-box-09 {
-    display: none;
+@media (max-width: 768px) {
+  .hero-figure {
+    display: none !important;
   }
 }
 @media (min-width: 641px) {
@@ -1516,6 +1507,138 @@ main {
   padding: 0.45rem 1.1rem;
   font-size: 0.84rem;
   margin-bottom: 0;
+}
+
+/* Hero Typography & Elements */
+.hero-title {
+  font-size: 2.85rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.6px;
+  line-height: 1.15;
+  margin-bottom: 0.5rem;
+}
+
+.hero-subtitle {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.hero-status-pill {
+  font-size: 0.85rem;
+  padding: 0.42rem 1.15rem;
+}
+
+/* --- RESPONSIVE MOBILE TWEAKS (<= 576px) --- */
+@media (max-width: 576px) {
+  .site-header {
+    padding: 0.65rem 0 !important;
+  }
+
+  .site-header .header-container {
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.6rem !important;
+    padding: 0 0.85rem !important;
+  }
+
+  .site-header .header-brand a {
+    gap: 0.5rem !important;
+  }
+
+  .site-header .header-brand .header-logo-image {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .site-header .header-brand span {
+    font-size: 1.15rem !important;
+  }
+
+  .site-header .header-actions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 0.45rem !important;
+    width: 100% !important;
+  }
+
+  .site-header .action-pill {
+    padding: 0.38rem 0.78rem !important;
+    font-size: 0.78rem !important;
+    gap: 0.35rem !important;
+  }
+
+  .site-header .action-pill svg {
+    width: 13px !important;
+    height: 13px !important;
+  }
+
+  .site-header .status-pill {
+    display: none !important;
+  }
+
+  /* Hero Section on Mobile */
+  .hero {
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
+  }
+
+  .hero-copy {
+    padding: 0 1rem !important;
+  }
+
+  .logo-container {
+    width: 80px !important;
+    height: 80px !important;
+    border-radius: 24px !important;
+    margin: 0 auto 1rem auto !important;
+  }
+
+  .logo-container img {
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  .hero-status-pill {
+    font-size: 0.72rem !important;
+    padding: 0.32rem 0.85rem !important;
+    white-space: nowrap !important;
+    max-width: 95% !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .hero-title {
+    font-size: 2rem !important;
+    line-height: 1.25 !important;
+    letter-spacing: -0.4px !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .hero-subtitle {
+    font-size: 0.98rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  .hero-description {
+    font-size: 0.92rem !important;
+    line-height: 1.55 !important;
+    padding: 0 0.5rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  .tech-chips {
+    gap: 0.35rem !important;
+    margin-bottom: 1.75rem !important;
+    padding: 0 0.5rem !important;
+  }
+
+  .tech-chip {
+    font-size: 0.75rem !important;
+    padding: 0.25rem 0.6rem !important;
+  }
 }
 
 /* Modern Footer */
