@@ -1007,11 +1007,11 @@ main {
    MATERIAL EXPRESSIVE 3 FLIP CARDS & GRID SYSTEM (MATCHING PROJECT HUB)
    ============================================================================== */
 
-/* --- WRAPPER E GRIGLIA DINAMICA COMPATTA (CARD SLENDER DA 310PX) --- */
+/* --- WRAPPER E GRIGLIA DINAMICA (ESATTAMENTE 3 CARD PER FILA SU DESKTOP) --- */
 .wrapper {
   width: 95%;
   margin: 0 auto 3.5rem auto;
-  max-width: 85rem;
+  max-width: 86rem;
 }
 
 .cols {
@@ -1021,27 +1021,30 @@ main {
   gap: 1.5rem;
 }
 
+/* 3 card per fila su desktop */
 .col {
-  flex: 0 0 360px !important;
-  max-width: 360px !important;
-  width: 360px !important;
-  margin: 1.25rem 1rem !important;
+  flex: 0 0 calc((100% - 3.2rem) / 3) !important;
+  max-width: calc((100% - 3.2rem) / 3) !important;
+  width: calc((100% - 3.2rem) / 3) !important;
+  margin: 0 0 1.5rem 0 !important;
   cursor: pointer;
+  display: flex;
+  justify-content: center;
 }
 
 .flip-card {
   width: 100%;
-  max-width: 360px;
-  height: 360px;
+  max-width: 100%;
+  height: 320px;
   margin: 0 auto;
 }
 
 .flip-card .card-container,
 .container.flip-card {
-  width: 360px !important;
-  max-width: 360px !important;
-  height: 360px !important;
-  min-height: 360px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 320px !important;
+  min-height: 320px !important;
   margin: 0 auto !important;
   padding: 0 !important;
   -webkit-transform-style: preserve-3d;
@@ -1051,12 +1054,20 @@ main {
   position: relative;
 }
 
-@media (max-width: 992px) {
+/* Tablet: 2 card per fila (577px - 991px) */
+@media (max-width: 991px) and (min-width: 577px) {
   .cols {
-    gap: 1rem;
+    gap: 1.25rem;
+  }
+  .col {
+    flex: 0 0 calc((100% - 1.5rem) / 2) !important;
+    max-width: calc((100% - 1.5rem) / 2) !important;
+    width: calc((100% - 1.5rem) / 2) !important;
+    margin: 0 0 1.25rem 0 !important;
   }
 }
 
+/* Mobile: 1 card per fila (<= 576px) */
 @media screen and (max-width: 576px) {
   .cols {
     display: flex !important;
@@ -1066,7 +1077,7 @@ main {
   }
   .col {
     width: 100% !important;
-    max-width: 360px !important;
+    max-width: 420px !important;
     flex: 0 0 100% !important;
     margin: 0 0 1.25rem 0 !important;
     display: flex;
@@ -1076,7 +1087,9 @@ main {
   .flip-card .card-container,
   .container.flip-card {
     width: 100% !important;
-    max-width: 360px !important;
+    max-width: 100% !important;
+    height: 320px !important;
+    min-height: 320px !important;
   }
 }
 
@@ -1098,7 +1111,7 @@ main {
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   text-align: center;
-  min-height: 360px;
+  min-height: 320px;
   height: 100%;
   color: #fff;
   position: absolute;
