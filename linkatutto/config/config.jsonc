@@ -1,0 +1,9 @@
+{
+  "baseUrl": "https://access-sphere.giovannilamarmora.com",
+  "client_id": "LINKATUTTO-AUTH-01",
+  "redirect_uri": "https://linkatutto.giovannilamarmora.com",
+  "access_sphere_script": "/app/authentication/auth.js",
+  "strapi_url": "https://strapi.giovannilamarmora.com",
+  "linkatutto_datas": "/api/hostwebservers?populate=*&pagination[pageSize]=100",
+  "linkatutto_data": "/api/hostwebserver-config?populate=*",
+}

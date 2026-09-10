@@ -1,0 +1,24 @@
+﻿name: personal-project-hub
+
+services:
+  personal-project-hub:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: personal-project-hub
+    hostname: personal-project-hub
+    restart: unless-stopped
+    ports:
+      - 10010:80
+    volumes:
+      # Monta la cartella locale nel container: modifiche o nuove cartelle sono subito live senza ricreare l'immagine!
+      - ./:/usr/share/nginx/html:ro
+    # Se Nginx Proxy Manager usa una Docker network (es. npm-network o reverse-proxy):
+    networks:
+      docker-network:
+        aliases:
+          - personal-project-hub
+
+networks:
+  docker-network:
+    external: true
