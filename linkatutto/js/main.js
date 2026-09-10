@@ -380,7 +380,22 @@
  */
 function logout() {
   console.log("🔴 Logout started...");
-  window.AccessSphere.logout();
+  if (window.location.search.includes("demo")) {
+    const url = new URL(window.location.href);
+    url.searchParams.delete("demo");
+    const cleanUrl =
+      url.origin +
+      url.pathname +
+      (url.searchParams.toString() ? "?" + url.searchParams.toString() : "") +
+      url.hash;
+    window.location.href = cleanUrl;
+    return;
+  }
+  if (window.AccessSphere && typeof window.AccessSphere.logout === "function") {
+    window.AccessSphere.logout();
+  } else {
+    window.location.href = window.location.origin + window.location.pathname;
+  }
 }
 
 /**
