@@ -62,8 +62,11 @@
   </head>
 
   <body class="is-boxed">
+    <!-- Interactive 3D Particle Constellation Background Canvas -->
+    <canvas id="bg3d" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; opacity: 0.6;"></canvas>
+    
     <div id="blank_page" class="body-wrap has-animations"></div>
-    <div id="dashboard" class="body-wrap not-display has-animations">
+    <div id="dashboard" class="body-wrap not-display has-animations" style="position: relative; z-index: 1;">
       <!-- Top Modern Glassmorphism Navigation -->
       <header class="site-header">
         <div
@@ -185,9 +188,32 @@
       </header>
 
       <main>
-        <!-- Hero Section -->
-        <section class="hero text-center pt-5 pb-2">
-          <div class="container">
+        <!-- Hero Section with 3D Geometric Floating Animation -->
+        <section class="hero text-center pt-5 pb-4 position-relative overflow-hidden">
+          <!-- 3D Geometric Floating Figures (Anime.js Animation) -->
+          <div class="hero-figure anime-element" style="position: absolute; top: 10px; right: 5%; pointer-events: none; z-index: 1; opacity: 0.85;">
+            <svg
+              class="placeholder"
+              width="528"
+              height="396"
+              viewBox="0 0 528 396"
+              style="color: transparent"
+            >
+              <rect width="528" height="396" style="fill: transparent" />
+            </svg>
+            <div class="hero-figure-box hero-figure-box-01" data-rotation="45deg"></div>
+            <div class="hero-figure-box hero-figure-box-02" data-rotation="-45deg"></div>
+            <div class="hero-figure-box hero-figure-box-03" data-rotation="0deg"></div>
+            <div class="hero-figure-box hero-figure-box-04" data-rotation="-135deg"></div>
+            <div class="hero-figure-box hero-figure-box-05"></div>
+            <div class="hero-figure-box hero-figure-box-06"></div>
+            <div class="hero-figure-box hero-figure-box-07"></div>
+            <div class="hero-figure-box hero-figure-box-08" data-rotation="-22deg"></div>
+            <div class="hero-figure-box hero-figure-box-09" data-rotation="-52deg"></div>
+            <div class="hero-figure-box hero-figure-box-10" data-rotation="-50deg"></div>
+          </div>
+
+          <div class="hero-copy position-relative" style="z-index: 2; max-width: 960px; margin: 0 auto; padding: 0 1.25rem;">
             <div class="status-pill mb-3">
               <span class="status-dot"></span>
               <span>Full-Stack & DevOps · Microservice Registry</span>
@@ -203,7 +229,7 @@
 
             <h1
               class="fw-bolder text-white mb-2"
-              style="font-size: 2.75rem; letter-spacing: -0.6px"
+              style="font-size: 2.85rem; letter-spacing: -0.6px; line-height: 1.15; white-space: normal;"
             >
               All Microservices & Links
             </h1>
@@ -218,8 +244,8 @@
             <p
               class="text-secondary mx-auto mb-4"
               style="
-                max-width: 44rem;
-                font-size: 1rem;
+                max-width: 48rem;
+                font-size: 1.05rem;
                 line-height: 1.6;
                 color: var(--md-sys-color-on-surface-variant) !important;
               "

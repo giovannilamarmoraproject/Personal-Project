@@ -867,22 +867,23 @@ pre {
 }
 @media (min-width: 641px) {
   .hero {
-    text-align: left;
-    padding-top: 64px;
-    padding-bottom: 88px;
+    text-align: center;
+    padding-top: 56px;
+    padding-bottom: 64px;
   }
   .hero-inner {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    display: block;
   }
   .hero-copy {
-    padding-right: 64px;
-    min-width: 552px;
-    width: 552px;
+    padding-right: 0;
+    min-width: unset;
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+    text-align: center;
   }
   .hero-cta {
-    margin: 0;
+    margin: 0 auto;
   }
 
   .hero-figure svg {
@@ -1035,7 +1036,7 @@ main {
    MATERIAL EXPRESSIVE 3 FLIP CARDS & GRID SYSTEM (MATCHING PROJECT HUB)
    ============================================================================== */
 
-/* --- WRAPPER E GRIGLIA DINAMICA A 3 CARD PER RIGA --- */
+/* --- WRAPPER E GRIGLIA DINAMICA COMPATTA (CARD SLENDER DA 310PX) --- */
 .wrapper {
   width: 95%;
   margin: 0 auto 3.5rem auto;
@@ -1046,31 +1047,42 @@ main {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  gap: 1.5rem;
 }
 
 .col {
-  flex: 0 0 calc(33.333333% - 2rem) !important;
-  max-width: calc(33.333333% - 2rem) !important;
-  width: calc(33.333333% - 2rem) !important;
-  margin: 1rem;
+  flex: 0 0 360px !important;
+  max-width: 360px !important;
+  width: 360px !important;
+  margin: 1.25rem 1rem !important;
   cursor: pointer;
 }
 
 .flip-card {
-  margin-left: 10px;
-  margin-right: 10px;
   width: 100%;
+  max-width: 360px;
+  height: 360px;
+  margin: 0 auto;
+}
+
+.flip-card .card-container,
+.container.flip-card {
+  width: 360px !important;
+  max-width: 360px !important;
+  height: 360px !important;
+  min-height: 360px !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+  -webkit-perspective: 1000px;
+  perspective: 1000px;
+  position: relative;
 }
 
 @media (max-width: 992px) {
-  .col {
-    flex: 0 0 calc(50% - 2rem) !important;
-    max-width: calc(50% - 2rem) !important;
-    width: calc(50% - 2rem) !important;
-  }
-  .flip-card {
-    margin-left: -10px !important;
-    margin-right: -10px !important;
+  .cols {
+    gap: 1rem;
   }
 }
 
@@ -1079,39 +1091,34 @@ main {
     display: flex !important;
     flex-direction: column !important;
     align-items: center;
+    gap: 1.25rem;
   }
   .col {
     width: 100% !important;
-    max-width: 100% !important;
+    max-width: 360px !important;
     flex: 0 0 100% !important;
-    margin: 0 0 1.5rem 0 !important;
+    margin: 0 0 1.25rem 0 !important;
     display: flex;
     justify-content: center;
   }
-  .flip-card {
+  .flip-card,
+  .flip-card .card-container,
+  .container.flip-card {
     width: 100% !important;
-    max-width: 360px;
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+    max-width: 360px !important;
   }
 }
 
-/* --- STILI 3D FLIP CARD --- */
-.container.flip-card {
-  -webkit-transform-style: preserve-3d;
-  transform-style: preserve-3d;
-  -webkit-perspective: 1000px;
-  perspective: 1000px;
-  position: relative;
-  min-height: 340px;
-  padding: 0 !important;
-}
-
+/* --- STILI 3D FLIP CARD SENZA BORDI (MATCHING PROJECTS CENTRAL HUB) --- */
 .flip-card .front,
-.flip-card .back {
+.flip-card .back,
+.card-container .front,
+.card-container .back {
   background-size: cover;
   box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.4);
-  border-radius: 16px;
+  border-radius: 16px !important;
+  border: none !important;
+  outline: none !important;
   background-position: center;
   -webkit-transition: -webkit-transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
   transition: -webkit-transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
@@ -1120,15 +1127,19 @@ main {
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   text-align: center;
-  min-height: 340px;
+  min-height: 360px;
   height: 100%;
   color: #fff;
-  border: 0.5px solid rgba(255, 255, 255, 0.12) !important;
-  position: relative;
-  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
 }
 
-.flip-card .back {
+.flip-card .back,
+.card-container .back {
   background: #20232b;
   background: -webkit-linear-gradient(45deg, #252830 0%, #15171d 100%);
   background: -o-linear-gradient(45deg, #252830 0%, #15171d 100%);
@@ -1137,14 +1148,11 @@ main {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  border: none !important;
 }
 
-.flip-card .front:after {
+.flip-card .front:after,
+.card-container .front:after {
   position: absolute;
   top: 0;
   left: 0;
@@ -1160,33 +1168,44 @@ main {
   border-radius: 16px;
 }
 
-.container.flip-card:hover .front,
-.col.hover .container.flip-card .front {
+/* 3D Flip Transitions on Hover / Touch */
+.card-container .front,
+.flip-card .front,
+.container.flip-card .front {
+  -webkit-transform: rotateY(0deg);
+  transform: rotateY(0deg);
+}
+
+.card-container .back,
+.flip-card .back,
+.container.flip-card .back {
+  -webkit-transform: rotateY(180deg);
+  transform: rotateY(180deg);
+}
+
+.col:hover .front,
+.col.hover .front,
+.flip-card:hover .front,
+.flip-card.hover .front,
+.card-container:hover .front,
+.container.flip-card:hover .front {
   -webkit-transform: rotateY(-180deg);
   transform: rotateY(-180deg);
 }
 
-.container.flip-card:hover .back,
-.col.hover .container.flip-card .back {
+.col:hover .back,
+.col.hover .back,
+.flip-card:hover .back,
+.flip-card.hover .back,
+.card-container:hover .back,
+.container.flip-card:hover .back {
   -webkit-transform: rotateY(0deg);
   transform: rotateY(0deg);
 }
 
-.container.flip-card .front {
-  -webkit-transform: rotateY(0deg);
-  transform: rotateY(0deg);
-  -webkit-transform-style: preserve-3d;
-  transform-style: preserve-3d;
-}
-
-.container.flip-card .back {
-  -webkit-transform: rotateY(180deg);
-  transform: rotateY(180deg);
-  -webkit-transform-style: preserve-3d;
-  transform-style: preserve-3d;
-}
-
-.flip-card .inner {
+/* --- EFFETTO TESTO 3D IN RILIEVO (COME CARD DI PROJECT) --- */
+.flip-card .inner,
+.card-container .inner {
   -webkit-transform: translateY(-50%) translateZ(60px) scale(0.94);
   transform: translateY(-50%) translateZ(60px) scale(0.94);
   top: 50%;
@@ -1194,20 +1213,27 @@ main {
   left: 0;
   width: 100%;
   padding: 1.75rem 1.4rem;
+  -webkit-box-sizing: border-box;
   box-sizing: border-box;
+  outline: none !important;
+  -webkit-perspective: inherit;
+  perspective: inherit;
   z-index: 2;
+  pointer-events: auto;
 }
 
-.flip-card .front .inner p {
-  font-size: 1.75rem;
-  font-weight: 700;
-  margin-bottom: 1.75rem;
-  position: relative;
-  line-height: 1.25;
-  color: #ffffff;
+.flip-card .front .inner p,
+.card-container .front .inner p {
+  font-size: 1.85rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 1.75rem !important;
+  position: relative !important;
+  line-height: 1.25 !important;
+  color: #ffffff !important;
 }
 
-.flip-card .front .inner p:after {
+.flip-card .front .inner p:after,
+.card-container .front .inner p:after {
   content: "";
   width: 3.5rem;
   height: 3px;
@@ -1221,20 +1247,37 @@ main {
   bottom: -0.75rem;
 }
 
-.flip-card .front .inner span {
-  color: rgba(255, 255, 255, 0.85);
-  font-family: "Figtree", sans-serif;
-  font-weight: 600;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  font-size: 0.85rem;
+.flip-card .front .inner span,
+.card-container .front .inner span {
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-family: "Figtree", sans-serif !important;
+  font-weight: 600 !important;
+  letter-spacing: 1.5px !important;
+  text-transform: uppercase !important;
+  font-size: 0.85rem !important;
 }
 
-.flip-card .back .inner h1 {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 0.85rem;
+.flip-card .back .inner h1,
+.card-container .back .inner h1 {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+  margin-bottom: 0.3rem !important;
+}
+
+.flip-card .after,
+.card-container .after {
+  content: "";
+  width: 3.5rem;
+  height: 3px;
+  position: relative;
+  background: #1a73e8;
+  border-radius: 2px;
+  display: block;
+  left: 0;
+  right: 0;
+  margin: 0 auto 1rem auto;
+  bottom: -0.4rem;
 }
 
 /* Action Button (Star Button Style Matching Project Hub) */
@@ -1245,13 +1288,13 @@ main {
   background-color: #1a73e8;
   color: #ffffff !important;
   font-weight: 600;
-  font-size: 0.82rem;
+  font-size: 0.85rem;
   text-decoration: none !important;
   border-radius: 50rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
-  padding: 0.42rem 1.1rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.45rem 1.15rem;
+  border: none !important;
   cursor: pointer;
 }
 
@@ -1259,7 +1302,12 @@ main {
   background-color: #1557b0;
   color: #ffffff !important;
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(26, 115, 232, 0.45);
+  box-shadow: 0 8px 20px rgba(26, 115, 232, 0.4);
+}
+
+.star-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(26, 115, 232, 0.4);
 }
 
 .action-buttons-group {

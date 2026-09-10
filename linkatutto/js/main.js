@@ -187,23 +187,26 @@
       
       res += `
         <div class="col" ontouchstart="this.classList.toggle('hover');">
-          <div class="container flip-card">
-            <div
-              class="front"
-              style="
-                background-image: url('${logoUrl}');
-                ${bgStyle}
-              "
-            >
-              <div class="inner">
-                <p>${element.title}</p>
-                <span>${displayCategory}</span>
+          <div class="flip-card">
+            <div class="card-container">
+              <div
+                class="front"
+                style="
+                  background-image: url('${logoUrl}');
+                  ${bgStyle}
+                "
+              >
+                <div class="inner">
+                  <p>${element.title}</p>
+                  <span>${displayCategory}</span>
+                </div>
               </div>
-            </div>
-            <div class="back">
-              <div class="inner">
-                <h1>${element.title}</h1>
-                ${createButton(element.link)}
+              <div class="back">
+                <div class="inner">
+                  <h1>${element.title}</h1>
+                  <div class="after"></div>
+                  ${createButton(element.link)}
+                </div>
               </div>
             </div>
           </div>
