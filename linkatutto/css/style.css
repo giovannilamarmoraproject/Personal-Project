@@ -1317,15 +1317,14 @@ main {
   box-shadow: 0 0 10px rgba(26, 115, 232, 0.85);
 }
 
-/* Action Button (Star Button Style with Silky Smooth Glow & Fluid Sweep) */
+/* Action Button (Star Button Style with Rich Glow & Fluid Sheen Sweep) */
 .star-button {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  background-color: #1a73e8;
-  background-image: linear-gradient(135deg, #1f78f0 0%, #1557b0 100%);
+  background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
   color: #ffffff !important;
   font-weight: 600;
   font-size: 0.8rem;
@@ -1333,55 +1332,65 @@ main {
   border-radius: 50rem;
   padding: 0.42rem 1.05rem;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 14px rgba(26, 115, 232, 0.35);
+  box-shadow: 0 4px 14px rgba(26, 115, 232, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   cursor: pointer;
   overflow: hidden;
-  transition: transform 0.28s cubic-bezier(0.25, 1, 0.5, 1),
-              box-shadow 0.28s cubic-bezier(0.25, 1, 0.5, 1),
-              border-color 0.28s cubic-bezier(0.25, 1, 0.5, 1),
-              filter 0.28s cubic-bezier(0.25, 1, 0.5, 1);
-  transform: translateY(0) translateZ(0);
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
+  transition: transform 0.32s cubic-bezier(0.25, 1, 0.5, 1),
+              box-shadow 0.32s cubic-bezier(0.25, 1, 0.5, 1),
+              border-color 0.28s ease,
+              background 0.28s ease;
+  transform: translateY(0) scale(1) translateZ(0);
+  will-change: transform, box-shadow;
   z-index: 1;
 }
 
-/* Light Sheen Sweep Effect on Hover (GPU-Accelerated via transform) */
+/* Stable hit-area to ensure the lift motion never jitters or drops hover */
+.star-button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  pointer-events: auto;
+  z-index: -1;
+}
+
+/* Light Sheen Sweep Effect on Hover */
 .star-button::before {
   content: "";
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 50%;
-  height: 200%;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
   background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.35),
-    transparent
+    120deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.45) 50%,
+    transparent 80%
   );
-  transform: rotate(25deg) translateX(-160%);
-  transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
-  pointer-events: none;
+  transition: left 0.65s ease;
   z-index: 2;
+  pointer-events: none;
 }
 
 .star-button:hover {
-  transform: translateY(-2px) translateZ(0);
-  filter: brightness(1.12);
-  box-shadow: 0 6px 20px rgba(26, 115, 232, 0.55), 0 0 14px rgba(138, 180, 248, 0.35);
-  border-color: rgba(255, 255, 255, 0.4);
+  background: linear-gradient(135deg, #2b82f6 0%, #1a73e8 100%);
   color: #ffffff !important;
+  transform: translateY(-3px) scale(1.04) translateZ(0);
+  box-shadow: 0 8px 24px rgba(26, 115, 232, 0.65), 0 0 16px rgba(138, 180, 248, 0.5);
+  border-color: rgba(255, 255, 255, 0.45);
 }
 
 .star-button:hover::before {
-  transform: rotate(25deg) translateX(360%);
+  left: 100%;
 }
 
 .star-button:active {
   transform: translateY(0) scale(0.98) translateZ(0);
-  box-shadow: 0 2px 8px rgba(26, 115, 232, 0.45);
-  transition-duration: 0.1s;
+  box-shadow: 0 3px 10px rgba(26, 115, 232, 0.45);
+  transition-duration: 0.12s;
 }
 
 .action-buttons-group {
