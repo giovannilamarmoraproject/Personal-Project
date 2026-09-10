@@ -13,6 +13,19 @@ services:
     volumes:
       # Monta la cartella locale nel container: modifiche o nuove cartelle sono subito live senza ricreare l'immagine!
       - ./:/usr/share/nginx/html:ro
+
+    labels:
+      # 1. Attiva il monitoraggio di WUD
+      - "wud.watch=true"
+      # 2. Monitora specificamente il tag latest
+      - "wud.tag.include=^latest$"
+      # 3. Controlla le variazioni di hash digest SHA-256
+      - "wud.watch.digest=true"
+      # 4. Attiva il trigger di deploy automatico
+      - "wud.trigger.docker.local.enabled=true"
+      # 5. Forza l'esecuzione automatica immediata al rilevamento
+      - "wud.trigger.docker.local.auto=true"
+      - "wud.trigger.docker.local.threshold=all"
     # Se Nginx Proxy Manager usa una Docker network (es. npm-network o reverse-proxy):
     networks:
       docker-network:
