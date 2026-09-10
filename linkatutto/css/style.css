@@ -1007,9 +1007,10 @@ main {
    MATERIAL EXPRESSIVE 3 FLIP CARDS & GRID SYSTEM (MATCHING PROJECT HUB)
    ============================================================================== */
 
-/* --- WRAPPER E GRIGLIA DINAMICA (CARD 360x320, 3 PER FILA SU DESKTOP) --- */
+/* --- WRAPPER E GRIGLIA DINAMICA (CARD 360x320, ESATTAMENTE 3 PER FILA SU DESKTOP) --- */
 .wrapper {
-  width: min(96%, 80rem);
+  width: min(96%, calc(3 * 360px + 2 * 1.5rem + 4px));
+  max-width: calc(3 * 360px + 2 * 1.5rem + 4px);
   margin: 0 auto 3.5rem auto;
 }
 
@@ -1018,6 +1019,9 @@ main {
   flex-wrap: wrap;
   justify-content: center;
   gap: 1.5rem;
+  width: 100%;
+  max-width: calc(3 * 360px + 2 * 1.5rem + 4px);
+  margin: 0 auto;
 }
 
 /* 3 card per fila su desktop (360px x 320px) */
@@ -1383,7 +1387,8 @@ main {
 
 /* Category Sections Centered */
 .category-header {
-  width: min(94%, 85rem);
+  width: min(96%, calc(3 * 360px + 2 * 1.5rem + 4px));
+  max-width: calc(3 * 360px + 2 * 1.5rem + 4px);
   margin: 3.5rem auto 1.5rem auto;
   display: flex;
   align-items: center;
