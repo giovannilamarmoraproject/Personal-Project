@@ -254,61 +254,116 @@
   if (window.location.search.includes("demo")) {
     console.log("🚀 Linkatutto Demo Mode Activated");
     const demoData = {
-      "Core Microservices": [
-        {
-          title: "Portfolio Service",
-          logo: "https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/0f58a355856d25a7154482951a3220899ee59d10/assets/icons/svg/rounded_white.svg",
-          link: {
-            Swagger: "#",
-            Actuator: "#",
-            Repo: "https://github.com/giovannilamarmora",
-          },
-          style_css: DEFAULT_STYLE_CSS,
-        },
+      "Core Microservices & Apps": [
         {
           title: "MoneyStats API",
           logo: "https://raw.githubusercontent.com/giovannilamarmoraproject/MoneyStats/master/.github/assets/img/MoneyStats.png",
           link: {
             "Web App": "https://moneystats.giovannilamarmora.com",
-            Swagger: "#",
-            Metrics: "#",
+            Swagger: "https://moneystats.service.giovannilamarmora.com/swagger-ui/index.html",
+            GitHub: "https://github.com/giovannilamarmoraproject/MoneyStats",
           },
           style_css: DEFAULT_STYLE_CSS,
         },
         {
           title: "Access Sphere",
-          logo: "https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/0f58a355856d25a7154482951a3220899ee59d10/assets/icons/svg/rounded_white.svg",
-          link: { Console: "#", Docs: "#" },
+          logo: "https://strapi.giovannilamarmora.com/uploads/3072743_a19ead8f0e.jpg",
+          link: {
+            Console: "https://access-sphere.giovannilamarmora.com",
+            Docs: "https://giovannilamarmora.github.io",
+          },
           style_css: DEFAULT_STYLE_CSS,
         },
         {
-          title: "Portfolio Service",
-          logo: "https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/0f58a355856d25a7154482951a3220899ee59d10/assets/icons/svg/rounded_white.svg",
+          title: "Costi Casa",
+          logo: "https://projects.giovannilamarmora.com/costi-casa/icon.jpg",
           link: {
-            Swagger: "#",
-            Actuator: "#",
+            "Web App": "https://costi-casa.giovannilamarmora.com",
             Repo: "https://github.com/giovannilamarmora",
           },
           style_css: DEFAULT_STYLE_CSS,
         },
+        {
+          title: "Material Home Assistant",
+          logo: "https://strapi.giovannilamarmora.com/uploads/material_home_assistant_18ab2c869d.png",
+          link: {
+            Website: "https://materialhomeassistant.com/",
+            GitHub: "https://github.com/giovannilamarmoraproject/Material-Home-Assistant",
+          },
+          style_css: DEFAULT_STYLE_CSS,
+        },
+        {
+          title: "The Real Marza",
+          logo: "https://yt3.googleusercontent.com/T3I5_9aU84CdDowZbjragxSkkIYTWKoTV8wuIqPYBbt1eZi3BQ5HEPH-By-SyGodl6it_hOHTg=s900-c-k-c0x00ffffff-no-rj",
+          link: {
+            Website: "https://the-real-marza.giovannilamarmora.com",
+            YouTube: "https://www.youtube.com/@TheRealMarzaa",
+          },
+          style_css: DEFAULT_STYLE_CSS,
+        },
+        {
+          title: "Portfolio Service",
+          logo: "https://giovannilamarmora.github.io/assets/icons/svg/rounded_white.svg",
+          link: {
+            Portfolio: "https://giovannilamarmora.github.io/",
+            GitHub: "https://github.com/giovannilamarmora",
+          },
+          style_css: DEFAULT_STYLE_CSS,
+        },
       ],
-      "Gateways & Systems": [
+      "Database & Cloud Infrastructure": [
         {
-          title: "Linkatutto Hub",
-          logo: "https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/0f58a355856d25a7154482951a3220899ee59d10/assets/icons/svg/rounded_white.svg",
-          link: { Gateway: "#", Health: "#" },
+          title: "MySQL Database",
+          logo: "https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/mysql/mysql.png",
+          link: {
+            Console: "https://cloudbeaver.giovannilamarmora.com",
+            Docs: "https://dev.mysql.com/doc/",
+          },
           style_css: DEFAULT_STYLE_CSS,
         },
         {
-          title: "Personal Project Server",
-          logo: "https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/0f58a355856d25a7154482951a3220899ee59d10/assets/icons/svg/rounded_white.svg",
-          link: { "Central Hub": "/", "The Real Marza": "/the-real-marza/" },
+          title: "Redis Cache",
+          logo: "https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/redis/redis.png",
+          link: {
+            Website: "https://redis.io/",
+            Docs: "https://redis.io/docs/",
+          },
           style_css: DEFAULT_STYLE_CSS,
         },
         {
-          title: "Home Assistant Proxy",
-          logo: "https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/0f58a355856d25a7154482951a3220899ee59d10/assets/icons/svg/rounded_white.svg",
-          link: { Dashboard: "#", Status: "#" },
+          title: "Strapi CMS",
+          logo: "https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/strapi/strapi.png",
+          link: {
+            Admin: "https://strapi.giovannilamarmora.com/admin",
+            Website: "https://strapi.io/",
+          },
+          style_css: DEFAULT_STYLE_CSS,
+        },
+        {
+          title: "GitBook Docs",
+          logo: "https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/gitbook/gitbook.png",
+          link: {
+            Docs: "https://giovannilamarmora.gitbook.io/",
+            Portal: "https://www.gitbook.com",
+          },
+          style_css: DEFAULT_STYLE_CSS,
+        },
+        {
+          title: "Docker Registry",
+          logo: "https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/docker/docker.png",
+          link: {
+            Hub: "https://hub.docker.com/u/giovannilamarmora",
+            Registry: "https://ghcr.io",
+          },
+          style_css: DEFAULT_STYLE_CSS,
+        },
+        {
+          title: "Kubernetes Cluster",
+          logo: "https://raw.githubusercontent.com/github/explore/80688e429a7d4ef2fca1e82350fe8e3517d3494d/topics/kubernetes/kubernetes.png",
+          link: {
+            Dashboard: "https://kubernetes.io/",
+            Docs: "https://kubernetes.io/docs/",
+          },
           style_css: DEFAULT_STYLE_CSS,
         },
       ],
