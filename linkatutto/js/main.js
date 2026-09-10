@@ -204,9 +204,9 @@
               </div>
               <div class="back">
                 <div class="inner">
-                  <div class="back-category-pill">${displayCategory}</div>
                   <h1>${element.title}</h1>
                   <div class="after"></div>
+                  <div class="back-category-pill">${displayCategory}</div>
                   ${createButton(element.link)}
                 </div>
               </div>
