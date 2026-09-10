@@ -299,3 +299,48 @@ function logout() {
   console.log("🔴 Logout started...");
   window.AccessSphere.logout();
 }
+
+/**
+ * ------------------------------
+ * Mobile Hamburger Menu Toggle
+ * ------------------------------
+ */
+function initMobileMenu() {
+  const hamburgerBtn = document.getElementById("hamburger-btn");
+  const mobileMenu = document.getElementById("mobile-menu");
+  if (!hamburgerBtn || !mobileMenu || hamburgerBtn.dataset.bound) return;
+  hamburgerBtn.dataset.bound = "true";
+
+  hamburgerBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const isOpen = mobileMenu.classList.toggle("open");
+    hamburgerBtn.classList.toggle("active", isOpen);
+    hamburgerBtn.setAttribute("aria-expanded", isOpen);
+  });
+
+  mobileMenu.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      mobileMenu.classList.remove("open");
+      hamburgerBtn.classList.remove("active");
+      hamburgerBtn.setAttribute("aria-expanded", "false");
+    });
+  });
+
+  document.addEventListener("click", (e) => {
+    if (
+      mobileMenu.classList.contains("open") &&
+      !mobileMenu.contains(e.target) &&
+      !hamburgerBtn.contains(e.target)
+    ) {
+      mobileMenu.classList.remove("open");
+      hamburgerBtn.classList.remove("active");
+      hamburgerBtn.setAttribute("aria-expanded", "false");
+    }
+  });
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initMobileMenu);
+} else {
+  initMobileMenu();
+}

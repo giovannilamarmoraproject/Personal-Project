@@ -77,22 +77,23 @@
               href="#"
             >
               <img
-                width="40"
-                height="40"
+                width="38"
+                height="38"
                 class="header-logo-image logo-images rounded-circle shadow-sm"
                 src="https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/0f58a355856d25a7154482951a3220899ee59d10/assets/icons/svg/rounded_white.svg"
                 alt="Logo"
               />
               <span
                 class="fw-bold text-white fs-5"
-                style="letter-spacing: -0.3px; font-size: 1.25rem !important;"
+                style="letter-spacing: -0.3px;"
                 >Linkatutto</span
               >
             </a>
           </div>
 
-          <div class="header-actions d-flex align-items-center gap-2 gap-md-3 flex-wrap">
-            <div class="status-pill d-none d-md-inline-flex m-0">
+          <!-- Desktop Navigation Actions (hidden on <= 768px) -->
+          <div class="header-actions d-none d-md-flex align-items-center gap-2 gap-lg-3">
+            <div class="status-pill m-0">
               <span class="status-dot"></span>
               <span>Services Gateway · Online</span>
             </div>
@@ -169,6 +170,107 @@
                 viewBox="0 0 24 24"
                 width="14"
                 height="14"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+              <span>Logout</span>
+            </a>
+          </div>
+
+          <!-- Mobile Hamburger Toggle Button (visible on <= 768px) -->
+          <button
+            class="hamburger-btn d-md-none"
+            id="hamburger-btn"
+            type="button"
+            aria-label="Toggle navigation menu"
+            aria-expanded="false"
+          >
+            <span class="hamburger-bar"></span>
+            <span class="hamburger-bar"></span>
+            <span class="hamburger-bar"></span>
+          </button>
+        </div>
+
+        <!-- Mobile Collapsible Menu Dropdown -->
+        <div class="mobile-menu d-md-none" id="mobile-menu">
+          <div class="mobile-menu-inner">
+            <div class="status-pill mb-2 w-100 justify-content-center">
+              <span class="status-dot"></span>
+              <span>Services Gateway · Online</span>
+            </div>
+
+            <a href="/" class="mobile-menu-link">
+              <svg
+                viewBox="0 0 24 24"
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </svg>
+              <span>Central Hub</span>
+            </a>
+
+            <a
+              href="https://github.com/giovannilamarmora"
+              target="_blank"
+              class="mobile-menu-link github_url"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="16"
+                height="16"
+                fill="currentColor"
+              >
+                <path
+                  d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"
+                />
+              </svg>
+              <span>GitHub</span>
+            </a>
+
+            <a
+              class="mobile-menu-link log_explore"
+              target="_blank"
+              href="#"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="16"
+                height="16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <span>Logs Explore</span>
+            </a>
+
+            <a
+              class="mobile-menu-link text-danger"
+              id="mobile-logout-btn"
+              onclick="logout()"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="16"
+                height="16"
                 fill="none"
                 stroke="currentColor"
                 stroke-width="2"
@@ -266,107 +368,112 @@
 
       <!-- Modern Footer (Matching Project Hub) -->
       <footer class="site-footer">
-        <div
-          class="d-flex flex-wrap align-items-center justify-content-between gap-3 pb-3 border-bottom border-secondary border-opacity-25 mb-3"
-        >
-          <div class="footer-top-brand">
-            <a
-              class="website_url d-flex align-items-center gap-2 text-decoration-none text-white"
-              target="_blank"
-              href="#"
-            >
-              <img
-                class="footer-brand-logo logo-images"
-                src="https://raw.githubusercontent.com/giovannilamarmoraproject/Portfolio/cd15a57f99b8cfdd8d3f29e4d7d0f3b52004c47d/assets/img/logo.svg"
-                alt="Logo"
-              />
-              <span class="fw-bold">Giovanni Lamarmora</span>
-            </a>
+        <div class="footer-content">
+          <!-- Top Row: Brand & Socials -->
+          <div class="footer-top-row">
+            <div class="footer-top-brand">
+              <a
+                class="website_url d-flex align-items-center gap-2 text-decoration-none text-white"
+                target="_blank"
+                href="#"
+              >
+                <img
+                  class="footer-brand-logo logo-images"
+                  src="https://raw.githubusercontent.com/giovannilamarmoraproject/Portfolio/cd15a57f99b8cfdd8d3f29e4d7d0f3b52004c47d/assets/img/logo.svg"
+                  alt="Logo"
+                />
+                <span class="fw-bold">Giovanni Lamarmora</span>
+              </a>
+            </div>
+
+            <!-- Socials -->
+            <div class="footer-socials">
+              <a
+                class="footer-social-btn github_url"
+                href="https://github.com/giovannilamarmora"
+                target="_blank"
+                title="GitHub"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"
+                  />
+                </svg>
+              </a>
+              <a
+                class="footer-social-btn website_url"
+                href="https://giovannilamarmora.github.io/"
+                target="_blank"
+                title="Portfolio"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <path
+                    d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
+                  ></path>
+                </svg>
+              </a>
+            </div>
           </div>
 
-          <div class="d-flex align-items-center gap-2">
+          <!-- Middle Row: Footer Navigation Links -->
+          <div class="footer-links-wrap">
             <a
               id="contact_url"
               target="_blank"
               href="#"
-              class="action-pill py-1 px-3"
+              class="action-pill"
               >Contact</a
             >
             <a
               id="about_url"
               target="_blank"
               href="#"
-              class="action-pill py-1 px-3"
+              class="action-pill"
               >About us</a
             >
             <a
               id="FAQ_url"
               target="_blank"
               href="#"
-              class="action-pill py-1 px-3"
+              class="action-pill"
               >FAQ's</a
             >
             <a
               id="support_url"
               target="_blank"
               href="#"
-              class="action-pill py-1 px-3"
+              class="action-pill"
               >Support</a
             >
           </div>
 
-          <div class="d-flex align-items-center gap-2">
-            <a
-              class="footer-social-btn github_url"
-              href="https://github.com/giovannilamarmora"
-              target="_blank"
-              title="GitHub"
-            >
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path
-                  d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"
-                />
-              </svg>
-            </a>
-            <a
-              class="footer-social-btn website_url"
-              href="https://giovannilamarmora.github.io/"
-              target="_blank"
-              title="Portfolio"
-            >
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="2" y1="12" x2="22" y2="12"></line>
-                <path
-                  d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
-                ></path>
-              </svg>
-            </a>
-          </div>
-        </div>
+          <!-- Divider -->
+          <div class="footer-divider"></div>
 
-        <div
-          class="d-flex flex-wrap justify-content-between align-items-center text-secondary small"
-        >
-          <div id="copyright-text" class="footer-copyright">
-            &copy; 2026 Giovanni Lamarmora, all rights reserved.
-          </div>
-          <div>
-            Linkatutto · Infrastructure Registry & Microservice Dashboard
+          <!-- Bottom Row: Meta & Copyright -->
+          <div class="footer-bottom-row">
+            <div id="copyright-text" class="footer-copyright">
+              &copy; 2026 Giovanni Lamarmora, all rights reserved.
+            </div>
+            <div class="footer-subtitle">
+              Linkatutto · Infrastructure Registry & Microservice Dashboard
+            </div>
           </div>
         </div>
       </footer>
