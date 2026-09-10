@@ -916,7 +916,7 @@ pre {
 }
 main {
   flex: 1 0 auto;
-  padding-top: 68px !important;
+  padding-top: 84px !important;
 }
 .section-inner {
   position: relative;
@@ -1576,7 +1576,7 @@ main {
   -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25) !important;
-  padding: 0.75rem 0 !important;
+  padding: 1.15rem 0 !important;
 }
 
 .site-header::before {
@@ -1743,7 +1743,7 @@ main {
 /* --- RESPONSIVE MOBILE TWEAKS (<= 576px) --- */
 @media (max-width: 576px) {
   .site-header {
-    padding: 0.75rem 0 !important;
+    padding: 0.95rem 0 !important;
   }
 
   .site-header .header-container {
