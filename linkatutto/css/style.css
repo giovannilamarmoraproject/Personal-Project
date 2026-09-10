@@ -1007,11 +1007,10 @@ main {
    MATERIAL EXPRESSIVE 3 FLIP CARDS & GRID SYSTEM (MATCHING PROJECT HUB)
    ============================================================================== */
 
-/* --- WRAPPER E GRIGLIA DINAMICA (ESATTAMENTE 3 CARD PER FILA SU DESKTOP) --- */
+/* --- WRAPPER E GRIGLIA DINAMICA (CARD 360x320, 3 PER FILA SU DESKTOP) --- */
 .wrapper {
-  width: 95%;
+  width: min(96%, 80rem);
   margin: 0 auto 3.5rem auto;
-  max-width: 86rem;
 }
 
 .cols {
@@ -1021,11 +1020,11 @@ main {
   gap: 1.5rem;
 }
 
-/* 3 card per fila su desktop */
+/* 3 card per fila su desktop (360px x 320px) */
 .col {
-  flex: 0 0 calc((100% - 3.2rem) / 3) !important;
-  max-width: calc((100% - 3.2rem) / 3) !important;
-  width: calc((100% - 3.2rem) / 3) !important;
+  flex: 0 0 360px !important;
+  max-width: 360px !important;
+  width: 360px !important;
   margin: 0 0 1.5rem 0 !important;
   cursor: pointer;
   display: flex;
@@ -1033,16 +1032,16 @@ main {
 }
 
 .flip-card {
-  width: 100%;
-  max-width: 100%;
+  width: 360px;
+  max-width: 360px;
   height: 320px;
   margin: 0 auto;
 }
 
 .flip-card .card-container,
 .container.flip-card {
-  width: 100% !important;
-  max-width: 100% !important;
+  width: 360px !important;
+  max-width: 360px !important;
   height: 320px !important;
   min-height: 320px !important;
   margin: 0 auto !important;
@@ -1052,19 +1051,6 @@ main {
   -webkit-perspective: 1000px;
   perspective: 1000px;
   position: relative;
-}
-
-/* Tablet: 2 card per fila (577px - 991px) */
-@media (max-width: 991px) and (min-width: 577px) {
-  .cols {
-    gap: 1.25rem;
-  }
-  .col {
-    flex: 0 0 calc((100% - 1.5rem) / 2) !important;
-    max-width: calc((100% - 1.5rem) / 2) !important;
-    width: calc((100% - 1.5rem) / 2) !important;
-    margin: 0 0 1.25rem 0 !important;
-  }
 }
 
 /* Mobile: 1 card per fila (<= 576px) */
@@ -1077,7 +1063,7 @@ main {
   }
   .col {
     width: 100% !important;
-    max-width: 420px !important;
+    max-width: 360px !important;
     flex: 0 0 100% !important;
     margin: 0 0 1.25rem 0 !important;
     display: flex;
@@ -1087,7 +1073,7 @@ main {
   .flip-card .card-container,
   .container.flip-card {
     width: 100% !important;
-    max-width: 100% !important;
+    max-width: 360px !important;
     height: 320px !important;
     min-height: 320px !important;
   }
