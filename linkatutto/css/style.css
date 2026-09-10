@@ -1317,14 +1317,15 @@ main {
   box-shadow: 0 0 10px rgba(26, 115, 232, 0.85);
 }
 
-/* Action Button (Star Button Style with Rich Glow & Sheen Sweep) */
+/* Action Button (Star Button Style with Silky Smooth Glow & Fluid Sweep) */
 .star-button {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  background: linear-gradient(135deg, #1a73e8 0%, #1557b0 100%);
+  background-color: #1a73e8;
+  background-image: linear-gradient(135deg, #1f78f0 0%, #1557b0 100%);
   color: #ffffff !important;
   font-weight: 600;
   font-size: 0.8rem;
@@ -1332,48 +1333,55 @@ main {
   border-radius: 50rem;
   padding: 0.42rem 1.05rem;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 14px rgba(26, 115, 232, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 14px rgba(26, 115, 232, 0.35);
   cursor: pointer;
   overflow: hidden;
-  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-  will-change: transform, box-shadow;
+  transition: transform 0.28s cubic-bezier(0.25, 1, 0.5, 1),
+              box-shadow 0.28s cubic-bezier(0.25, 1, 0.5, 1),
+              border-color 0.28s cubic-bezier(0.25, 1, 0.5, 1),
+              filter 0.28s cubic-bezier(0.25, 1, 0.5, 1);
+  transform: translateY(0) translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
   z-index: 1;
 }
 
-/* Light Sheen Sweep Effect on Hover */
+/* Light Sheen Sweep Effect on Hover (GPU-Accelerated via transform) */
 .star-button::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
+  top: -50%;
+  left: -50%;
+  width: 50%;
+  height: 200%;
   background: linear-gradient(
-    120deg,
-    transparent 20%,
-    rgba(255, 255, 255, 0.45) 50%,
-    transparent 80%
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.35),
+    transparent
   );
-  transition: all 0.65s ease;
-  z-index: 2;
+  transform: rotate(25deg) translateX(-160%);
+  transition: transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
   pointer-events: none;
+  z-index: 2;
 }
 
 .star-button:hover {
-  background: linear-gradient(135deg, #2b82f6 0%, #1a73e8 100%);
+  transform: translateY(-2px) translateZ(0);
+  filter: brightness(1.12);
+  box-shadow: 0 6px 20px rgba(26, 115, 232, 0.55), 0 0 14px rgba(138, 180, 248, 0.35);
+  border-color: rgba(255, 255, 255, 0.4);
   color: #ffffff !important;
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 8px 24px rgba(26, 115, 232, 0.65), 0 0 16px rgba(138, 180, 248, 0.5);
-  border-color: rgba(255, 255, 255, 0.45);
 }
 
 .star-button:hover::before {
-  left: 100%;
+  transform: rotate(25deg) translateX(360%);
 }
 
 .star-button:active {
-  transform: translateY(0) scale(0.98);
-  box-shadow: 0 3px 10px rgba(26, 115, 232, 0.45);
+  transform: translateY(0) scale(0.98) translateZ(0);
+  box-shadow: 0 2px 8px rgba(26, 115, 232, 0.45);
+  transition-duration: 0.1s;
 }
 
 .action-buttons-group {
@@ -1511,14 +1519,21 @@ main {
   font-weight: 600;
   color: var(--md-sys-color-on-surface);
   text-decoration: none !important;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1),
+              background-color 0.25s cubic-bezier(0.25, 1, 0.5, 1),
+              border-color 0.25s cubic-bezier(0.25, 1, 0.5, 1),
+              color 0.25s cubic-bezier(0.25, 1, 0.5, 1),
+              box-shadow 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+  transform: translateY(0) translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .action-pill:hover {
   background: var(--md-sys-color-surface-container-high);
   border-color: rgba(255, 255, 255, 0.2);
   color: #ffffff;
-  transform: translateY(-2px);
+  transform: translateY(-2px) translateZ(0);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
