@@ -44,7 +44,7 @@
     "category": "Gateway & Tools",
     "description": "Centralized internal service gateway and microservices registry hub, providing direct access to endpoints, API documentation, actuator metrics, and admin consoles.",
     "image": "https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/0f58a355856d25a7154482951a3220899ee59d10/assets/icons/svg/rounded_white.svg",
-    "url": "./linkatutto/",
+    "url": "./linkatutto/?demo=true",
     "tags": ["Gateway", "Microservices", "Registry"]
   }
 ]
