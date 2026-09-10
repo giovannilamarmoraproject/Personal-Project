@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TRM | Kings League Italia</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=block"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      /* Specific Styles for Kings League Page */
+      .bg-shape.shape-orange {
+        width: 100vw;
+        height: 100vh;
+        top: 0;
+        left: 0;
+        opacity: 0.15;
+        border-radius: 0;
+      }
+      .bg-shape.shape-purple {
+        display: none;
+      }
+    </style>
+    <link rel="icon" type="image/x-icon" href="/assets/logo.jpeg" />
+  </head>
+  <body>
+    <div class="bg-shape shape-orange"></div>
+
+    <header>
+      <div class="container header-content">
+        <a href="index.html" class="logo">
+          <div class="nav-logo-container">
+            <img src="/assets/logo.jpeg" alt="Marza Logo" class="nav-logo" />
+          </div>
+          <span>TheRealMarza</span></a
+        >
+        <button class="mobile-menu-btn">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <nav>
+          <a href="index.html">Home</a>
+          <a href="twitch.html">Twitch</a>
+          <a href="youtube.html">YouTube</a>
+          <a href="setup.html">My Setup</a>
+          <a href="kingsleague.html" class="active btn-highlight"
+            >Kings League TRM</a
+          >
+        </nav>
+      </div>
+    </header>
+
+    <main class="kl-page">
+      <!-- KL Hero -->
+      <section class="hero container kl-hero">
+        <div class="kl-logo-container float-anim">
+          <img src="/assets/trm.webp" alt="TRM Logo" />
+        </div>
+        <div class="hero-text text-center">
+          <h1>Team <span class="kl-text-color">TRM</span></h1>
+          <p class="subtitle kl-text-color">Kings League Italia</p>
+          <p class="description">
+            La squadra ufficiale di TheRealMarza. Sangue, sudore e spettacolo.
+          </p>
+        </div>
+      </section>
+
+      <!-- Roster Section -->
+      <section class="roster-section container animate-on-scroll">
+        <h2 class="section-title">Il <span>Roster</span></h2>
+        <div class="roster-grid">
+          <!-- Finti Giocatori -->
+          <div class="player-card glass-panel-sm">
+            <div class="player-number">10</div>
+            <h3>Mario Rossi</h3>
+            <p>Attaccante</p>
+          </div>
+          <div class="player-card glass-panel-sm">
+            <div class="player-number">7</div>
+            <h3>Luca Bianchi</h3>
+            <p>Centrocampista</p>
+          </div>
+          <div class="player-card glass-panel-sm">
+            <div class="player-number">1</div>
+            <h3>Gigi Buffa</h3>
+            <p>Portiere</p>
+          </div>
+          <div class="player-card glass-panel-sm">
+            <div class="player-number">99</div>
+            <h3>Alex Neri</h3>
+            <p>Difensore</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Prossima Partita -->
+      <section class="match-section container animate-on-scroll">
+        <div class="glass-panel text-center">
+          <h2 class="section-title">Prossima <span>Partita</span></h2>
+          <div class="match-details">
+            <div class="team">
+              <img src="/assets/trm.webp" width="80" alt="TRM" />
+              <h3>TRM</h3>
+            </div>
+            <div class="vs">VS</div>
+            <div class="team">
+              <div class="fake-logo">OPP</div>
+              <h3>Avversari</h3>
+            </div>
+          </div>
+          <p class="match-time">Domenica, 21:00 - Live su Twitch</p>
+          <a href="https://www.twitch.tv/therealmarzaa" class="btn btn-kl"
+            >Guarda la partita</a
+          >
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container footer-content">
+        <p>&copy; 2026 TheRealMarza x TRM. Tutti i diritti riservati.</p>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>

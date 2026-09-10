@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TheRealMarza | YouTube</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=block"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .bg-shape.shape-purple {
+        width: 80vw;
+        height: 80vh;
+        top: 10%;
+        left: 10%;
+        opacity: 0.05;
+        border-radius: 0;
+        background-color: #ff0000; /* YouTube Red variant */
+      }
+      .bg-shape.shape-orange {
+        display: none;
+      }
+    </style>
+    <link rel="icon" type="image/x-icon" href="/assets/logo.jpeg" />
+  </head>
+  <body>
+    <div class="bg-shape shape-purple"></div>
+
+    <header>
+      <div class="container header-content">
+        <a href="index.html" class="logo">
+          <div class="nav-logo-container">
+            <img src="/assets/logo.jpeg" alt="Marza Logo" class="nav-logo" />
+          </div>
+          <span>TheRealMarza</span></a
+        >
+        <button class="mobile-menu-btn">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <nav>
+          <a href="index.html">Home</a>
+          <a href="twitch.html">Twitch</a>
+          <a href="youtube.html" class="active">YouTube</a>
+          <a href="setup.html">My Setup</a>
+          <a href="kingsleague.html" class="btn-highlight">Kings League TRM</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="youtube-page" style="padding-top: 120px; min-height: 100vh">
+      <section class="container text-center mb-5">
+        <h1 class="section-title" style="margin-bottom: 10px">
+          <i class="fa-brands fa-youtube" style="color: #ff0000"></i> My
+          <span>Videos</span>
+        </h1>
+        <p class="description">Tutti i miei ultimi video raggruppati qui.</p>
+      </section>
+
+      <section class="container mb-5">
+        <div id="video-grid" class="yt-grid">
+          <!-- I video verranno generati dinamicamente dal JS -->
+        </div>
+
+        <div class="text-center mt-3 mb-5">
+          <button
+            id="load-more-btn"
+            class="btn btn-outline"
+            style="border-color: #ff0000"
+          >
+            Carica Altri <i class="fa-solid fa-angle-down"></i>
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <footer style="margin-top: 50px">
+      <div class="container footer-content">
+        <p>&copy; 2026 TheRealMarza. Tutti i diritti riservati.</p>
+      </div>
+    </footer>
+
+    <!-- JS Base per Header/Scroll + JS Specifico per YT -->
+    <script src="script.js"></script>
+    <script src="youtube.js"></script>
+  </body>
+</html>

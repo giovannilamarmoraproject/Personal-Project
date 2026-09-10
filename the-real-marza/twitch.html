@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TheRealMarza | Twitch Live & VODs</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=block"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .bg-shape.shape-purple {
+        width: 100vw;
+        height: 100vh;
+        top: 0;
+        left: 0;
+        opacity: 0.15;
+        border-radius: 0;
+      }
+      .bg-shape.shape-orange {
+        display: none;
+      }
+    </style>
+    <link rel="icon" type="image/x-icon" href="/assets/logo.jpeg" />
+  </head>
+  <body>
+    <div class="bg-shape shape-purple"></div>
+
+    <header>
+      <div class="container header-content">
+        <a href="index.html" class="logo">
+          <div class="nav-logo-container">
+            <img src="/assets/logo.jpeg" alt="Marza Logo" class="nav-logo" />
+          </div>
+          <span>TheRealMarza</span></a
+        >
+        <button class="mobile-menu-btn">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <nav>
+          <a href="index.html">Home</a>
+          <a
+            href="twitch.html"
+            class="active"
+            style="color: var(--twitch-color)"
+            >Twitch</a
+          >
+          <a href="youtube.html">YouTube</a>
+          <a href="setup.html">My Setup</a>
+          <a href="kingsleague.html" class="btn-highlight">Kings League TRM</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="twitch-page" style="padding-top: 120px; min-height: 100vh">
+      <section class="container text-center mb-5">
+        <h1 class="section-title" style="margin-bottom: 10px">
+          <i class="fa-brands fa-twitch" style="color: var(--twitch-color)"></i>
+          Live <span>& VODs</span>
+        </h1>
+        <p class="description">
+          Guarda le mie ultime trasmissioni direttamente da qui.
+        </p>
+      </section>
+
+      <section class="container animate-on-scroll">
+        <div style="text-align: right; margin-bottom: 15px">
+          <button id="toggle-chat-btn" class="btn btn-twitch-small">
+            <i class="fa-solid fa-comment-slash"></i> Nascondi Chat
+          </button>
+        </div>
+        <div class="twitch-embed-container glass-panel">
+          <!-- Video Player -->
+          <div class="twitch-video">
+            <iframe
+              src="https://player.twitch.tv/?video=2819211919&parent=therealmarza.giovannilamarmora.com&parent=localhost"
+              frameborder="0"
+              allowfullscreen="true"
+              scrolling="no"
+              style="width: 100%; height: 100%"
+            >
+            </iframe>
+          </div>
+          <!-- Chat Embed -->
+          <div class="twitch-chat">
+            <iframe
+              src="https://www.twitch.tv/embed/therealmarzaa/chat?parent=therealmarza.giovannilamarmora.com&parent=localhost&darkpopout"
+              frameborder="0"
+              scrolling="no"
+              style="width: 100%; height: 100%"
+            >
+            </iframe>
+          </div>
+        </div>
+      </section>
+
+      <!-- Twitch Clips Section -->
+      <section
+        class="container animate-on-scroll"
+        style="margin-top: 80px; margin-bottom: 50px"
+      >
+        <h2 class="section-title text-center">
+          Top <span style="color: var(--twitch-color)">Clips</span>
+        </h2>
+        <div class="clip-grid">
+          <!-- Clip 1 -->
+          <div class="clip-card glass-panel-sm" style="padding: 10px">
+            <div class="clip-thumb-container" style="margin-bottom: 5px">
+              <iframe
+                src="https://clips.twitch.tv/embed?clip=BovineAgileGuanacoCoolStoryBro-nCfnaHTtUZB72T4W&parent=therealmarza.giovannilamarmora.com&parent=localhost"
+                frameborder="0"
+                allowfullscreen="true"
+                scrolling="no"
+                style="
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  width: 100%;
+                  height: 100%;
+                "
+              ></iframe>
+            </div>
+          </div>
+          <!-- Clip 2 -->
+          <div class="clip-card glass-panel-sm" style="padding: 10px">
+            <div class="clip-thumb-container" style="margin-bottom: 5px">
+              <iframe
+                src="https://clips.twitch.tv/embed?clip=SlipperyPluckyHamburgerShadyLulu-FEuB5mqUMrpdwPTt&parent=therealmarza.giovannilamarmora.com&parent=localhost"
+                frameborder="0"
+                allowfullscreen="true"
+                scrolling="no"
+                style="
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  width: 100%;
+                  height: 100%;
+                "
+              ></iframe>
+            </div>
+          </div>
+          <!-- Clip 3 -->
+          <div class="clip-card glass-panel-sm" style="padding: 10px">
+            <div class="clip-thumb-container" style="margin-bottom: 5px">
+              <iframe
+                src="https://clips.twitch.tv/embed?clip=GentleInspiringAntelopeJebaited-QsLEmWTUZ2n4xdNo&parent=therealmarza.giovannilamarmora.com&parent=localhost"
+                frameborder="0"
+                allowfullscreen="true"
+                scrolling="no"
+                style="
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  width: 100%;
+                  height: 100%;
+                "
+              ></iframe>
+            </div>
+          </div>
+          <!-- Clip 4 -->
+          <div class="clip-card glass-panel-sm" style="padding: 10px">
+            <div class="clip-thumb-container" style="margin-bottom: 5px">
+              <iframe
+                src="https://clips.twitch.tv/embed?clip=CalmDignifiedPeanutBloodTrail-xLUq3SSTsMs7goyw&parent=therealmarza.giovannilamarmora.com&parent=localhost"
+                frameborder="0"
+                allowfullscreen="true"
+                scrolling="no"
+                style="
+                  position: absolute;
+                  top: 0;
+                  left: 0;
+                  width: 100%;
+                  height: 100%;
+                "
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer style="margin-top: 100px">
+      <div class="container footer-content">
+        <p>&copy; 2026 TheRealMarza. Tutti i diritti riservati.</p>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,23 @@
+[
+  {
+    "title": "Costi Casa",
+    "category": "Web App",
+    "description": "Web application for budget management, expense tracking, and mortgage simulations for home purchasing, featuring added links for documents, FAQs, and answers.",
+    "image": "https://projects.giovannilamarmora.com/costi-casa/icon.jpg",
+    "url": "./costi-casa/"
+  },
+  {
+    "title": "Material Home Assistant",
+    "category": "Integration & UI",
+    "description": "A custom UI suite and integration for Home Assistant designed around Google's Material Expressive 3 design principles, bringing the Google Home app look and feel directly into your dashboard.",
+    "image": "https://strapi.giovannilamarmora.com/uploads/material_home_assistant_18ab2c869d.png",
+    "url": "https://materialhomeassistant.com/"
+  },
+  {
+    "title": "The Real Marza",
+    "category": "WebSite",
+    "description": "Dedicated website for Francesco Marzano that briefly explains who he is. It serves as an all-in-one hub gathering clips, streams, YouTube content, and social media links.",
+    "image": "https://yt3.googleusercontent.com/T3I5_9aU84CdDowZbjragxSkkIYTWKoTV8wuIqPYBbt1eZi3BQ5HEPH-By-SyGodl6it_hOHTg=s900-c-k-c0x00ffffff-no-rj",
+    "url": "./the-real-marza/"
+  }
+]

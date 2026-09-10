@@ -1,0 +1,22 @@
+{
+  "name": "Costi Casa",
+  "short_name": "Costi Casa",
+  "version": "1.5.0",
+  "description": "Gestione Casa & Budget Personale",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#141218",
+  "theme_color": "#d0bcff",
+  "icons": [
+    {
+      "src": "./icon.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "./icon.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

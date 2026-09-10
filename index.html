@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Giovanni Lamarmora | Central Hub</title>
+
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="https://giovannilamarmora.github.io/assets/icons/svg/rounded_white.svg"
+    />
+
+    <!-- Google Fonts: Figtree -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Bootstrap 5 CSS per la griglia e layout di base -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      /* --- MATERIAL EXPRESSIVE 3 STYLING & TOKENS (Dark Mode) --- */
+      :root {
+        --md-sys-color-background: #0f1013;
+        --md-sys-color-surface: #18191f;
+        --md-sys-color-surface-container: #202128;
+        --md-sys-color-surface-container-high: #2b2d35;
+        --md-sys-color-primary: #1a73e8;
+        --md-sys-color-on-primary: #ffffff;
+        --md-sys-color-outline: #8c909c;
+        --md-sys-color-on-surface: #e2e2ec;
+        --md-sys-color-on-surface-variant: #c4c6d0;
+      }
+
+      body {
+        background-color: var(--md-sys-color-background);
+        color: var(--md-sys-color-on-surface);
+        font-family: "Figtree", sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      /* --- HEADER & LOGO INGRANDITO MATERIAL EXPRESSIVE 3 --- */
+      header {
+        padding: 4.5rem 1rem 2.5rem 1rem;
+        text-align: center;
+      }
+
+      .logo-container {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100px;
+        height: 100px;
+        background: linear-gradient(
+          135deg,
+          var(--md-sys-color-surface-container-high),
+          var(--md-sys-color-surface-container)
+        );
+        border-radius: 36px;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      .logo-container:hover {
+        transform: scale(1.06);
+      }
+
+      .logo-container img {
+        width: 58px;
+        height: 58px;
+        filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+      }
+
+      header h1 {
+        font-size: 3rem;
+        font-weight: 800;
+        color: #ffffff;
+        letter-spacing: -0.5px;
+        margin-bottom: 0.5rem;
+      }
+
+      header p {
+        color: var(--md-sys-color-outline);
+        font-size: 1.15rem;
+        font-weight: 400;
+      }
+
+      /* --- WRAPPER E GRIGLIA DINAMICA --- */
+      .wrapper {
+        width: 92%;
+        margin: 0 auto 5rem auto;
+        max-width: 85rem;
+      }
+
+      .cols {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .col {
+        width: calc(25% - 2rem);
+        margin: 1rem;
+        cursor: pointer;
+      }
+
+      .flip-card {
+        margin-left: 15px;
+        margin-right: 15px;
+      }
+
+      @media (max-width: 1300px) {
+        .col {
+          width: calc(33.333333% - 2rem);
+        }
+        .flip-card {
+          margin-left: -15px !important;
+          margin-right: -15px !important;
+        }
+      }
+
+      @media (max-width: 780px) {
+        .col {
+          width: calc(50% - 2rem);
+        }
+        .flip-card {
+          margin-left: -40px !important;
+          margin-right: -40px !important;
+        }
+      }
+
+      @media screen and (max-width: 576px) {
+        .cols {
+          display: flex !important;
+          flex-direction: column !important;
+          align-items: center;
+        }
+
+        .col {
+          width: 100% !important;
+          max-width: 100% !important;
+          flex: 0 0 100% !important;
+          margin: 0 0 1.5rem 0 !important;
+          display: flex;
+          justify-content: center;
+        }
+
+        .flip-card {
+          width: 100% !important;
+          max-width: 360px;
+          margin-left: 0 !important;
+          margin-right: 0 !important;
+        }
+      }
+
+      /* --- STILI CARD FLIP --- */
+      .container {
+        -webkit-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+        -webkit-perspective: 1000px;
+        perspective: 1000px;
+      }
+
+      .front,
+      .back {
+        background-size: cover;
+        box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.35);
+        border-radius: 14px;
+        background-position: center;
+        -webkit-transition: -webkit-transform 0.7s
+          cubic-bezier(0.4, 0.2, 0.2, 1);
+        transition: -webkit-transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+        -o-transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+        transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+        transition:
+          transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1),
+          -webkit-transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        text-align: center;
+        min-height: 320px;
+        height: auto;
+        border-radius: 14px;
+        color: #fff;
+        font-size: 1.5rem;
+      }
+
+      .back {
+        background: #2c313a;
+        background: -webkit-linear-gradient(45deg, #2c313a 0%, #1a1d23 100%);
+        background: -o-linear-gradient(45deg, #2c313a 0%, #1a1d23 100%);
+        background: linear-gradient(45deg, #2c313a 0%, #1a1d23 100%);
+      }
+
+      .front:after {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        content: "";
+        display: block;
+        opacity: 0.65;
+        background-color: #000;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        border-radius: 14px;
+      }
+
+      .container:hover .front,
+      .container:hover .back {
+        -webkit-transition: -webkit-transform 0.7s
+          cubic-bezier(0.4, 0.2, 0.2, 1);
+        transition: -webkit-transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+        -o-transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+        transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+        transition:
+          transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1),
+          -webkit-transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+      }
+
+      .back {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .inner {
+        -webkit-transform: translateY(-50%) translateZ(60px) scale(0.94);
+        transform: translateY(-50%) translateZ(60px) scale(0.94);
+        top: 50%;
+        position: absolute;
+        left: 0;
+        width: 100%;
+        padding: 2rem;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        outline: 1px solid transparent;
+        -webkit-perspective: inherit;
+        perspective: inherit;
+        z-index: 2;
+      }
+
+      .container .back {
+        -webkit-transform: rotateY(180deg);
+        transform: rotateY(180deg);
+        -webkit-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+      }
+
+      .container .front {
+        -webkit-transform: rotateY(0deg);
+        transform: rotateY(0deg);
+        -webkit-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+      }
+
+      .container:hover .back {
+        -webkit-transform: rotateY(0deg);
+        transform: rotateY(0deg);
+        -webkit-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+      }
+
+      .container:hover .front {
+        -webkit-transform: rotateY(-180deg);
+        transform: rotateY(-180deg);
+        -webkit-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+      }
+
+      .front .inner p {
+        font-size: 2.1rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        position: relative;
+      }
+
+      .front .inner p:after {
+        content: "";
+        width: 4rem;
+        height: 2px;
+        position: absolute;
+        background: #1a73e8;
+        display: block;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        bottom: -0.75rem;
+      }
+
+      .after {
+        content: "";
+        width: 4rem;
+        height: 2px;
+        position: relative;
+        background: #1a73e8;
+        display: block;
+        left: 0;
+        right: 0;
+        margin: 0 auto;
+        bottom: -0.5rem;
+      }
+
+      .front .inner span {
+        color: rgba(255, 255, 255, 0.8);
+        font-family: "Figtree", sans-serif;
+        font-weight: 500;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        font-size: 0.95rem;
+      }
+
+      p {
+        font-size: 13.5px;
+        color: #c4c6d0;
+        line-height: 1.5;
+      }
+
+      h1 {
+        font-size: 20px;
+        font-weight: 700;
+        position: relative;
+        top: 5px;
+        color: #fff;
+      }
+
+      /* --- STILE PULSANTE MATERIAL EXPRESSIVE 3 --- */
+      .star-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #1a73e8;
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-decoration: none;
+        border-radius: 50rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+        position: relative;
+        overflow: hidden;
+        border: none;
+      }
+
+      .star-button:hover {
+        background-color: #1557b0;
+        color: #ffffff;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(26, 115, 232, 0.4);
+      }
+
+      .star-button:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba(26, 115, 232, 0.4);
+      }
+
+      /* --- FOOTER MATERIAL EXPRESSIVE 3 --- */
+      footer {
+        width: min(92%, 85rem);
+        margin: 0 auto 2rem auto;
+        padding: 1.3rem 1.4rem 1rem;
+        color: var(--md-sys-color-on-surface-variant);
+        font-size: 0.95rem;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        background: linear-gradient(
+          180deg,
+          rgba(19, 20, 26, 0.96),
+          rgba(15, 16, 20, 0.94)
+        );
+        border-radius: 24px 24px 18px 18px;
+        box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28);
+        margin-top: auto;
+      }
+
+      .footer-inner {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+
+      .footer-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.85rem;
+      }
+
+      .footer-logo {
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        display: grid;
+        place-items: center;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      }
+
+      .footer-logo img {
+        width: 26px;
+        height: 26px;
+        object-fit: contain;
+      }
+
+      .footer-copy {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        line-height: 1.2;
+      }
+
+      .footer-copy strong {
+        font-size: 1.05rem;
+        color: #ffffff;
+      }
+
+      .footer-label {
+        font-size: 0.72rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--md-sys-color-outline);
+      }
+
+      .footer-meta {
+        color: var(--md-sys-color-on-surface-variant);
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+      }
+
+      .footer-meta a {
+        color: var(--md-sys-color-primary);
+        text-decoration: none;
+        font-weight: 600;
+        transition: opacity 0.2s ease;
+      }
+
+      .footer-meta a:hover {
+        opacity: 0.8;
+        text-decoration: underline;
+      }
+
+      .footer-note {
+        text-align: center;
+        color: rgba(255, 255, 255, 0.64);
+        font-size: 0.78rem;
+        margin-top: 0.75rem;
+        padding-top: 0.8rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo-container">
+        <img
+          src="https://giovannilamarmora.github.io/assets/icons/svg/rounded_white.svg"
+          alt="Logo"
+        />
+      </div>
+      <h1>Central Hub</h1>
+      <p>My personal projects and digital experiments</p>
+    </header>
+
+    <div class="wrapper">
+      <div class="cols" id="projects-container">
+        <!-- Le card verranno generate dinamicamente qui -->
+        <div
+          style="
+            color: var(--md-sys-color-outline);
+            text-align: center;
+            width: 100%;
+            padding: 3rem;
+          "
+        >
+          Loading projects...
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <img
+              src="https://giovannilamarmora.github.io/assets/icons/svg/rounded_white.svg"
+              alt="Central Hub logo"
+            />
+          </div>
+          <div class="footer-copy">
+            <span class="footer-label">Personal Project Server</span>
+            <strong>Central Hub</strong>
+          </div>
+        </div>
+
+        <div class="footer-meta">
+          <span>Built by</span>
+          <a href="https://giovannilamarmora.github.io" target="_blank"
+            >Giovanni Lamarmora</a
+          >
+        </div>
+      </div>
+
+      <div class="footer-note">&copy; 2026 Central Hub.</div>
+    </footer>
+
+    <script>
+      async function loadProjects() {
+        try {
+          const response = await fetch("./projects.json");
+          const projects = await response.json();
+          const container = document.getElementById("projects-container");
+          container.innerHTML = "";
+
+          if (projects.length === 0) {
+            container.innerHTML = `<div style="color: var(--md-sys-color-outline); text-align: center; width: 100%; padding: 3rem;">No projects found.</div>`;
+            return;
+          }
+
+          projects.forEach((p) => {
+            const colDiv = document.createElement("div");
+            colDiv.className = "col";
+
+            const bgImage =
+              p.image ||
+              "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80";
+
+            // Usa il campo url dal JSON, oppure genera un link fallback basato sul titolo se assente
+            const targetUrl =
+              p.url || `./${p.title.toLowerCase().replace(/\s+/g, "-")}/`;
+            const subtitle = p.category || "Project";
+            const btnText = "Open Project";
+
+            colDiv.innerHTML = `
+              <div class="flip-card" ontouchstart="this.classList.toggle('hover');">
+                <div class="container">
+                  <div class="front" style="background-image: url('${bgImage}');">
+                    <div class="inner">
+                      <p>${p.title}</p>
+                      <span>${subtitle}</span>
+                    </div>
+                  </div>
+                  <div class="back">
+                    <div class="inner">
+                      <h1>${p.title}</h1>
+                      <div class="after"></div>
+                      <p class="mt-3">${p.description}</p>
+                      <div align="center" class="mt-3">
+                        <a href="${targetUrl}" target="_blank" class="star-button" style="width: 180px; height: 50px; line-height: 50px; display: inline-block;">
+                          ${btnText}
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `;
+            container.appendChild(colDiv);
+          });
+        } catch (error) {
+          console.error("Error loading the JSON file:", error);
+          document.getElementById("projects-container").innerHTML =
+            `<div style="color: #ffb4ab; text-align: center; width: 100%; padding: 3rem;">Error loading projects from projects.json</div>`;
+        }
+      }
+
+      loadProjects();
+    </script>
+  </body>
+</html>

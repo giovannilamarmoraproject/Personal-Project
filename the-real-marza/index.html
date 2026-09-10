@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TheRealMarza | Official Hub</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=block"
+      rel="stylesheet"
+    />
+    <!-- FontAwesome for Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" type="image/x-icon" href="/assets/logo.jpeg" />
+  </head>
+  <body>
+    <!-- Background Elements -->
+    <div class="bg-shape shape-purple"></div>
+    <div class="bg-shape shape-orange"></div>
+
+    <!-- Header / Navbar -->
+    <header>
+      <div class="container header-content">
+        <a href="index.html" class="logo">
+          <div class="nav-logo-container">
+            <img src="/assets/logo.jpeg" alt="Marza Logo" class="nav-logo" />
+          </div>
+          <span>TheRealMarza</span></a
+        >
+        <button class="mobile-menu-btn">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <nav>
+          <a href="index.html" class="active">Home</a>
+          <a href="twitch.html">Twitch</a>
+          <a href="youtube.html">YouTube</a>
+          <a href="#social">Social</a>
+          <a href="setup.html">My Setup</a>
+          <a href="kingsleague.html" class="btn-highlight">Kings League TRM</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+      <!-- Hero Section -->
+      <section id="about" class="hero container">
+        <div class="hero-text animate-on-scroll">
+          <div class="live-badge">
+            <span class="pulse"></span> LIVE NOW ON TWITCH
+          </div>
+          <h1>Francesco <br /><span class="text-gradient">Marzano</span></h1>
+          <p class="subtitle">
+            Streamer &middot; Content Creator &middot; Presidente TRM
+          </p>
+          <p class="description">
+            Benvenuti nel mio Hub Ufficiale. Qui trovate tutti i miei canali per
+            non perdervi nessuna live, le ultime novità, il mio setup e gli
+            aggiornamenti sulla Kings League.
+          </p>
+          <div class="hero-buttons">
+            <a
+              href="https://www.twitch.tv/therealmarzaa"
+              target="_blank"
+              class="btn btn-twitch"
+              ><i class="fa-brands fa-twitch"></i> Entra in Live</a
+            >
+            <a href="#video" class="btn btn-outline"
+              ><i class="fa-solid fa-play"></i> Ultimo Video</a
+            >
+          </div>
+        </div>
+        <div class="hero-image animate-on-scroll">
+          <div class="image-wrapper">
+            <img src="/assets/profile.jpg" alt="Francesco Marzano" />
+          </div>
+        </div>
+      </section>
+
+      <!-- Milestones Section (Counter) -->
+      <section class="milestones-section container animate-on-scroll">
+        <div class="milestones-grid glass-panel-sm">
+          <div class="milestone">
+            <h3 class="counter" data-target="1879990">0</h3>
+            <p>Followers</p>
+          </div>
+          <div class="milestone">
+            <h3 class="counter" data-target="14852">0</h3>
+            <p>Ore di Live</p>
+          </div>
+          <div class="milestone">
+            <h3 class="counter" data-target="5961">0</h3>
+            <p>Spettatori di Picco</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sponsors Section -->
+      <section
+        class="sponsors-section animate-on-scroll"
+        style="margin: 80px 0"
+      >
+        <div class="container text-center" style="margin-bottom: 30px">
+          <p
+            style="
+              color: var(--text-secondary);
+              text-transform: uppercase;
+              letter-spacing: 4px;
+              font-size: 0.85rem;
+              font-weight: 700;
+            "
+          >
+            Partner & Sponsor Ufficiali
+          </p>
+        </div>
+        <div
+          style="
+            position: relative;
+            background: rgba(10, 10, 10, 0.6);
+            padding: 40px 0;
+            border-top: 1px solid var(--glass-border);
+            border-bottom: 1px solid var(--glass-border);
+          "
+        >
+          <div class="sponsors-slider">
+            <div class="sponsors-track">
+              <!-- Set 1 -->
+              <div class="sponsor-logo">
+                <i class="fa-solid fa-headset"></i> Logitech G
+              </div>
+              <div class="sponsor-logo">
+                <i class="fa-solid fa-chair"></i> SecretLab
+              </div>
+              <div class="sponsor-logo">
+                <i class="fa-brands fa-playstation"></i> PlayStation
+              </div>
+              <div class="sponsor-logo">
+                <i class="fa-solid fa-bolt"></i> RedBull
+              </div>
+              <div class="sponsor-logo">
+                <i class="fa-brands fa-discord"></i> Discord
+              </div>
+              <!-- Set 2 (Duplicato per animazione infinita) -->
+              <div class="sponsor-logo">
+                <i class="fa-solid fa-headset"></i> Logitech G
+              </div>
+              <div class="sponsor-logo">
+                <i class="fa-solid fa-chair"></i> SecretLab
+              </div>
+              <div class="sponsor-logo">
+                <i class="fa-brands fa-playstation"></i> PlayStation
+              </div>
+              <div class="sponsor-logo">
+                <i class="fa-solid fa-bolt"></i> RedBull
+              </div>
+              <div class="sponsor-logo">
+                <i class="fa-brands fa-discord"></i> Discord
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Latest Video Section -->
+      <section id="video" class="video-section container animate-on-scroll">
+        <h2 class="section-title">Clip <span>Of The Week</span></h2>
+        <div class="video-container glass-panel">
+          <!-- YouTube Embed -->
+          <iframe
+            width="100%"
+            height="500"
+            src="https://www.youtube.com/embed/414-C1AXgPQ?controls=1"
+            title="YouTube video player"
+            frameborder="0"
+            allow="
+              accelerometer;
+              autoplay;
+              clipboard-write;
+              encrypted-media;
+              gyroscope;
+              picture-in-picture;
+            "
+            allowfullscreen
+          ></iframe>
+        </div>
+      </section>
+
+      <!-- Social Hub Section -->
+      <section id="social" class="social-hub container animate-on-scroll">
+        <h2 class="section-title">My <span>Socials</span></h2>
+        <div class="social-grid">
+          <a
+            href="https://www.twitch.tv/therealmarzaa"
+            class="social-card twitch"
+            target="_blank"
+          >
+            <i class="fa-brands fa-twitch"></i>
+            <h3>Twitch</h3>
+            <p>Live tutti i giorni</p>
+          </a>
+          <a
+            href="https://www.instagram.com/therealmarzaa"
+            class="social-card instagram"
+            target="_blank"
+          >
+            <i class="fa-brands fa-instagram"></i>
+            <h3>Instagram</h3>
+            <p>Dietro le quinte</p>
+          </a>
+          <a
+            href="https://www.youtube.com/@marzatv"
+            class="social-card youtube"
+            target="_blank"
+          >
+            <i class="fa-brands fa-youtube"></i>
+            <h3>YouTube</h3>
+            <p>Best moments</p>
+          </a>
+          <a
+            href="https://www.tiktok.com/@justmarzaa"
+            class="social-card tiktok"
+            target="_blank"
+          >
+            <i class="fa-brands fa-tiktok"></i>
+            <h3>TikTok</h3>
+            <p>Clip virali</p>
+          </a>
+        </div>
+      </section>
+
+      <!-- Teaser Setup & Store -->
+      <section class="teaser-section container animate-on-scroll">
+        <div class="teaser-grid">
+          <div class="teaser-card setup-teaser">
+            <h3>My Gear & Setup</h3>
+            <p>
+              Scopri il PC, i monitor e le periferiche che uso per streammare
+              ogni giorno.
+            </p>
+            <a href="setup.html" class="btn btn-outline-small">Scopri di più</a>
+          </div>
+          <div class="teaser-card merch-teaser">
+            <h3>Official Merch</h3>
+            <p>
+              Vesti TRM. Felpe, magliette e accessori ufficiali in edizione
+              limitata.
+            </p>
+            <a href="#" class="btn btn-outline-small">Shop Now (Coming Soon)</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container footer-content">
+        <p>&copy; 2026 TheRealMarza. Tutti i diritti riservati.</p>
+        <p class="credits">Sviluppato per TheRealMarza</p>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>

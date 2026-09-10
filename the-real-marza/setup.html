@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TheRealMarza | My Setup</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=block"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .bg-shape.shape-purple {
+        width: 100vw;
+        height: 100vh;
+        top: 0;
+        left: 0;
+        opacity: 0.1;
+        border-radius: 0;
+      }
+      .bg-shape.shape-orange {
+        display: none;
+      }
+    </style>
+    <link rel="icon" type="image/x-icon" href="/assets/logo.jpeg" />
+  </head>
+  <body>
+    <div class="bg-shape shape-purple"></div>
+
+    <header>
+      <div class="container header-content">
+        <a href="index.html" class="logo">
+          <div class="nav-logo-container">
+            <img src="/assets/logo.jpeg" alt="Marza Logo" class="nav-logo" />
+          </div>
+          <span>TheRealMarza</span></a
+        >
+        <button class="mobile-menu-btn">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <nav>
+          <a href="index.html">Home</a>
+          <a href="twitch.html">Twitch</a>
+          <a href="youtube.html">YouTube</a>
+          <a href="setup.html" class="active">My Setup</a>
+          <a href="kingsleague.html" class="btn-highlight">Kings League TRM</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="setup-page" style="padding-top: 120px; min-height: 100vh">
+      <section class="container text-center mb-5">
+        <h1 class="section-title" style="margin-bottom: 10px">
+          My <span>Setup</span>
+        </h1>
+        <p class="description">
+          Le periferiche e i componenti che uso ogni giorno per le mie live.
+        </p>
+      </section>
+
+      <section class="container animate-on-scroll">
+        <div class="setup-grid">
+          <!-- PC -->
+          <div class="setup-card glass-panel-sm">
+            <i class="fa-solid fa-desktop setup-icon"></i>
+            <h3>Streaming PC</h3>
+            <p class="specs">Intel i9 13900K, RTX 4090, 64GB RAM, 2TB SSD</p>
+            <a href="#" class="btn btn-outline-small mt-3"
+              >Compralo su Amazon</a
+            >
+          </div>
+          <!-- Monitor -->
+          <div class="setup-card glass-panel-sm">
+            <i class="fa-solid fa-tv setup-icon"></i>
+            <h3>Monitor Principale</h3>
+            <p class="specs">ASUS ROG Swift 360Hz 27" 1440p</p>
+            <a href="#" class="btn btn-outline-small mt-3"
+              >Compralo su Amazon</a
+            >
+          </div>
+          <!-- Mouse -->
+          <div class="setup-card glass-panel-sm">
+            <i class="fa-solid fa-computer-mouse setup-icon"></i>
+            <h3>Mouse</h3>
+            <p class="specs">Logitech G PRO X Superlight</p>
+            <a href="#" class="btn btn-outline-small mt-3"
+              >Compralo su Amazon</a
+            >
+          </div>
+          <!-- Tastiera -->
+          <div class="setup-card glass-panel-sm">
+            <i class="fa-regular fa-keyboard setup-icon"></i>
+            <h3>Tastiera</h3>
+            <p class="specs">Wooting 60HE</p>
+            <a href="#" class="btn btn-outline-small mt-3"
+              >Compralo su Amazon</a
+            >
+          </div>
+          <!-- Cuffie -->
+          <div class="setup-card glass-panel-sm">
+            <i class="fa-solid fa-headset setup-icon"></i>
+            <h3>Cuffie</h3>
+            <p class="specs">Logitech G PRO X 2 Lightspeed</p>
+            <a href="#" class="btn btn-outline-small mt-3"
+              >Compralo su Amazon</a
+            >
+          </div>
+          <!-- Microfono -->
+          <div class="setup-card glass-panel-sm">
+            <i class="fa-solid fa-microphone setup-icon"></i>
+            <h3>Microfono</h3>
+            <p class="specs">Shure SM7B + GoXLR</p>
+            <a href="#" class="btn btn-outline-small mt-3"
+              >Compralo su Amazon</a
+            >
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer style="margin-top: 100px">
+      <div class="container footer-content">
+        <p>&copy; 2026 TheRealMarza. Tutti i diritti riservati.</p>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
