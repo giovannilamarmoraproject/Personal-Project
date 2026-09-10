@@ -63,13 +63,31 @@
 
   <body class="is-boxed">
     <!-- Interactive 3D Particle Constellation Background Canvas -->
-    <canvas id="bg3d" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; opacity: 0.6;"></canvas>
-    
+    <canvas
+      id="bg3d"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.6;
+      "
+    ></canvas>
+
     <div id="blank_page" class="body-wrap has-animations"></div>
-    <div id="dashboard" class="body-wrap not-display has-animations" style="position: relative; z-index: 1;">
+    <div
+      id="dashboard"
+      class="body-wrap not-display has-animations"
+      style="position: relative; z-index: 1"
+    >
       <!-- Top Modern Glassmorphism Navigation -->
       <header class="site-header">
-        <div class="header-container d-flex align-items-center justify-content-between">
+        <div
+          class="header-container d-flex align-items-center justify-content-between"
+        >
           <div class="brand header-brand">
             <a
               class="website_url d-flex align-items-center gap-3 text-decoration-none"
@@ -85,24 +103,22 @@
               />
               <span
                 class="fw-bold text-white fs-5"
-                style="letter-spacing: -0.3px;"
+                style="letter-spacing: -0.3px"
                 >Linkatutto</span
               >
             </a>
           </div>
 
           <!-- Desktop Navigation Actions (hidden on <= 768px) -->
-          <div class="header-actions d-none d-md-flex align-items-center gap-2 gap-lg-3">
+          <div
+            class="header-actions d-none d-md-flex align-items-center gap-2 gap-lg-3"
+          >
             <div class="status-pill m-0">
               <span class="status-dot"></span>
               <span>Services Gateway · Online</span>
             </div>
 
-            <a
-              href="/"
-              class="action-pill"
-              title="Back to Central Hub"
-            >
+            <a href="/" class="action-pill" title="Back to Central Hub">
               <svg
                 viewBox="0 0 24 24"
                 width="14"
@@ -241,11 +257,7 @@
               <span>GitHub</span>
             </a>
 
-            <a
-              class="mobile-menu-link log_explore"
-              target="_blank"
-              href="#"
-            >
+            <a class="mobile-menu-link log_explore" target="_blank" href="#">
               <svg
                 viewBox="0 0 24 24"
                 width="16"
@@ -289,9 +301,21 @@
 
       <main>
         <!-- Hero Section with 3D Geometric Floating Animation -->
-        <section class="hero text-center pt-5 pb-4 position-relative overflow-hidden">
+        <section
+          class="hero text-center pt-5 pb-4 position-relative overflow-hidden"
+        >
           <!-- 3D Geometric Floating Figures (Anime.js Animation) -->
-          <div class="hero-figure anime-element" style="position: absolute; top: 10px; right: 5%; pointer-events: none; z-index: 1; opacity: 0.85;">
+          <div
+            class="hero-figure anime-element"
+            style="
+              position: absolute;
+              top: 10px;
+              right: 5%;
+              pointer-events: none;
+              z-index: 1;
+              opacity: 0.85;
+            "
+          >
             <svg
               class="placeholder"
               width="528"
@@ -301,20 +325,49 @@
             >
               <rect width="528" height="396" style="fill: transparent" />
             </svg>
-            <div class="hero-figure-box hero-figure-box-01" data-rotation="45deg"></div>
-            <div class="hero-figure-box hero-figure-box-02" data-rotation="-45deg"></div>
-            <div class="hero-figure-box hero-figure-box-03" data-rotation="0deg"></div>
-            <div class="hero-figure-box hero-figure-box-04" data-rotation="-135deg"></div>
+            <div
+              class="hero-figure-box hero-figure-box-01"
+              data-rotation="45deg"
+            ></div>
+            <div
+              class="hero-figure-box hero-figure-box-02"
+              data-rotation="-45deg"
+            ></div>
+            <div
+              class="hero-figure-box hero-figure-box-03"
+              data-rotation="0deg"
+            ></div>
+            <div
+              class="hero-figure-box hero-figure-box-04"
+              data-rotation="-135deg"
+            ></div>
             <div class="hero-figure-box hero-figure-box-05"></div>
             <div class="hero-figure-box hero-figure-box-06"></div>
             <div class="hero-figure-box hero-figure-box-07"></div>
-            <div class="hero-figure-box hero-figure-box-08" data-rotation="-22deg"></div>
-            <div class="hero-figure-box hero-figure-box-09" data-rotation="-52deg"></div>
-            <div class="hero-figure-box hero-figure-box-10" data-rotation="-50deg"></div>
+            <div
+              class="hero-figure-box hero-figure-box-08"
+              data-rotation="-22deg"
+            ></div>
+            <div
+              class="hero-figure-box hero-figure-box-09"
+              data-rotation="-52deg"
+            ></div>
+            <div
+              class="hero-figure-box hero-figure-box-10"
+              data-rotation="-50deg"
+            ></div>
           </div>
 
-          <div class="hero-copy position-relative" style="z-index: 2; max-width: 1050px; margin: 0 auto; padding: 0 1.5rem; text-align: center;">
-            
+          <div
+            class="hero-copy position-relative"
+            style="
+              z-index: 2;
+              max-width: 1050px;
+              margin: 0 auto;
+              padding: 0 1.5rem;
+              text-align: center;
+            "
+          >
             <!-- Logo al centro sopra il testo in verde -->
             <div class="d-flex justify-content-center">
               <div class="logo-container">
@@ -338,11 +391,22 @@
               All Microservices & Links
             </h1>
 
-            <div class="text-primary fw-semibold fs-5 mb-3 hero-subtitle" style="color: #8ab4f8 !important">
+            <div
+              class="text-primary fw-semibold fs-5 mb-3 hero-subtitle"
+              style="color: #8ab4f8 !important"
+            >
               Linkatutto Service Gateway & Infrastructure Registry
             </div>
 
-            <p class="text-secondary mx-auto mb-4 hero-description" style="max-width: 52rem; font-size: 1.05rem; line-height: 1.6; color: var(--md-sys-color-on-surface-variant) !important;">
+            <p
+              class="text-secondary mx-auto mb-4 hero-description"
+              style="
+                max-width: 52rem;
+                font-size: 1.05rem;
+                line-height: 1.6;
+                color: var(--md-sys-color-on-surface-variant) !important;
+              "
+            >
               Direct access to microservice instances, OpenAPI/Swagger
               documentations, actuator health metrics, and infrastructure
               endpoints.
@@ -379,7 +443,7 @@
               >
                 <img
                   class="footer-brand-logo logo-images"
-                  src="https://raw.githubusercontent.com/giovannilamarmoraproject/Portfolio/cd15a57f99b8cfdd8d3f29e4d7d0f3b52004c47d/assets/img/logo.svg"
+                  src="https://giovannilamarmora.github.io/assets/icons/svg/rounded_white.svg"
                   alt="Logo"
                 />
                 <span class="fw-bold">Giovanni Lamarmora</span>
@@ -433,32 +497,16 @@
 
           <!-- Middle Row: Footer Navigation Links -->
           <div class="footer-links-wrap">
-            <a
-              id="contact_url"
-              target="_blank"
-              href="#"
-              class="action-pill"
+            <a id="contact_url" target="_blank" href="#" class="action-pill"
               >Contact</a
             >
-            <a
-              id="about_url"
-              target="_blank"
-              href="#"
-              class="action-pill"
+            <a id="about_url" target="_blank" href="#" class="action-pill"
               >About us</a
             >
-            <a
-              id="FAQ_url"
-              target="_blank"
-              href="#"
-              class="action-pill"
+            <a id="FAQ_url" target="_blank" href="#" class="action-pill"
               >FAQ's</a
             >
-            <a
-              id="support_url"
-              target="_blank"
-              href="#"
-              class="action-pill"
+            <a id="support_url" target="_blank" href="#" class="action-pill"
               >Support</a
             >
           </div>

@@ -5,5 +5,5 @@
   "access_sphere_script": "/app/authentication/auth.js",
   "strapi_url": "https://strapi.giovannilamarmora.com",
   "linkatutto_datas": "/api/hostwebservers?populate=*&pagination[pageSize]=100",
-  "linkatutto_data": "/api/hostwebserver-config?populate=*",
+  "linkatutto_data": "/api/hostwebserver-config?populate=*"
 }
