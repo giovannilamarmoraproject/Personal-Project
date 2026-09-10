@@ -150,7 +150,10 @@
     dataList.innerHTML = ""; // Pulisce eventuali dati precedenti
     for (const key in strapi) {
       if (strapi.hasOwnProperty(key)) {
-        const categoryHeader = key === "Default" ? "" : `
+        const categoryHeader =
+          key === "Default"
+            ? ""
+            : `
           <div class="category-header">
             <div class="category-line line-left"></div>
             <h2 class="category-title">
@@ -181,11 +184,17 @@
 
   function createCard(datas, categoryName) {
     let res = "";
-    const displayCategory = (categoryName && categoryName !== "Default") ? categoryName : "Microservice";
+    const displayCategory =
+      categoryName && categoryName !== "Default"
+        ? categoryName
+        : "Microservice";
     datas.forEach((element) => {
-      const bgStyle = element.style_css == null ? DEFAULT_STYLE_CSS : element.style_css;
-      const logoUrl = element.logo ? element.logo : "https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/0f58a355856d25a7154482951a3220899ee59d10/assets/icons/svg/rounded_white.svg";
-      
+      const bgStyle =
+        element.style_css == null ? DEFAULT_STYLE_CSS : element.style_css;
+      const logoUrl = element.logo
+        ? element.logo
+        : "https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/0f58a355856d25a7154482951a3220899ee59d10/assets/icons/svg/rounded_white.svg";
+
       res += `
         <div class="col">
           <div class="flip-card">
@@ -249,42 +258,60 @@
         {
           title: "Portfolio Service",
           logo: "https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/0f58a355856d25a7154482951a3220899ee59d10/assets/icons/svg/rounded_white.svg",
-          link: { "Swagger": "#", "Actuator": "#", "Repo": "https://github.com/giovannilamarmora" },
-          style_css: DEFAULT_STYLE_CSS
+          link: {
+            Swagger: "#",
+            Actuator: "#",
+            Repo: "https://github.com/giovannilamarmora",
+          },
+          style_css: DEFAULT_STYLE_CSS,
         },
         {
           title: "MoneyStats API",
           logo: "https://raw.githubusercontent.com/giovannilamarmoraproject/MoneyStats/master/.github/assets/img/MoneyStats.png",
-          link: { "Web App": "https://moneystats.giovannilamarmora.com", "Swagger": "#", "Metrics": "#" },
-          style_css: DEFAULT_STYLE_CSS
+          link: {
+            "Web App": "https://moneystats.giovannilamarmora.com",
+            Swagger: "#",
+            Metrics: "#",
+          },
+          style_css: DEFAULT_STYLE_CSS,
         },
         {
           title: "Access Sphere",
           logo: "https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/0f58a355856d25a7154482951a3220899ee59d10/assets/icons/svg/rounded_white.svg",
-          link: { "Console": "#", "Docs": "#" },
-          style_css: DEFAULT_STYLE_CSS
-        }
+          link: { Console: "#", Docs: "#" },
+          style_css: DEFAULT_STYLE_CSS,
+        },
+        {
+          title: "Portfolio Service",
+          logo: "https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/0f58a355856d25a7154482951a3220899ee59d10/assets/icons/svg/rounded_white.svg",
+          link: {
+            Swagger: "#",
+            Actuator: "#",
+            Repo: "https://github.com/giovannilamarmora",
+          },
+          style_css: DEFAULT_STYLE_CSS,
+        },
       ],
       "Gateways & Systems": [
         {
           title: "Linkatutto Hub",
           logo: "https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/0f58a355856d25a7154482951a3220899ee59d10/assets/icons/svg/rounded_white.svg",
-          link: { "Gateway": "#", "Health": "#" },
-          style_css: DEFAULT_STYLE_CSS
+          link: { Gateway: "#", Health: "#" },
+          style_css: DEFAULT_STYLE_CSS,
         },
         {
           title: "Personal Project Server",
           logo: "https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/0f58a355856d25a7154482951a3220899ee59d10/assets/icons/svg/rounded_white.svg",
           link: { "Central Hub": "/", "The Real Marza": "/the-real-marza/" },
-          style_css: DEFAULT_STYLE_CSS
+          style_css: DEFAULT_STYLE_CSS,
         },
         {
           title: "Home Assistant Proxy",
           logo: "https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/0f58a355856d25a7154482951a3220899ee59d10/assets/icons/svg/rounded_white.svg",
-          link: { "Dashboard": "#", "Status": "#" },
-          style_css: DEFAULT_STYLE_CSS
-        }
-      ]
+          link: { Dashboard: "#", Status: "#" },
+          style_css: DEFAULT_STYLE_CSS,
+        },
+      ],
     };
     displayData(demoData);
     hideBlankPage();
@@ -309,7 +336,6 @@ function logout() {
 function initMobileMenu() {
   const hamburgerBtn = document.getElementById("hamburger-btn");
   const mobileMenu = document.getElementById("mobile-menu");
-  const siteHeader = document.querySelector(".site-header");
   if (!hamburgerBtn || !mobileMenu || hamburgerBtn.dataset.bound) return;
   hamburgerBtn.dataset.bound = "true";
 
@@ -318,7 +344,6 @@ function initMobileMenu() {
     const isOpen = mobileMenu.classList.toggle("open");
     hamburgerBtn.classList.toggle("active", isOpen);
     hamburgerBtn.setAttribute("aria-expanded", isOpen);
-    if (siteHeader) siteHeader.classList.toggle("menu-open", isOpen);
   });
 
   mobileMenu.querySelectorAll("a").forEach((link) => {
@@ -326,7 +351,6 @@ function initMobileMenu() {
       mobileMenu.classList.remove("open");
       hamburgerBtn.classList.remove("active");
       hamburgerBtn.setAttribute("aria-expanded", "false");
-      if (siteHeader) siteHeader.classList.remove("menu-open");
     });
   });
 
@@ -339,7 +363,6 @@ function initMobileMenu() {
       mobileMenu.classList.remove("open");
       hamburgerBtn.classList.remove("active");
       hamburgerBtn.setAttribute("aria-expanded", "false");
-      if (siteHeader) siteHeader.classList.remove("menu-open");
     }
   });
 }
@@ -352,7 +375,11 @@ function initMobileMenu() {
 function initCardFlip() {
   document.addEventListener("click", (e) => {
     // If the click is on an actual link or button inside the card, don't flip!
-    if (e.target.closest("a") || e.target.closest("button") || e.target.closest(".star-button")) {
+    if (
+      e.target.closest("a") ||
+      e.target.closest("button") ||
+      e.target.closest(".star-button")
+    ) {
       return;
     }
 
