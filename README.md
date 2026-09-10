@@ -191,6 +191,207 @@ Quando una richiesta arriva al container attraverso **Nginx Proxy Manager Plus (
 
 ---
 
+### 🛡️ Configurazione Completa Tab "Advanced" in NPMPlus
+
+Ecco le configurazioni pronte da incollare direttamente nella scheda **Advanced** di NPMPlus per proteggere il server, forzare HTTPS, abilitare i WebSocket e personalizzare i messaggi di errore in formato JSON uniforme.
+
+#### Opzione A: Per l'Hub Principale (`project.giovannilamarmora.com`)
+
+```nginx
+# Proxy Headers Standard e WebSocket
+proxy_set_header Host $host;
+proxy_set_header X-Real-IP $remote_addr;
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+proxy_set_header X-Forwarded-Proto $scheme;
+proxy_set_header X-Forwarded-Host $host;
+proxy_set_header X-Forwarded-Port $server_port;
+proxy_http_version 1.1;
+proxy_set_header Upgrade $http_upgrade;
+proxy_set_header Connection "upgrade";
+
+# --------------------------------------
+# Controllo di Sicurezza e Risorse Web
+# --------------------------------------
+set $allow_request 0;
+set $forbidden_msg "Access forbidden";
+
+# 0. Permetti sempre le richieste preflight CORS (OPTIONS)
+if ($request_method = OPTIONS) {
+    set $allow_request 1;
+}
+
+# 1. Accesso alla Root, Favicon, Robots e Manifest
+if ($request_uri ~* "^/($|favicon\.ico$|robots\.txt$|manifest\.json$|sitemap\.xml$)") {
+    set $allow_request 1;
+}
+
+# 2. Risorse Frontend: Pagine HTML, Assets Statici, Script, Stili, Immagini e Font
+if ($request_uri ~* "\.(html|css|js|mjs|json|png|jpg|jpeg|gif|ico|webp|svg|woff|woff2|ttf|eot|map)$") {
+    set $allow_request 1;
+}
+
+# 3. Sottocartelle e Directory Progetto (es. /the-real-marza/, /costi-casa/)
+if ($request_uri ~* "^/[a-zA-Z0-9_\-]+(/.*)?$") {
+    set $allow_request 1;
+}
+
+# Se la richiesta tenta di accedere a percorsi nascosti o script non autorizzati => 404 JSON
+if ($allow_request = 0) {
+    return 404;
+}
+
+# --------------------------------------
+# Filtri di Sicurezza Protocollo & User-Agent
+# --------------------------------------
+# Blocco protocollo HTTP (forza HTTPS)
+if ($scheme = http) {
+    return 422;
+}
+
+# Blocco client/scanner automatici sospetti (consente i normali browser e crawler preview)
+if ($http_user_agent ~* (Postman|curl|wget|nikto|sqlmap)) {
+    set $forbidden_msg "Automated tools and scanners are not allowed";
+    return 403;
+}
+
+# --------------------------------------
+# Pagine di Errore Custom in JSON (con header CORS)
+# --------------------------------------
+error_page 401 = @json_401;
+location @json_401 {
+    default_type application/json;
+    add_header 'Access-Control-Allow-Origin' '*' always;
+    return 401 '{"dateTime": "$time_iso8601", "url": "$request_uri", "error": {"errorCode": "ERR_NGINX_401", "exception": "NGINX_UNAUTHORIZED", "status": "UNAUTHORIZED", "message": "You are not allowed to make this request!"}}';
+}
+
+error_page 403 = @json_403;
+location @json_403 {
+    default_type application/json;
+    add_header 'Access-Control-Allow-Origin' '*' always;
+    return 403 '{"dateTime": "$time_iso8601", "url": "$request_uri", "error": {"errorCode": "ERR_NGINX_403", "exception": "NGINX_FORBIDDEN", "status": "FORBIDDEN", "message": "$forbidden_msg"}}';
+}
+
+error_page 404 = @json_404;
+location @json_404 {
+    default_type application/json;
+    add_header 'Access-Control-Allow-Origin' '*' always;
+    return 404 '{"dateTime": "$time_iso8601", "url": "$request_uri", "error": {"errorCode": "ERR_NGINX_404", "exception": "NGINX_NOT_FOUND", "status": "NOT_FOUND", "message": "Source not found"}}';
+}
+
+error_page 422 = @json_422;
+location @json_422 {
+    default_type application/json;
+    add_header 'Access-Control-Allow-Origin' '*' always;
+    return 422 '{"dateTime": "$time_iso8601", "url": "$request_uri", "error": {"errorCode": "ERR_NGINX_422", "exception": "NGINX_PROTOCOL_NOT_VALID", "status": "UNPROCESSABLE_ENTITY", "message": "The current protocol is not valid, please use HTTPS"}}';
+}
+
+error_page 502 503 504 = @json_50x;
+location @json_50x {
+    default_type application/json;
+    add_header 'Access-Control-Allow-Origin' '*' always;
+    return 503 '{"dateTime": "$time_iso8601", "url": "$request_uri", "error": {"errorCode": "ERR_NGINX_503", "exception": "NGINX_SERVICE_UNAVAILABLE", "status": "SERVICE_UNAVAILABLE", "message": "Backend service is currently unavailable"}}';
+}
+```
+
+#### Opzione B: Per un Sottodominio Dedicato (es. `the-real-marza.giovannilamarmora.com`)
+
+Basta aggiungere in cima l'header `X-Target-Folder`:
+
+```nginx
+# Reindirizzamento esplicito alla cartella del progetto
+proxy_set_header X-Target-Folder "the-real-marza";
+
+# Proxy Headers Standard e WebSocket
+proxy_set_header Host $host;
+proxy_set_header X-Real-IP $remote_addr;
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+proxy_set_header X-Forwarded-Proto $scheme;
+proxy_set_header X-Forwarded-Host $host;
+proxy_set_header X-Forwarded-Port $server_port;
+proxy_http_version 1.1;
+proxy_set_header Upgrade $http_upgrade;
+proxy_set_header Connection "upgrade";
+
+# --------------------------------------
+# Controllo di Sicurezza e Risorse Web
+# --------------------------------------
+set $allow_request 0;
+set $forbidden_msg "Access forbidden";
+
+# 0. Preflight CORS (OPTIONS)
+if ($request_method = OPTIONS) {
+    set $allow_request 1;
+}
+
+# 1. Root, Favicon, Robots e Manifest
+if ($request_uri ~* "^/($|favicon\.ico$|robots\.txt$|manifest\.json$)") {
+    set $allow_request 1;
+}
+
+# 2. Risorse Statiche del Sottoprogetto
+if ($request_uri ~* "\.(html|css|js|mjs|json|png|jpg|jpeg|gif|ico|webp|svg|woff|woff2|ttf|eot|map)$") {
+    set $allow_request 1;
+}
+
+# 3. Pagine e sottocartelle del progetto (es. /twitch.html, /youtube.html, /assets/...)
+if ($request_uri ~* "^/[a-zA-Z0-9_\-]+(/.*)?$") {
+    set $allow_request 1;
+}
+
+if ($allow_request = 0) {
+    return 404;
+}
+
+# Blocco HTTP
+if ($scheme = http) {
+    return 422;
+}
+
+# Blocco Scanner
+if ($http_user_agent ~* (Postman|curl|wget|nikto|sqlmap)) {
+    set $forbidden_msg "Automated tools and scanners are not allowed";
+    return 403;
+}
+
+# Pagine Errore JSON
+error_page 401 = @json_401;
+location @json_401 {
+    default_type application/json;
+    add_header 'Access-Control-Allow-Origin' '*' always;
+    return 401 '{"dateTime": "$time_iso8601", "url": "$request_uri", "error": {"errorCode": "ERR_NGINX_401", "exception": "NGINX_UNAUTHORIZED", "status": "UNAUTHORIZED", "message": "You are not allowed to make this request!"}}';
+}
+
+error_page 403 = @json_403;
+location @json_403 {
+    default_type application/json;
+    add_header 'Access-Control-Allow-Origin' '*' always;
+    return 403 '{"dateTime": "$time_iso8601", "url": "$request_uri", "error": {"errorCode": "ERR_NGINX_403", "exception": "NGINX_FORBIDDEN", "status": "FORBIDDEN", "message": "$forbidden_msg"}}';
+}
+
+error_page 404 = @json_404;
+location @json_404 {
+    default_type application/json;
+    add_header 'Access-Control-Allow-Origin' '*' always;
+    return 404 '{"dateTime": "$time_iso8601", "url": "$request_uri", "error": {"errorCode": "ERR_NGINX_404", "exception": "NGINX_NOT_FOUND", "status": "NOT_FOUND", "message": "Source not found"}}';
+}
+
+error_page 422 = @json_422;
+location @json_422 {
+    default_type application/json;
+    add_header 'Access-Control-Allow-Origin' '*' always;
+    return 422 '{"dateTime": "$time_iso8601", "url": "$request_uri", "error": {"errorCode": "ERR_NGINX_422", "exception": "NGINX_PROTOCOL_NOT_VALID", "status": "UNPROCESSABLE_ENTITY", "message": "The current protocol is not valid, please use HTTPS"}}';
+}
+
+error_page 502 503 504 = @json_50x;
+location @json_50x {
+    default_type application/json;
+    add_header 'Access-Control-Allow-Origin' '*' always;
+    return 503 '{"dateTime": "$time_iso8601", "url": "$request_uri", "error": {"errorCode": "ERR_NGINX_503", "exception": "NGINX_SERVICE_UNAVAILABLE", "status": "SERVICE_UNAVAILABLE", "message": "Backend service is currently unavailable"}}';
+}
+```
+
+---
+
 ## ➕ Aggiunta di un Nuovo Progetto
 
 Per aggiungere un nuovo progetto al server:
