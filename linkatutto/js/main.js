@@ -406,6 +406,7 @@ function logout() {
 function initMobileMenu() {
   const hamburgerBtn = document.getElementById("hamburger-btn");
   const mobileMenu = document.getElementById("mobile-menu");
+  const siteHeader = document.querySelector(".site-header");
   if (!hamburgerBtn || !mobileMenu || hamburgerBtn.dataset.bound) return;
   hamburgerBtn.dataset.bound = "true";
 
@@ -414,6 +415,7 @@ function initMobileMenu() {
     const isOpen = mobileMenu.classList.toggle("open");
     hamburgerBtn.classList.toggle("active", isOpen);
     hamburgerBtn.setAttribute("aria-expanded", isOpen);
+    if (siteHeader) siteHeader.classList.toggle("menu-open", isOpen);
   });
 
   mobileMenu.querySelectorAll("a").forEach((link) => {
@@ -421,6 +423,7 @@ function initMobileMenu() {
       mobileMenu.classList.remove("open");
       hamburgerBtn.classList.remove("active");
       hamburgerBtn.setAttribute("aria-expanded", "false");
+      if (siteHeader) siteHeader.classList.remove("menu-open");
     });
   });
 
@@ -433,6 +436,7 @@ function initMobileMenu() {
       mobileMenu.classList.remove("open");
       hamburgerBtn.classList.remove("active");
       hamburgerBtn.setAttribute("aria-expanded", "false");
+      if (siteHeader) siteHeader.classList.remove("menu-open");
     }
   });
 }
