@@ -2,20 +2,21 @@
 
 services:
   personal-project-hub:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ${DOCKER_REPOSITORY:-ghcr.io/giovannilamarmoraproject/personal-project}:${APP_VERSION:-latest}
     container_name: personal-project-hub
     hostname: personal-project-hub
     restart: unless-stopped
     ports:
       - 10010:80
-    volumes:
-      # Monta la cartella locale nel container: modifiche o nuove cartelle sono subito live senza ricreare l'immagine!
-      - ./:/usr/share/nginx/html:ro
+
+    # Tutti i file del sito, dei sottoprogetti e la configurazione Nginx
+    # sono gia' inclusi all'interno dell'immagine Docker generata da GitHub Actions.
+    # Per sviluppo locale con hot-reload, scommentare la seguente riga:
+    # volumes:
+    #   - ./:/usr/share/nginx/html:ro
 
     labels:
-      # 1. Attiva il monitoraggio di WUD
+      # 1. Attiva il monitoraggio di WUD (What's Up Docker)
       - "wud.watch=true"
       # 2. Monitora specificamente il tag latest
       - "wud.tag.include=^latest$"
@@ -26,7 +27,8 @@ services:
       # 5. Forza l'esecuzione automatica immediata al rilevamento
       - "wud.trigger.docker.local.auto=true"
       - "wud.trigger.docker.local.threshold=all"
-    # Se Nginx Proxy Manager usa una Docker network (es. npm-network o reverse-proxy):
+
+    # Se Nginx Proxy Manager / NPMPlus e sulla stessa rete Docker:
     networks:
       docker-network:
         aliases:
