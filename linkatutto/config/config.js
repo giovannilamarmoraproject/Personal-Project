@@ -21,6 +21,10 @@ const fallbackConfig = {
 let configuration;
 
 async function init() {
+  if (window.location.search.includes("demo")) {
+    console.log("🚀 Linkatutto Demo Mode: skipping Access Sphere script load");
+    return;
+  }
   configuration = await loadConfig(); // ✅ Aspetta il valore prima di continuare
   window.accessSphereConfig = {
     client_id: configuration.client_id,

@@ -763,9 +763,32 @@
       .footer-note-links a:hover {
         color: #ffffff;
       }
+
+      /* Elevate content above 3D canvas background */
+      header,
+      .filter-wrapper,
+      .wrapper,
+      footer {
+        position: relative;
+        z-index: 1;
+      }
     </style>
   </head>
   <body>
+    <!-- Interactive 3D Particle Constellation Background Canvas -->
+    <canvas
+      id="bg3d"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.65;
+      "
+    ></canvas>
     <header>
       <!-- Status Badge -->
       <div class="status-badge">
@@ -1163,6 +1186,127 @@
       }
 
       loadProjects();
+
+      /* --- INTERACTIVE 3D PARTICLE CONSTELLATION BACKGROUND --- */
+      function init3DCanvasBackground() {
+        const canvas = document.getElementById("bg3d");
+        if (!canvas || canvas.dataset.initialized) return;
+        canvas.dataset.initialized = "true";
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        let width = (canvas.width = window.innerWidth);
+        let height = (canvas.height = window.innerHeight);
+
+        window.addEventListener("resize", () => {
+          width = canvas.width = window.innerWidth;
+          height = canvas.height = window.innerHeight;
+        });
+
+        const numPoints = 42;
+        const points = [];
+        const fov = 380;
+
+        for (let i = 0; i < numPoints; i++) {
+          points.push({
+            x: (Math.random() - 0.5) * 1100,
+            y: (Math.random() - 0.5) * 1100,
+            z: Math.random() * 800 + 40,
+            vx: (Math.random() - 0.5) * 0.35,
+            vy: (Math.random() - 0.5) * 0.35,
+            vz: (Math.random() - 0.5) * 0.45,
+            radius: Math.random() * 1.8 + 1.2,
+          });
+        }
+
+        let mouseX = 0;
+        let mouseY = 0;
+        let targetRotX = 0;
+        let targetRotY = 0;
+        let rotX = 0;
+        let rotY = 0;
+
+        window.addEventListener("mousemove", (e) => {
+          mouseX = (e.clientX - width / 2) * 0.00025;
+          mouseY = (e.clientY - height / 2) * 0.00025;
+        });
+
+        function render() {
+          ctx.clearRect(0, 0, width, height);
+
+          targetRotX += mouseX * 0.4;
+          targetRotY += mouseY * 0.4;
+          rotX += (targetRotX - rotX) * 0.04;
+          rotY += (targetRotY - rotY) * 0.04;
+
+          const projected = [];
+          for (let i = 0; i < points.length; i++) {
+            const p = points[i];
+            p.x += p.vx;
+            p.y += p.vy;
+            p.z += p.vz;
+
+            if (p.x < -650) p.x = 650;
+            if (p.x > 650) p.x = -650;
+            if (p.y < -650) p.y = 650;
+            if (p.y > 650) p.y = -650;
+            if (p.z < 20) p.z = 750;
+            if (p.z > 750) p.z = 20;
+
+            const cosY = Math.cos(rotX * 0.15 + 0.001);
+            const sinY = Math.sin(rotX * 0.15 + 0.001);
+            const rx = p.x * cosY - p.z * sinY;
+            const rz = p.z * cosY + p.x * sinY;
+
+            const scale = fov / (fov + rz);
+            const px = rx * scale + width / 2;
+            const py = p.y * scale + height / 2;
+
+            projected.push({
+              x: px,
+              y: py,
+              z: rz,
+              scale,
+              radius: p.radius * scale,
+            });
+          }
+
+          // Disegna linee 3D di connessione
+          ctx.lineWidth = 0.75;
+          for (let i = 0; i < projected.length; i++) {
+            for (let j = i + 1; j < projected.length; j++) {
+              const dx = projected[i].x - projected[j].x;
+              const dy = projected[i].y - projected[j].y;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+              if (dist < 135) {
+                const alpha = (1 - dist / 135) * 0.35;
+                ctx.strokeStyle = `rgba(26, 115, 232, ${alpha})`;
+                ctx.beginPath();
+                ctx.moveTo(projected[i].x, projected[i].y);
+                ctx.lineTo(projected[j].x, projected[j].y);
+                ctx.stroke();
+              }
+            }
+          }
+
+          // Disegna nodi particellari
+          for (let i = 0; i < projected.length; i++) {
+            const p = projected[i];
+            const alpha = Math.max(0.18, Math.min(0.9, p.scale));
+            ctx.fillStyle = `rgba(138, 180, 248, ${alpha})`;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, Math.max(0.7, p.radius), 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+          requestAnimationFrame(render);
+        }
+
+        render();
+      }
+
+      init3DCanvasBackground();
     </script>
   </body>
 </html>
