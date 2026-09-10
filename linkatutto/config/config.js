@@ -69,7 +69,7 @@ async function loadConfig() {
       "❌ Failed to load remote configuration. Using fallback config.",
       error,
     );
-    return localConfig;
+    return fallbackConfig;
   }
 }
 

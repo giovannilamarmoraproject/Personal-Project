@@ -220,18 +220,18 @@ if ($request_method = OPTIONS) {
     set $allow_request 1;
 }
 
-# 1. Accesso alla Root, Favicon, Robots e Manifest
-if ($request_uri ~* "^/($|favicon\.ico$|robots\.txt$|manifest\.json$|sitemap\.xml$)") {
+# 1. Accesso alla Root (anche con query string di autenticazione/OAuth), Favicon, Robots e Manifest
+if ($uri ~* "^/($|favicon\.ico$|robots\.txt$|manifest\.json$|sitemap\.xml$)") {
     set $allow_request 1;
 }
 
 # 2. Risorse Frontend: Pagine HTML, Assets Statici, Script, Stili, Immagini e Font
-if ($request_uri ~* "\.(html|css|js|mjs|json|png|jpg|jpeg|gif|ico|webp|svg|woff|woff2|ttf|eot|map)$") {
+if ($uri ~* "\.(html|css|js|mjs|json|png|jpg|jpeg|gif|ico|webp|svg|woff|woff2|ttf|eot|map)$") {
     set $allow_request 1;
 }
 
 # 3. Sottocartelle e Directory Progetto (es. /the-real-marza/, /costi-casa/)
-if ($request_uri ~* "^/[a-zA-Z0-9_\-]+(/.*)?$") {
+if ($uri ~* "^/[a-zA-Z0-9_\-]+(/.*)?$") {
     set $allow_request 1;
 }
 
@@ -323,18 +323,18 @@ if ($request_method = OPTIONS) {
     set $allow_request 1;
 }
 
-# 1. Root, Favicon, Robots e Manifest
-if ($request_uri ~* "^/($|favicon\.ico$|robots\.txt$|manifest\.json$)") {
+# 1. Root (anche con parametri query di autenticazione/OAuth), Favicon, Robots e Manifest
+if ($uri ~* "^/($|favicon\.ico$|robots\.txt$|manifest\.json$)") {
     set $allow_request 1;
 }
 
 # 2. Risorse Statiche del Sottoprogetto
-if ($request_uri ~* "\.(html|css|js|mjs|json|png|jpg|jpeg|gif|ico|webp|svg|woff|woff2|ttf|eot|map)$") {
+if ($uri ~* "\.(html|css|js|mjs|json|png|jpg|jpeg|gif|ico|webp|svg|woff|woff2|ttf|eot|map)$") {
     set $allow_request 1;
 }
 
 # 3. Pagine e sottocartelle del progetto (es. /twitch.html, /youtube.html, /assets/...)
-if ($request_uri ~* "^/[a-zA-Z0-9_\-]+(/.*)?$") {
+if ($uri ~* "^/[a-zA-Z0-9_\-]+(/.*)?$") {
     set $allow_request 1;
 }
 
