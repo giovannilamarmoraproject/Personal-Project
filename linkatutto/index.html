@@ -69,31 +69,29 @@
     <div id="dashboard" class="body-wrap not-display has-animations" style="position: relative; z-index: 1;">
       <!-- Top Modern Glassmorphism Navigation -->
       <header class="site-header">
-        <div
-          class="container d-flex align-items-center justify-content-between"
-        >
+        <div class="header-container d-flex align-items-center justify-content-between">
           <div class="brand header-brand">
             <a
-              class="website_url d-flex align-items-center gap-2 text-decoration-none"
+              class="website_url d-flex align-items-center gap-3 text-decoration-none"
               target="_blank"
               href="#"
             >
               <img
-                width="36"
-                height="36"
+                width="40"
+                height="40"
                 class="header-logo-image logo-images rounded-circle shadow-sm"
                 src="https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/0f58a355856d25a7154482951a3220899ee59d10/assets/icons/svg/rounded_white.svg"
                 alt="Logo"
               />
               <span
                 class="fw-bold text-white fs-5"
-                style="letter-spacing: -0.3px"
+                style="letter-spacing: -0.3px; font-size: 1.25rem !important;"
                 >Linkatutto</span
               >
             </a>
           </div>
 
-          <div class="d-flex align-items-center gap-2 flex-wrap">
+          <div class="d-flex align-items-center gap-3 flex-wrap">
             <div class="status-pill d-none d-md-inline-flex m-0">
               <span class="status-dot"></span>
               <span>Services Gateway · Online</span>
@@ -213,18 +211,25 @@
             <div class="hero-figure-box hero-figure-box-10" data-rotation="-50deg"></div>
           </div>
 
-          <div class="hero-copy position-relative" style="z-index: 2; max-width: 960px; margin: 0 auto; padding: 0 1.25rem;">
-            <div class="status-pill mb-3">
-              <span class="status-dot"></span>
-              <span>Full-Stack & DevOps · Microservice Registry</span>
+          <div class="hero-copy position-relative" style="z-index: 2; max-width: 1050px; margin: 0 auto; padding: 0 1.5rem; text-align: center;">
+            
+            <!-- Logo al centro sopra il testo in verde -->
+            <div class="d-flex justify-content-center">
+              <div class="logo-container">
+                <img
+                  class="header-logo-image logo-images"
+                  src="https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/0f58a355856d25a7154482951a3220899ee59d10/assets/icons/svg/rounded_white.svg"
+                  alt="Logo"
+                />
+              </div>
             </div>
 
-            <div class="logo-container">
-              <img
-                class="header-logo-image logo-images"
-                src="https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/0f58a355856d25a7154482951a3220899ee59d10/assets/icons/svg/rounded_white.svg"
-                alt="Logo"
-              />
+            <!-- Testo in verde (Status Pill) sotto il logo -->
+            <div class="d-flex justify-content-center">
+              <div class="status-pill mb-3">
+                <span class="status-dot"></span>
+                <span>Full-Stack & DevOps · Microservice Registry</span>
+              </div>
             </div>
 
             <h1
@@ -244,7 +249,7 @@
             <p
               class="text-secondary mx-auto mb-4"
               style="
-                max-width: 48rem;
+                max-width: 52rem;
                 font-size: 1.05rem;
                 line-height: 1.6;
                 color: var(--md-sys-color-on-surface-variant) !important;
