@@ -638,27 +638,7 @@ pre {
   display: inline-flex;
 }
 
-@media (min-width: 641px) {
-  .site-header {
-    position: relative;
-  }
-  .site-header::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 700px;
-    background: #242830;
-    background: linear-gradient(
-      80deg,
-      rgba(36, 40, 48, 0.5) 0%,
-      rgba(36, 40, 48, 0) 100%
-    );
-    transform-origin: 0;
-    transform: skewY(-12deg);
-  }
-}
+
 .hero {
   text-align: center;
   padding-top: 48px;
@@ -1584,16 +1564,21 @@ main {
   border-color: rgba(26, 115, 232, 0.3);
 }
 
-/* Site Header Modern Glassmorphism */
+/* Site Header Modern Glassmorphism (Frosted Glass Blur) */
 .site-header {
   position: sticky;
   top: 0;
-  z-index: 100;
-  background: rgba(11, 12, 16, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  z-index: 1000;
+  background: rgba(11, 12, 16, 0.6) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3) !important;
   padding: 0.75rem 0;
+}
+
+.site-header::before {
+  display: none !important;
 }
 
 .site-header .header-container {
@@ -1698,7 +1683,9 @@ main {
   max-height: 0;
   opacity: 0;
   transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, padding 0.3s ease;
-  background: rgba(15, 16, 20, 0.98);
+  background: rgba(11, 12, 16, 0.8) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
