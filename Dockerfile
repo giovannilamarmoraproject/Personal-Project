@@ -1,4 +1,4 @@
-﻿FROM nginx:alpine
+FROM nginx:alpine
 
 # Rimuovi la configurazione predefinita di nginx
 RUN rm -rf /etc/nginx/conf.d/default.conf
@@ -8,6 +8,7 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copia tutti i file del server (Central Hub, assets, the-real-marza, costi-casa, etc.)
 COPY . /usr/share/nginx/html
+RUN rm -f /usr/share/nginx/html/nginx.conf /usr/share/nginx/html/VERSION
 
 # Esponi la porta HTTP
 EXPOSE 80
