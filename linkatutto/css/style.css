@@ -1683,23 +1683,24 @@ main {
   transform: translateY(-7px) rotate(-45deg);
 }
 
-/* Mobile Dropdown Menu */
+/* Mobile Dropdown Menu (Seamless Frosted Glass Matching Header) */
 .mobile-menu {
   display: none;
   overflow: hidden;
   max-height: 0;
   opacity: 0;
+  padding: 0 1.25rem;
   transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, padding 0.3s ease;
-  background: rgba(11, 12, 16, 0.8) !important;
-  backdrop-filter: blur(20px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-bottom: none !important;
 }
 
 .mobile-menu.open {
-  max-height: 380px;
+  max-height: 420px;
   opacity: 1;
-  padding: 1rem 1.25rem 1.25rem 1.25rem;
+  padding: 0.85rem 1.25rem 0.5rem 1.25rem;
 }
 
 .mobile-menu-inner {
@@ -1712,28 +1713,28 @@ main {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.65rem 1rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
-  color: #e2e2ec;
+  padding: 0.55rem 1.15rem;
+  background: var(--md-sys-color-surface-container);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 9999px;
+  color: var(--md-sys-color-on-surface);
   text-decoration: none !important;
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-size: 0.88rem;
+  font-weight: 600;
   transition: all 0.2s ease;
 }
 
 .mobile-menu-link:hover {
-  background: rgba(26, 115, 232, 0.15);
+  background: var(--md-sys-color-surface-container-high);
+  border-color: rgba(255, 255, 255, 0.2);
   color: #ffffff;
-  border-color: rgba(26, 115, 232, 0.35);
   transform: translateX(4px);
 }
 
 .mobile-menu-link.text-danger:hover {
-  background: rgba(234, 67, 53, 0.15);
+  background: rgba(234, 67, 53, 0.15) !important;
   color: #ff8a80 !important;
-  border-color: rgba(234, 67, 53, 0.35);
+  border-color: rgba(234, 67, 53, 0.35) !important;
 }
 
 @media (max-width: 768px) {
