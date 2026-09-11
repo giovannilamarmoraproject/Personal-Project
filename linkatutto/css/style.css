@@ -1299,12 +1299,12 @@ html.hide-front-card-text .card-container .front .inner {
   transform: translateY(-46%) translateZ(30px) scale(0.9) !important;
 }
 
-/* Quando il testo è nascosto, riduci l'overlay per far risaltare il logo */
+/* Quando il testo è nascosto, mantieni comunque un velo scuro bilanciato (non troppo, ma scuro) */
 body.hide-front-card-text .flip-card .front:after,
 body.hide-front-card-text .card-container .front:after,
 html.hide-front-card-text .flip-card .front:after,
 html.hide-front-card-text .card-container .front:after {
-  opacity: 0.12 !important;
+  opacity: 0.42 !important;
 }
 
 .flip-card .back .inner h1,
