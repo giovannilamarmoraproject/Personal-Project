@@ -478,12 +478,103 @@ function initCardFlip() {
   });
 }
 
+/**
+ * -------------------------------------------------------------
+ * Gestione Slider Toggle per il Testo Frontale delle Card
+ * Default: testo nascosto (hide-front-card-text)
+ * Salvataggio dello stato in localStorage
+ * -------------------------------------------------------------
+ */
+function initCardTextToggle() {
+  const STORAGE_KEY = "linkatutto_show_front_text";
+  let savedVal = null;
+  try {
+    savedVal = localStorage.getItem(STORAGE_KEY);
+  } catch (e) {
+    console.warn("localStorage non accessibile:", e);
+  }
+
+  // Default: testo nascosto (show = true solo se salvato esplicitamente come "true")
+  const isVisible = savedVal === "true";
+
+  function applyVisibility(show, save = true) {
+    if (show) {
+      document.body.classList.remove("hide-front-card-text");
+      document.documentElement.classList.remove("hide-front-card-text");
+    } else {
+      document.body.classList.add("hide-front-card-text");
+      document.documentElement.classList.add("hide-front-card-text");
+    }
+
+    const desktopSwitch = document.getElementById("toggle-front-text-switch");
+    const mobileSwitch = document.getElementById(
+      "mobile-toggle-front-text-switch",
+    );
+    if (desktopSwitch) desktopSwitch.checked = show;
+    if (mobileSwitch) mobileSwitch.checked = show;
+
+    if (save) {
+      try {
+        localStorage.setItem(STORAGE_KEY, show ? "true" : "false");
+      } catch (e) {}
+    }
+  }
+
+  // Applica stato iniziale (default nascosto)
+  applyVisibility(isVisible, false);
+
+  // Listener per cambio stato switch desktop
+  const desktopSwitch = document.getElementById("toggle-front-text-switch");
+  if (desktopSwitch) {
+    desktopSwitch.addEventListener("change", (e) => {
+      applyVisibility(e.target.checked, true);
+    });
+  }
+
+  // Click su tutto il container pill desktop
+  const desktopPill = document.getElementById("card-text-toggle");
+  if (desktopPill) {
+    desktopPill.addEventListener("click", (e) => {
+      if (e.target.closest(".switch-toggle")) return;
+      if (desktopSwitch) {
+        desktopSwitch.checked = !desktopSwitch.checked;
+        applyVisibility(desktopSwitch.checked, true);
+      }
+    });
+  }
+
+  // Listener per cambio stato switch mobile
+  const mobileSwitch = document.getElementById(
+    "mobile-toggle-front-text-switch",
+  );
+  if (mobileSwitch) {
+    mobileSwitch.addEventListener("change", (e) => {
+      applyVisibility(e.target.checked, true);
+    });
+  }
+
+  // Click su tutto il container pill mobile
+  const mobilePill = document.getElementById("mobile-card-text-toggle");
+  if (mobilePill) {
+    mobilePill.addEventListener("click", (e) => {
+      if (e.target.closest(".switch-toggle")) return;
+      if (mobileSwitch) {
+        mobileSwitch.checked = !mobileSwitch.checked;
+        applyVisibility(mobileSwitch.checked, true);
+      }
+    });
+  }
+}
+
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => {
     initMobileMenu();
     initCardFlip();
+    initCardTextToggle();
   });
 } else {
   initMobileMenu();
   initCardFlip();
+  initCardTextToggle();
 }
+

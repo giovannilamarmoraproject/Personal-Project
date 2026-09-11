@@ -1274,6 +1274,39 @@ main {
   font-size: 0.85rem !important;
 }
 
+/* --- VISIBILITÀ ANIMATA TESTO CARD FRONTALE (DEFAULT NASCOSTO) --- */
+.flip-card .front .inner,
+.card-container .front .inner {
+  transition: opacity 0.38s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.38s cubic-bezier(0.4, 0, 0.2, 1),
+              visibility 0.38s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.flip-card .front:after,
+.card-container .front:after {
+  transition: opacity 0.38s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Stato quando il testo è nascosto */
+body.hide-front-card-text .flip-card .front .inner,
+body.hide-front-card-text .card-container .front .inner,
+html.hide-front-card-text .flip-card .front .inner,
+html.hide-front-card-text .card-container .front .inner {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  -webkit-transform: translateY(-46%) translateZ(30px) scale(0.9) !important;
+  transform: translateY(-46%) translateZ(30px) scale(0.9) !important;
+}
+
+/* Quando il testo è nascosto, riduci l'overlay per far risaltare il logo */
+body.hide-front-card-text .flip-card .front:after,
+body.hide-front-card-text .card-container .front:after,
+html.hide-front-card-text .flip-card .front:after,
+html.hide-front-card-text .card-container .front:after {
+  opacity: 0.12 !important;
+}
+
 .flip-card .back .inner h1,
 .card-container .back .inner h1 {
   font-size: 1.25rem !important;
@@ -1624,6 +1657,106 @@ main {
 .site-header .status-dot {
   width: 7px;
   height: 7px;
+}
+
+/* --- BUTTON SLIDER SWITCH PER IL TESTO FRONTALE DELLE CARD --- */
+.action-pill.slider-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.28rem 0.55rem 0.28rem 0.75rem !important;
+  cursor: pointer;
+  user-select: none;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.action-pill.slider-pill:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
+}
+
+.action-pill.slider-pill .slider-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #e2e2ec;
+  letter-spacing: 0.2px;
+}
+
+.switch-toggle {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 18px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.switch-toggle .switch-input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+  pointer-events: none;
+}
+
+.switch-toggle .switch-slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.switch-toggle .switch-slider::before {
+  position: absolute;
+  content: "";
+  height: 12px;
+  width: 12px;
+  left: 2px;
+  bottom: 2px;
+  background-color: #8c909c;
+  border-radius: 50%;
+  transition: all 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.switch-toggle .switch-input:checked + .switch-slider {
+  background: linear-gradient(135deg, #1a73e8, #4285f4);
+  border-color: rgba(26, 115, 232, 0.5);
+  box-shadow: 0 0 10px rgba(26, 115, 232, 0.5);
+}
+
+.switch-toggle .switch-input:checked + .switch-slider::before {
+  transform: translateX(16px);
+  background-color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.45);
+}
+
+/* Hover state for switch */
+.action-pill.slider-pill:hover .switch-slider {
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.action-pill.slider-pill:hover .switch-input:not(:checked) + .switch-slider::before {
+  background-color: #ffffff;
+}
+
+/* Mobile Slider styling */
+.mobile-slider-pill {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  cursor: pointer;
+  user-select: none;
 }
 
 /* Hero Typography & Elements */
