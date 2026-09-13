@@ -1,5 +1,13 @@
 [
   {
+    "title": "Access Sphere",
+    "category": "Service",
+    "description": "Advanced digital identity and access management platform featuring multi-factor authentication (MFA), Single Sign-On (SSO), and centralized security policies.",
+    "image": "https://strapi.giovannilamarmora.com/uploads/3072743_a19ead8f0e.jpg",
+    "url": "https://access-sphere.giovannilamarmora.com",
+    "tags": ["Security", "SSO", "Microservices"]
+  },
+  {
     "title": "Costi Casa",
     "category": "Web App",
     "description": "Web application for budget management, expense tracking, and mortgage simulations for home purchasing, featuring added links for documents, FAQs, and answers.",
@@ -16,6 +24,14 @@
     "tags": ["Home Assistant", "Material 3", "IoT"]
   },
   {
+    "title": "MoneyStats",
+    "category": "Application",
+    "description": "Full-stack personal finance and wealth management platform built with Spring Boot and Angular, featuring comprehensive analytics and MySQL database architecture.",
+    "image": "https://giovannilamarmora.github.io/assets/img/project/logo_no_name.png",
+    "url": "https://moneystats-service.giovannilamarmora.com",
+    "tags": ["Java", "Spring Boot", "Angular"]
+  },
+  {
     "title": "The Real Marza",
     "category": "WebSite",
     "description": "Dedicated website for Francesco Marzano that briefly explains who he is. It serves as an all-in-one hub gathering clips, streams, YouTube content, and social media links.",
@@ -24,26 +40,10 @@
     "tags": ["Web Design", "Multimedia", "Streaming"]
   },
   {
-    "title": "Access Sphere",
-    "category": "Service",
-    "description": "Advanced digital identity and access management platform featuring multi-factor authentication (MFA), Single Sign-On (SSO), and centralized security policies.",
-    "image": "https://strapi.giovannilamarmora.com/uploads/3072743_a19ead8f0e.jpg",
-    "url": "https://access-sphere.giovannilamarmora.com",
-    "tags": ["Security", "SSO", "Microservices"]
-  },
-  {
-    "title": "MoneyStats",
-    "category": "Application",
-    "description": "Full-stack personal finance and wealth management platform built with Spring Boot and Angular, featuring comprehensive analytics and MySQL database architecture.",
-    "image": "https://giovannilamarmora.github.io/assets/img/project/logo_no_name.png",
-    "url": "https://moneystats.service.giovannilamarmora.com",
-    "tags": ["Java", "Spring Boot", "Angular"]
-  },
-  {
     "title": "Linkatutto",
     "category": "Gateway & Tools",
     "description": "Centralized internal service gateway and microservices registry hub, providing direct access to endpoints, API documentation, actuator metrics, and admin consoles.",
-    "image": "https://raw.githubusercontent.com/giovannilamarmora/giovannilamarmora.github.io/0f58a355856d25a7154482951a3220899ee59d10/assets/icons/svg/rounded_white.svg",
+    "image": "https://img.magnific.com/free-vector/abstract-background-with-network-communications-design_1048-19058.jpg?semt=ais_hybrid&w=740&q=80",
     "url": "./linkatutto/?demo=true",
     "tags": ["Gateway", "Microservices", "Registry"]
   }
