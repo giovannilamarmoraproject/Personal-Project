@@ -1,7 +1,9 @@
-const CACHE_NAME = "casa-app-v1.7.0";
+const CACHE_NAME = "casa-app-v1.7.2";
 const MEDIA_CACHE = "casa-media-v1"; // Does not get deleted on version bumps
 const urlsToCache = [
   "./index.html",
+  "./style.css",
+  "./app.js",
   "./icon.jpg?v=1",
   "./manifest.json",
   "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0",
