@@ -1,4 +1,4 @@
-const CACHE_NAME = "casa-app-v1.7.0";
+const CACHE_NAME = "casa-app-v1.6.9";
 const MEDIA_CACHE = "casa-media-v1"; // Does not get deleted on version bumps
 const urlsToCache = [
   "./index.html",
@@ -86,11 +86,4 @@ self.addEventListener("activate", (event) => {
     }),
   );
   self.clients.claim();
-});
-
-// Risponde al postMessage SKIP_WAITING inviato dalla pagina
-self.addEventListener("message", (event) => {
-  if (event.data && event.data.type === "SKIP_WAITING") {
-    self.skipWaiting();
-  }
 });
