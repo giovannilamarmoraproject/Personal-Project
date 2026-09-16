@@ -398,7 +398,21 @@
           <div id="pay-fatture-inputs"></div>
         </div>
 
-        <div id="pay-max-info" style="font-size: 13px; font-weight: 500; color: var(--md-sys-color-primary); background: var(--md-sys-color-surface-container-high); padding: 10px 14px; border-radius: 10px; margin-top: 14px; display: none; align-items: flex-start; gap: 8px;"></div>
+        <div
+          id="pay-max-info"
+          style="
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--md-sys-color-primary);
+            background: var(--md-sys-color-surface-container-high);
+            padding: 10px 14px;
+            border-radius: 10px;
+            margin-top: 14px;
+            display: none;
+            align-items: flex-start;
+            gap: 8px;
+          "
+        ></div>
 
         <div
           style="
@@ -1343,7 +1357,10 @@
 
         <!-- DETTAGLIO COSTO -->
         <div id="view-detail" class="view-section">
-          <div class="content-padding" style="padding-top: 0">
+          <div
+            class="content-padding"
+            style="padding-top: 0; padding-left: 5px; padding-right: 5px"
+          >
             <!-- Barra superiore con tasto indietro -->
             <div class="detail-header-bar">
               <button class="detail-back-btn" onclick="closeDetailView()">
@@ -1413,7 +1430,10 @@
                 "
               >
                 <h2 class="card-title" style="margin: 0">Storico Pagamenti</h2>
-                <div id="detail-add-payment-actions" style="display: flex; align-items: center; gap: 8px;">
+                <div
+                  id="detail-add-payment-actions"
+                  style="display: flex; align-items: center; gap: 8px"
+                >
                   <button
                     id="detail-add-payment-btn"
                     class="btn btn-filled"
@@ -1422,8 +1442,29 @@
                     <span class="material-symbols-outlined">add</span> Aggiungi
                     Pagamento
                   </button>
-                  <span id="detail-completato-badge" style="display: none; background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); padding: 6px 14px; border-radius: 20px; font-weight: 600; font-size: 13px; align-items: center; gap: 6px;">
-                    <span class="material-symbols-outlined" style="font-size: 18px; color: var(--md-sys-color-primary);">check_circle</span> Costo saldato al 100%
+                  <span
+                    id="detail-completato-badge"
+                    style="
+                      display: none;
+                      background: var(--md-sys-color-primary-container);
+                      color: var(--md-sys-color-on-primary-container);
+                      padding: 6px 14px;
+                      border-radius: 20px;
+                      font-weight: 600;
+                      font-size: 13px;
+                      align-items: center;
+                      gap: 6px;
+                    "
+                  >
+                    <span
+                      class="material-symbols-outlined"
+                      style="
+                        font-size: 18px;
+                        color: var(--md-sys-color-primary);
+                      "
+                      >check_circle</span
+                    >
+                    Costo saldato al 100%
                   </span>
                 </div>
               </div>
@@ -2222,7 +2263,7 @@
               </div>
             </div>
           </div>
-          
+
           <h4 class="version">
             Gestione Casa & Budget - Made with ❤️ by
             <a href="https://giovannilamarmora.github.io/" target="_blank"
