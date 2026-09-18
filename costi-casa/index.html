@@ -29,7 +29,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <link rel="stylesheet" href="./style.css?v=1.7.5" />
+    <link rel="stylesheet" href="./style.css?v=1.7.7" />
   </head>
   <body>
     <!-- WIZARD INIZIALE -->
@@ -589,6 +589,27 @@
             ></textarea>
           </div>
         </div>
+        <!-- Collegamento Costi Casa -->
+        <div class="input-group">
+          <div class="input-field" style="width: 100%">
+            <label style="display: flex; align-items: center; gap: 6px">
+              <span class="material-symbols-outlined" style="font-size: 18px"
+                >euro</span
+              >
+              Costi Casa collegati (opzionale)
+            </label>
+            <select
+              id="qa-modal-linked-cost-select"
+              onchange="handleQAAddLinkedCost(this)"
+            >
+              <option value="">Collega a un costo casa...</option>
+            </select>
+            <div
+              id="qa-modal-linked-costs-chips"
+              class="linked-costs-chips-container"
+            ></div>
+          </div>
+        </div>
         <!-- Sezione Immagini Domanda -->
         <div class="note-modal-images-area modal-images-area">
           <div
@@ -733,6 +754,27 @@
             ></textarea>
           </div>
         </div>
+        <!-- Collegamento Costi Casa -->
+        <div class="input-group">
+          <div class="input-field" style="width: 100%">
+            <label style="display: flex; align-items: center; gap: 6px">
+              <span class="material-symbols-outlined" style="font-size: 18px"
+                >euro</span
+              >
+              Costi Casa collegati (opzionale)
+            </label>
+            <select
+              id="task-modal-linked-cost-select"
+              onchange="handleTaskAddLinkedCost(this)"
+            >
+              <option value="">Collega a un costo casa...</option>
+            </select>
+            <div
+              id="task-modal-linked-costs-chips"
+              class="linked-costs-chips-container"
+            ></div>
+          </div>
+        </div>
         <!-- Sezione Immagini Task -->
         <div class="note-modal-images-area modal-images-area">
           <div
@@ -872,6 +914,27 @@
               placeholder="Scrivi qui i tuoi appunti..."
               style="min-height: 150px"
             ></textarea>
+          </div>
+        </div>
+        <!-- Collegamento Costi Casa -->
+        <div class="input-group">
+          <div class="input-field" style="width: 100%">
+            <label style="display: flex; align-items: center; gap: 6px">
+              <span class="material-symbols-outlined" style="font-size: 18px"
+                >euro</span
+              >
+              Costi Casa collegati (opzionale)
+            </label>
+            <select
+              id="note-modal-linked-cost-select"
+              onchange="handleNoteAddLinkedCost(this)"
+            >
+              <option value="">Collega a un costo casa...</option>
+            </select>
+            <div
+              id="note-modal-linked-costs-chips"
+              class="linked-costs-chips-container"
+            ></div>
           </div>
         </div>
         <!-- Sezione Immagini Appunto -->
@@ -1748,6 +1811,150 @@
               </div>
               <div class="payment-list" id="detail-payment-list"></div>
             </div>
+
+            <!-- Card Domande Collegate (visibile solo se presenti) -->
+            <div
+              id="detail-linked-qa-card"
+              class="card"
+              style="display: none; margin-top: 16px"
+            >
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  margin-bottom: 16px;
+                  flex-wrap: wrap;
+                  gap: 8px;
+                "
+              >
+                <h2
+                  class="card-title"
+                  style="
+                    margin: 0;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                  "
+                >
+                  <span
+                    class="material-symbols-outlined"
+                    style="color: var(--md-sys-color-primary)"
+                    >quiz</span
+                  >
+                  Domande Collegate
+                </h2>
+                <button
+                  class="btn btn-tonal"
+                  style="font-size: 13px; padding: 6px 12px"
+                  onclick="openAddQAModal(currentDetailId)"
+                >
+                  <span
+                    class="material-symbols-outlined"
+                    style="font-size: 18px"
+                    >add</span
+                  >
+                  Aggiungi Domanda
+                </button>
+              </div>
+              <div id="detail-linked-qa-list"></div>
+            </div>
+
+            <!-- Card Task Collegati (visibile solo se presenti) -->
+            <div
+              id="detail-linked-tasks-card"
+              class="card"
+              style="display: none; margin-top: 16px"
+            >
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  margin-bottom: 16px;
+                  flex-wrap: wrap;
+                  gap: 8px;
+                "
+              >
+                <h2
+                  class="card-title"
+                  style="
+                    margin: 0;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                  "
+                >
+                  <span
+                    class="material-symbols-outlined"
+                    style="color: var(--md-sys-color-primary)"
+                    >task_alt</span
+                  >
+                  Task Collegati
+                </h2>
+                <button
+                  class="btn btn-tonal"
+                  style="font-size: 13px; padding: 6px 12px"
+                  onclick="openAddTaskModal(currentDetailId)"
+                >
+                  <span
+                    class="material-symbols-outlined"
+                    style="font-size: 18px"
+                    >add</span
+                  >
+                  Aggiungi Task
+                </button>
+              </div>
+              <div id="detail-linked-tasks-list"></div>
+            </div>
+
+            <!-- Card Appunti Collegati (visibile solo se presenti) -->
+            <div
+              id="detail-linked-notes-card"
+              class="card"
+              style="display: none; margin-top: 16px"
+            >
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  margin-bottom: 16px;
+                  flex-wrap: wrap;
+                  gap: 8px;
+                "
+              >
+                <h2
+                  class="card-title"
+                  style="
+                    margin: 0;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                  "
+                >
+                  <span
+                    class="material-symbols-outlined"
+                    style="color: var(--md-sys-color-primary)"
+                    >description</span
+                  >
+                  Appunti Collegati
+                </h2>
+                <button
+                  class="btn btn-tonal"
+                  style="font-size: 13px; padding: 6px 12px"
+                  onclick="openAddNoteModal(currentDetailId)"
+                >
+                  <span
+                    class="material-symbols-outlined"
+                    style="font-size: 18px"
+                    >add</span
+                  >
+                  Aggiungi Appunto
+                </button>
+              </div>
+              <div id="detail-linked-notes-list"></div>
+            </div>
           </div>
         </div>
 
@@ -2547,12 +2754,12 @@
             <a href="https://giovannilamarmora.github.io/" target="_blank"
               >Giovanni Lamarmora</a
             >
-            <span class="version-number">v1.7.5</span>
+            <span class="version-number">v1.7.7</span>
           </h4>
         </div>
       </div>
     </div>
 
-    <script src="./app.js?v=1.7.5"></script>
+    <script src="./app.js?v=1.7.7"></script>
   </body>
 </html>

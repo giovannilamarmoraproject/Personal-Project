@@ -350,17 +350,26 @@ function sanitizeData() {
     if (!q.images) {
       q.images = q.image ? [q.image] : [];
     }
+    if (!Array.isArray(q.linkedCostIds)) {
+      q.linkedCostIds = [];
+    }
   });
   if (!appData.tasks) appData.tasks = [];
   appData.tasks.forEach((t) => {
     if (!t.images) {
       t.images = t.image ? [t.image] : [];
     }
+    if (!Array.isArray(t.linkedCostIds)) {
+      t.linkedCostIds = [];
+    }
   });
   if (!appData.notes) appData.notes = [];
   appData.notes.forEach((n) => {
     if (!n.images) {
       n.images = n.image ? [n.image] : [];
+    }
+    if (!Array.isArray(n.linkedCostIds)) {
+      n.linkedCostIds = [];
     }
   });
 
@@ -466,6 +475,18 @@ function sanitizeData() {
       };
       colorIndex++;
     }
+  });
+
+  // Assicura che i costi collegati puntino solo a ID di costo realmente esistenti
+  const validCostIds = new Set(appData.costi.map((c) => c.id));
+  appData.qa.forEach((q) => {
+    q.linkedCostIds = q.linkedCostIds.filter((cid) => validCostIds.has(cid));
+  });
+  appData.tasks.forEach((t) => {
+    t.linkedCostIds = t.linkedCostIds.filter((cid) => validCostIds.has(cid));
+  });
+  appData.notes.forEach((n) => {
+    n.linkedCostIds = n.linkedCostIds.filter((cid) => validCostIds.has(cid));
   });
 
   // Normalizzazione tabella budget
@@ -796,13 +817,223 @@ async function deleteFromModal() {
   if (result.isConfirmed) {
     const id = parseInt(document.getElementById("modal-id").value);
     const type = document.getElementById("modal-type").value;
-    if (type === "costo")
+    if (type === "costo") {
       appData.costi = appData.costi.filter((c) => c.id !== id);
-    else appData.budget = appData.budget.filter((b) => b.id !== id);
+      (appData.qa || []).forEach((q) => {
+        if (q.linkedCostIds)
+          q.linkedCostIds = q.linkedCostIds.filter((cid) => cid !== id);
+      });
+      (appData.tasks || []).forEach((t) => {
+        if (t.linkedCostIds)
+          t.linkedCostIds = t.linkedCostIds.filter((cid) => cid !== id);
+      });
+      (appData.notes || []).forEach((n) => {
+        if (n.linkedCostIds)
+          n.linkedCostIds = n.linkedCostIds.filter((cid) => cid !== id);
+      });
+    } else {
+      appData.budget = appData.budget.filter((b) => b.id !== id);
+    }
     closeModal();
     saveDataLocally();
     showNotification("Voce eliminata");
   }
+}
+
+/**
+ * Popola un elemento <select> con l'elenco dei costi casa disponibili da collegare.
+ * @param {HTMLSelectElement} selectEl - Menu a tendina.
+ * @param {number[]} currentIds - Array degli ID dei costi già collegati (da escludere).
+ */
+function populateLinkedCostSelect(selectEl, currentIds = []) {
+  if (!selectEl) return;
+  selectEl.innerHTML = '<option value="">Collega a un costo casa...</option>';
+  if (!appData.costi || appData.costi.length === 0) return;
+
+  const currentSet = new Set((currentIds || []).map((id) => Number(id)));
+  const sortedCosti = [...appData.costi].sort((a, b) =>
+    (a.desc || "").localeCompare(b.desc || "", "it", { sensitivity: "base" }),
+  );
+
+  sortedCosti.forEach((cost) => {
+    if (!currentSet.has(Number(cost.id))) {
+      const opt = document.createElement("option");
+      opt.value = cost.id;
+      opt.textContent = cost.desc || "Senza titolo";
+      selectEl.appendChild(opt);
+    }
+  });
+}
+
+/**
+ * Renderizza le chips dei costi collegati all'interno di un contenitore nel modale.
+ * @param {HTMLElement} containerEl - Contenitore chips.
+ * @param {number[]} idsArray - ID dei costi collegati.
+ * @param {Function} onRemove - Callback invocata alla rimozione.
+ */
+function renderLinkedCostsChips(containerEl, idsArray, onRemove) {
+  if (!containerEl) return;
+  containerEl.innerHTML = "";
+  if (!idsArray || idsArray.length === 0) return;
+
+  idsArray.forEach((costId) => {
+    const cost = (appData.costi || []).find((c) => c.id === Number(costId));
+    if (!cost) return;
+
+    const chip = document.createElement("div");
+    chip.className = "linked-cost-chip";
+    const catLabel = cost.cat ? `[${cost.cat}] ` : "";
+    chip.innerHTML = `
+      <span class="material-symbols-outlined" style="font-size: 15px;">euro</span>
+      <span class="linked-cost-chip-name" title="${escapeHTML(catLabel + cost.desc)}">${escapeHTML(catLabel + cost.desc)}</span>
+      <button type="button" class="linked-cost-chip-delete" title="Rimuovi collegamento">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    `;
+    chip.querySelector(".linked-cost-chip-delete").onclick = (e) => {
+      e.stopPropagation();
+      onRemove(costId);
+    };
+    containerEl.appendChild(chip);
+  });
+}
+
+/**
+ * Crea e restituisce l'elemento DOM card per una Domanda/Q&A.
+ * @param {Object} item - Oggetto domanda da appData.qa.
+ * @param {boolean} isInsideDetailView - True se renderizzato all'interno della vista dettaglio costo.
+ * @returns {HTMLElement}
+ */
+function createQACardElement(item, isInsideDetailView = false) {
+  const category = item.category || "Generale";
+  const isAnswered = item.answer && item.answer.trim().length > 0;
+  const statusBadge = isAnswered
+    ? `<span class="cat-badge" style="background-color: var(--md-sys-color-success); color: #141218;">Risposta Ricevuta</span>`
+    : `<span class="cat-badge" style="background-color: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface);">In Attesa</span>`;
+
+  let topicBg = "var(--md-sys-color-primary-container)";
+  let topicColor = "var(--md-sys-color-on-primary-container)";
+  if (
+    category !== "Generale" &&
+    appData.settings &&
+    appData.settings.categories &&
+    appData.settings.categories[category]
+  ) {
+    topicBg = appData.settings.categories[category].color;
+    topicColor = "#FFFFFF";
+  }
+
+  const card = document.createElement("div");
+  card.className = "qa-card";
+
+  // 1. Intestazione con Categoria, Status, data e pulsanti azione
+  const headerDiv = document.createElement("div");
+  headerDiv.style.cssText =
+    "display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap;";
+  headerDiv.innerHTML = `
+      <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+          <span class="cat-badge" style="background-color: ${topicBg}; color: ${topicColor}; font-size: 13px;">${category}</span>
+          ${statusBadge}
+      </div>
+      <div style="display: flex; gap: 4px; align-items: center;">
+          <span style="font-size: 12px; color: var(--md-sys-color-outline); margin-right: 8px;">${item.date || ""}</span>
+          <button class="btn-icon" onclick="openEditQAModal(${item.id})" title="Modifica"><span class="material-symbols-outlined">edit</span></button>
+          <button class="btn-icon" onclick="deleteQAItem(${item.id})" title="Elimina" style="color: var(--md-sys-color-error);"><span class="material-symbols-outlined">delete</span></button>
+      </div>
+  `;
+  card.appendChild(headerDiv);
+
+  // 2. Argomento e Testo della Domanda
+  const bodyDiv = document.createElement("div");
+  bodyDiv.style.marginTop = "4px";
+  bodyDiv.innerHTML = `
+      ${item.topic ? `<div style="font-size: 16px; font-weight: 700; color: var(--md-sys-color-on-surface); margin-bottom: 8px;">${escapeHTML(item.topic)}</div>` : ""}
+      <div style="font-size: 15px; color: var(--md-sys-color-on-surface); display: flex; gap: 8px; align-items: flex-start;">
+          <span class="material-symbols-outlined" style="color: var(--md-sys-color-primary); font-size: 20px;">help</span>
+          <span style="white-space: pre-wrap;">${escapeHTML(item.question)}</span>
+      </div>
+  `;
+  card.appendChild(bodyDiv);
+
+  // 2b. Badge Costi Casa collegati (se non siamo già dentro il dettaglio del costo)
+  if (
+    !isInsideDetailView &&
+    Array.isArray(item.linkedCostIds) &&
+    item.linkedCostIds.length > 0
+  ) {
+    const linkedCosts = item.linkedCostIds
+      .map((cid) => (appData.costi || []).find((c) => c.id === Number(cid)))
+      .filter(Boolean);
+    if (linkedCosts.length > 0) {
+      const linkedDiv = document.createElement("div");
+      linkedDiv.className = "card-linked-costs";
+      linkedDiv.innerHTML = linkedCosts
+        .map(
+          (cost) =>
+            `<a class="card-linked-cost-badge" onclick="event.stopPropagation(); openDetailView(${cost.id});" title="Apri dettaglio costo: ${escapeHTML(cost.desc)}">
+              <span class="material-symbols-outlined">euro</span>
+              <span>${escapeHTML(cost.desc)}</span>
+            </a>`,
+        )
+        .join("");
+      card.appendChild(linkedDiv);
+    }
+  }
+
+  // 3. Immagini collegate alla Domanda (tra domanda e risposta)
+  if (item.images && item.images.length > 0) {
+    const imgGrid = document.createElement("div");
+    imgGrid.className = "note-images-grid";
+
+    item.images.forEach((imgUrl, idx) => {
+      const thumb = document.createElement("div");
+      thumb.className = "note-image-thumb";
+      thumb.title = "Clicca per ingrandire";
+      thumb.onclick = () => openLightbox(item.images, idx);
+
+      const img = document.createElement("img");
+      img.src = imgUrl;
+      img.alt = `Foto ${idx + 1}`;
+      img.loading = "lazy";
+
+      const delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.className = "note-image-delete-btn";
+      delBtn.title = "Elimina immagine";
+      delBtn.innerHTML = `<span class="material-symbols-outlined">close</span>`;
+      delBtn.onclick = (e) => {
+        deleteQAImageDirect(item.id, idx, e);
+      };
+
+      thumb.appendChild(img);
+      thumb.appendChild(delBtn);
+      imgGrid.appendChild(thumb);
+    });
+
+    card.appendChild(imgGrid);
+  }
+
+  // 4. Risposta o messaggio di attesa
+  const answerDiv = document.createElement("div");
+  if (isAnswered) {
+    answerDiv.style.cssText =
+      "background: var(--md-sys-color-surface-container-high); border-radius: var(--md-sys-shape-corner-medium); padding: 14px 16px; margin-top: 8px; border-left: 4px solid var(--md-sys-color-success);";
+    answerDiv.innerHTML = `
+        <div style="font-size: 12px; font-weight: 600; color: var(--md-sys-color-success); margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+            <span class="material-symbols-outlined" style="font-size: 16px;">check_circle</span> Risposta:
+        </div>
+        <div style="font-size: 14px; line-height: 1.5; white-space: pre-wrap;">${escapeHTML(item.answer)}</div>
+    `;
+  } else {
+    answerDiv.style.cssText =
+      "font-size: 13px; color: var(--md-sys-color-outline); font-style: italic; display: flex; align-items: center; gap: 6px; margin-top: 8px;";
+    answerDiv.innerHTML = `
+        <span class="material-symbols-outlined" style="font-size: 16px;">pending</span> In attesa di risposta dal fornitore o professionista.
+    `;
+  }
+  card.appendChild(answerDiv);
+
+  return card;
 }
 
 /**
@@ -815,11 +1046,11 @@ function renderQASection() {
 
   if (!appData.qa || appData.qa.length === 0) {
     container.innerHTML = `
-                    <div style="text-align: center; color: var(--md-sys-color-outline); padding: 40px 16px;">
-                        <span class="material-symbols-outlined" style="font-size: 48px; opacity: 0.5;">quiz</span>
-                        <p style="margin: 12px 0 0 0;">Nessuna domanda presente. Clicca su "Aggiungi Domanda" per iniziare.</p>
-                    </div>
-                `;
+      <div style="text-align: center; color: var(--md-sys-color-outline); padding: 40px 16px;">
+          <span class="material-symbols-outlined" style="font-size: 48px; opacity: 0.5;">quiz</span>
+          <p style="margin: 12px 0 0 0;">Nessuna domanda presente. Clicca su "Aggiungi Domanda" per iniziare.</p>
+      </div>
+    `;
     return;
   }
 
@@ -856,109 +1087,7 @@ function renderQASection() {
       });
 
       groupedQA[category].forEach((item) => {
-        const isAnswered = item.answer && item.answer.trim().length > 0;
-        const statusBadge = isAnswered
-          ? `<span class="cat-badge" style="background-color: var(--md-sys-color-success); color: #141218;">Risposta Ricevuta</span>`
-          : `<span class="cat-badge" style="background-color: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface);">In Attesa</span>`;
-
-        let topicBg = "var(--md-sys-color-primary-container)";
-        let topicColor = "var(--md-sys-color-on-primary-container)";
-        if (
-          category !== "Generale" &&
-          appData.settings &&
-          appData.settings.categories &&
-          appData.settings.categories[category]
-        ) {
-          topicBg = appData.settings.categories[category].color;
-          topicColor = "#FFFFFF";
-        }
-
-        const card = document.createElement("div");
-        card.className = "qa-card";
-
-        // 1. Intestazione con Categoria, Status, data e pulsanti azione
-        const headerDiv = document.createElement("div");
-        headerDiv.style.cssText =
-          "display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap;";
-        headerDiv.innerHTML = `
-                  <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                      <span class="cat-badge" style="background-color: ${topicBg}; color: ${topicColor}; font-size: 13px;">${category}</span>
-                      ${statusBadge}
-                  </div>
-                  <div style="display: flex; gap: 4px; align-items: center;">
-                      <span style="font-size: 12px; color: var(--md-sys-color-outline); margin-right: 8px;">${item.date || ""}</span>
-                      <button class="btn-icon" onclick="openEditQAModal(${item.id})" title="Modifica"><span class="material-symbols-outlined">edit</span></button>
-                      <button class="btn-icon" onclick="deleteQAItem(${item.id})" title="Elimina" style="color: var(--md-sys-color-error);"><span class="material-symbols-outlined">delete</span></button>
-                  </div>
-              `;
-        card.appendChild(headerDiv);
-
-        // 2. Argomento e Testo della Domanda
-        const bodyDiv = document.createElement("div");
-        bodyDiv.style.marginTop = "4px";
-        bodyDiv.innerHTML = `
-                  ${item.topic ? `<div style="font-size: 16px; font-weight: 700; color: var(--md-sys-color-on-surface); margin-bottom: 8px;">${item.topic}</div>` : ""}
-                  <div style="font-size: 15px; color: var(--md-sys-color-on-surface); display: flex; gap: 8px; align-items: flex-start;">
-                      <span class="material-symbols-outlined" style="color: var(--md-sys-color-primary); font-size: 20px;">help</span>
-                      <span style="white-space: pre-wrap;">${item.question}</span>
-                  </div>
-              `;
-        card.appendChild(bodyDiv);
-
-        // 3. Immagini collegate alla Domanda (tra domanda e risposta)
-        if (item.images && item.images.length > 0) {
-          const imgGrid = document.createElement("div");
-          imgGrid.className = "note-images-grid";
-
-          item.images.forEach((imgUrl, idx) => {
-            const thumb = document.createElement("div");
-            thumb.className = "note-image-thumb";
-            thumb.title = "Clicca per ingrandire";
-            thumb.onclick = () => openLightbox(item.images, idx);
-
-            const img = document.createElement("img");
-            img.src = imgUrl;
-            img.alt = `Foto ${idx + 1}`;
-            img.loading = "lazy";
-
-            const delBtn = document.createElement("button");
-            delBtn.type = "button";
-            delBtn.className = "note-image-delete-btn";
-            delBtn.title = "Elimina immagine";
-            delBtn.innerHTML = `<span class="material-symbols-outlined">close</span>`;
-            delBtn.onclick = (e) => {
-              deleteQAImageDirect(item.id, idx, e);
-            };
-
-            thumb.appendChild(img);
-            thumb.appendChild(delBtn);
-            imgGrid.appendChild(thumb);
-          });
-
-          card.appendChild(imgGrid);
-        }
-
-        // 4. Risposta o messaggio di attesa
-        const answerDiv = document.createElement("div");
-        if (isAnswered) {
-          answerDiv.style.cssText =
-            "background: var(--md-sys-color-surface-container-high); border-radius: var(--md-sys-shape-corner-medium); padding: 14px 16px; margin-top: 8px; border-left: 4px solid var(--md-sys-color-success);";
-          answerDiv.innerHTML = `
-                    <div style="font-size: 12px; font-weight: 600; color: var(--md-sys-color-success); margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
-                        <span class="material-symbols-outlined" style="font-size: 16px;">check_circle</span> Risposta:
-                    </div>
-                    <div style="font-size: 14px; line-height: 1.5; white-space: pre-wrap;">${item.answer}</div>
-                `;
-        } else {
-          answerDiv.style.cssText =
-            "font-size: 13px; color: var(--md-sys-color-outline); font-style: italic; display: flex; align-items: center; gap: 6px; margin-top: 8px;";
-          answerDiv.innerHTML = `
-                    <span class="material-symbols-outlined" style="font-size: 16px;">pending</span> In attesa di risposta dal fornitore o professionista.
-                `;
-        }
-        card.appendChild(answerDiv);
-
-        container.appendChild(card);
+        container.appendChild(createQACardElement(item, false));
       });
     });
 }
@@ -1073,14 +1202,43 @@ async function deleteQAImageDirect(qaId, imgIndex, event) {
     item.images.splice(imgIndex, 1);
     saveDataLocally();
     renderQASection();
+    if (currentDetailId !== null) {
+      const curItem = appData.costi.find((c) => c.id === currentDetailId);
+      if (curItem) renderDetailView(curItem);
+    }
     showNotification("Immagine eliminata");
   }
 }
 
+let currentQALinkedCostIds = [];
+
+function handleQAAddLinkedCost(selectEl) {
+  const val = parseInt(selectEl.value);
+  if (!val) return;
+  if (!currentQALinkedCostIds.includes(val)) {
+    currentQALinkedCostIds.push(val);
+    renderQALinkedCostsPreview();
+  }
+  selectEl.value = "";
+}
+
+function removeQALinkedCost(costId) {
+  currentQALinkedCostIds = currentQALinkedCostIds.filter((id) => id !== costId);
+  renderQALinkedCostsPreview();
+}
+
+function renderQALinkedCostsPreview() {
+  const container = document.getElementById("qa-modal-linked-costs-chips");
+  renderLinkedCostsChips(container, currentQALinkedCostIds, removeQALinkedCost);
+  const select = document.getElementById("qa-modal-linked-cost-select");
+  populateLinkedCostSelect(select, currentQALinkedCostIds);
+}
+
 /**
  * Apre la modale per inserire una nuova domanda.
+ * @param {number|null} preselectedCostId - ID opzionale del costo da preselezionare.
  */
-function openAddQAModal() {
+function openAddQAModal(preselectedCostId = null) {
   document.getElementById("qa-modal-id").value = "";
   document.getElementById("qa-modal-title").innerText = "Nuova Domanda";
   document.getElementById("qa-modal-category").value = "Generale";
@@ -1090,6 +1248,8 @@ function openAddQAModal() {
   document.getElementById("qa-btn-delete").style.display = "none";
   currentQAImages = [];
   renderQAModalImagesPreview();
+  currentQALinkedCostIds = preselectedCostId ? [Number(preselectedCostId)] : [];
+  renderQALinkedCostsPreview();
   document.getElementById("qaModal").classList.add("active");
 }
 
@@ -1111,6 +1271,10 @@ function openEditQAModal(id) {
   document.getElementById("qa-btn-delete").style.display = "inline-flex";
   currentQAImages = Array.isArray(item.images) ? [...item.images] : [];
   renderQAModalImagesPreview();
+  currentQALinkedCostIds = Array.isArray(item.linkedCostIds)
+    ? [...item.linkedCostIds]
+    : [];
+  renderQALinkedCostsPreview();
   document.getElementById("qaModal").classList.add("active");
 }
 
@@ -1120,8 +1284,11 @@ function openEditQAModal(id) {
 function closeQAModal() {
   document.getElementById("qaModal").classList.remove("active");
   currentQAImages = [];
+  currentQALinkedCostIds = [];
   const preview = document.getElementById("qa-modal-images-preview");
   if (preview) preview.innerHTML = "";
+  const chips = document.getElementById("qa-modal-linked-costs-chips");
+  if (chips) chips.innerHTML = "";
 }
 
 /**
@@ -1150,6 +1317,7 @@ function saveQAModalChanges() {
       item.question = question;
       item.answer = answer;
       item.images = [...currentQAImages];
+      item.linkedCostIds = [...currentQALinkedCostIds];
     }
   } else {
     const today = new Date();
@@ -1161,12 +1329,17 @@ function saveQAModalChanges() {
       question,
       answer,
       images: [...currentQAImages],
+      linkedCostIds: [...currentQALinkedCostIds],
       date: dateStr,
     });
   }
   closeQAModal();
   saveDataLocally();
   renderQASection();
+  if (currentDetailId !== null) {
+    const curItem = appData.costi.find((c) => c.id === currentDetailId);
+    if (curItem) renderDetailView(curItem);
+  }
   showNotification("Domanda salvata!");
 }
 
@@ -1183,6 +1356,10 @@ async function deleteQAItem(id) {
     appData.qa = appData.qa.filter((q) => q.id !== id);
     saveDataLocally();
     renderQASection();
+    if (currentDetailId !== null) {
+      const curItem = appData.costi.find((c) => c.id === currentDetailId);
+      if (curItem) renderDetailView(curItem);
+    }
     showNotification("Domanda eliminata");
   }
 }
@@ -1202,8 +1379,152 @@ async function deleteQAFromModal() {
     closeQAModal();
     saveDataLocally();
     renderQASection();
+    if (currentDetailId !== null) {
+      const curItem = appData.costi.find((c) => c.id === currentDetailId);
+      if (curItem) renderDetailView(curItem);
+    }
     showNotification("Domanda eliminata");
   }
+}
+
+/**
+ * /**
+ * Crea e restituisce l'elemento DOM card per un Task.
+ * @param {Object} item - Oggetto task da appData.tasks.
+ * @param {boolean} isInsideDetailView - True se renderizzato all'interno della vista dettaglio costo.
+ * @returns {HTMLElement}
+ */
+function createTaskCardElement(item, isInsideDetailView = false) {
+  const category = item.category || "Generale";
+  let topicBg = "var(--md-sys-color-primary-container)";
+  let topicColor = "var(--md-sys-color-on-primary-container)";
+  if (
+    category !== "Generale" &&
+    appData.settings &&
+    appData.settings.categories &&
+    appData.settings.categories[category]
+  ) {
+    topicBg = appData.settings.categories[category].color;
+    topicColor = "#FFFFFF";
+  }
+
+  let dueDateBadge = "";
+  if (item.dueDate) {
+    const dateObj = new Date(item.dueDate);
+    const dateStr = dateObj.toLocaleDateString("it-IT");
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const diffDays = Math.ceil((dateObj - today) / (1000 * 60 * 60 * 24));
+    const isExpiringOrExpired = !item.completed && diffDays < 10;
+    dueDateBadge = `<span class="cat-badge" style="background-color: ${isExpiringOrExpired ? "var(--md-sys-color-error)" : "var(--md-sys-color-surface-container-high)"}; color: ${isExpiringOrExpired ? "#FFFFFF" : "var(--md-sys-color-on-surface)"}; display: flex; align-items: center; gap: 4px;"><span class="material-symbols-outlined" style="font-size: 14px;">calendar_month</span> ${dateStr}</span>`;
+  }
+
+  const card = document.createElement("div");
+  card.className = "qa-card";
+  card.style.opacity = item.completed ? "0.6" : "1";
+
+  const createdDateStr = new Date(item.id).toLocaleDateString("it-IT");
+
+  // 1. Header con Categoria, Badge, Scadenza, Data e Azioni
+  const headerDiv = document.createElement("div");
+  headerDiv.style.cssText =
+    "display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap;";
+  headerDiv.innerHTML = `
+      <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+          <span class="cat-badge" style="background-color: ${topicBg}; color: ${topicColor}; font-size: 13px;">${category}</span>
+          ${item.completed ? `<span class="cat-badge" style="background-color: var(--md-sys-color-success); color: #141218;">Completato</span>` : ""}
+          ${dueDateBadge}
+      </div>
+      <div style="display: flex; gap: 4px; align-items: center;">
+          <span style="font-size: 12px; color: var(--md-sys-color-outline); margin-right: 8px;">${createdDateStr}</span>
+          <button class="btn-icon" onclick="toggleTaskStatus(${item.id})" title="${item.completed ? "Segna da completare" : "Segna come completato"}">
+              <span class="material-symbols-outlined" style="color: ${item.completed ? "var(--md-sys-color-outline)" : "var(--md-sys-color-success)"};">${item.completed ? "undo" : "check_circle"}</span>
+          </button>
+          <button class="btn-icon" onclick="openEditTaskModal(${item.id})" title="Modifica"><span class="material-symbols-outlined">edit</span></button>
+          <button class="btn-icon" onclick="deleteTaskItem(${item.id})" title="Elimina" style="color: var(--md-sys-color-error);"><span class="material-symbols-outlined">delete</span></button>
+      </div>
+  `;
+  card.appendChild(headerDiv);
+
+  // 2. Titolo del Task
+  const titleDiv = document.createElement("div");
+  titleDiv.style.marginTop = "4px";
+  titleDiv.innerHTML = `
+      <div style="font-size: 16px; font-weight: 700; color: var(--md-sys-color-on-surface); margin-bottom: 4px; text-decoration: ${item.completed ? "line-through" : "none"};">${escapeHTML(item.title)}</div>
+  `;
+  card.appendChild(titleDiv);
+
+  // 2b. Badge Costi Casa collegati (se non siamo già dentro il dettaglio del costo)
+  if (
+    !isInsideDetailView &&
+    Array.isArray(item.linkedCostIds) &&
+    item.linkedCostIds.length > 0
+  ) {
+    const linkedCosts = item.linkedCostIds
+      .map((cid) => (appData.costi || []).find((c) => c.id === Number(cid)))
+      .filter(Boolean);
+    if (linkedCosts.length > 0) {
+      const linkedDiv = document.createElement("div");
+      linkedDiv.className = "card-linked-costs";
+      linkedDiv.innerHTML = linkedCosts
+        .map(
+          (cost) =>
+            `<a class="card-linked-cost-badge" onclick="event.stopPropagation(); openDetailView(${cost.id});" title="Apri dettaglio costo: ${escapeHTML(cost.desc)}">
+              <span class="material-symbols-outlined">euro</span>
+              <span>${escapeHTML(cost.desc)}</span>
+            </a>`,
+        )
+        .join("");
+      card.appendChild(linkedDiv);
+    }
+  }
+
+  // 3. Immagini collegate al Task
+  if (item.images && item.images.length > 0) {
+    const imgGrid = document.createElement("div");
+    imgGrid.className = "note-images-grid";
+
+    item.images.forEach((imgUrl, idx) => {
+      const thumb = document.createElement("div");
+      thumb.className = "note-image-thumb";
+      thumb.title = "Clicca per ingrandire";
+      thumb.onclick = () => openLightbox(item.images, idx);
+
+      const img = document.createElement("img");
+      img.src = imgUrl;
+      img.alt = `Foto ${idx + 1}`;
+      img.loading = "lazy";
+
+      const delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.className = "note-image-delete-btn";
+      delBtn.title = "Elimina immagine";
+      delBtn.innerHTML = `<span class="material-symbols-outlined">close</span>`;
+      delBtn.onclick = (e) => {
+        deleteTaskImageDirect(item.id, idx, e);
+      };
+
+      thumb.appendChild(img);
+      thumb.appendChild(delBtn);
+      imgGrid.appendChild(thumb);
+    });
+
+    card.appendChild(imgGrid);
+  }
+
+  // 4. Descrizione del Task
+  if (item.desc) {
+    const descDiv = document.createElement("div");
+    descDiv.style.cssText =
+      "font-size: 15px; color: var(--md-sys-color-on-surface); display: flex; gap: 8px; align-items: flex-start; white-space: pre-wrap; margin-top: 6px;";
+    descDiv.innerHTML = `
+        <span class="material-symbols-outlined" style="color: var(--md-sys-color-outline); font-size: 20px;">notes</span>
+        <span>${escapeHTML(item.desc)}</span>
+    `;
+    card.appendChild(descDiv);
+  }
+
+  return card;
 }
 
 /**
@@ -1220,11 +1541,11 @@ function renderTaskSection() {
 
   if (!appData.tasks || appData.tasks.length === 0) {
     activeContainer.innerHTML = `
-                    <div style="text-align: center; color: var(--md-sys-color-outline); padding: 40px 16px;">
-                        <span class="material-symbols-outlined" style="font-size: 48px; opacity: 0.5;">task</span>
-                        <p style="margin: 12px 0 0 0;">Nessun task presente. Clicca su "Aggiungi Task" per iniziare.</p>
-                    </div>
-                `;
+      <div style="text-align: center; color: var(--md-sys-color-outline); padding: 40px 16px;">
+          <span class="material-symbols-outlined" style="font-size: 48px; opacity: 0.5;">task</span>
+          <p style="margin: 12px 0 0 0;">Nessun task presente. Clicca su "Aggiungi Task" per iniziare.</p>
+      </div>
+    `;
     const deskB = document.getElementById("task-badge-desktop");
     const mobB = document.getElementById("task-badge-mobile");
     if (deskB) deskB.style.display = "none";
@@ -1298,115 +1619,8 @@ function renderTaskSection() {
           return 0;
         });
 
-        let expiringCount = 0;
         groupedTasks[category].forEach((item) => {
-          let topicBg = "var(--md-sys-color-primary-container)";
-          let topicColor = "var(--md-sys-color-on-primary-container)";
-          if (
-            category !== "Generale" &&
-            appData.settings &&
-            appData.settings.categories &&
-            appData.settings.categories[category]
-          ) {
-            topicBg = appData.settings.categories[category].color;
-            topicColor = "#FFFFFF";
-          }
-
-          let dueDateBadge = "";
-          if (item.dueDate) {
-            const dateObj = new Date(item.dueDate);
-            const dateStr = dateObj.toLocaleDateString("it-IT");
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const diffDays = Math.ceil(
-              (dateObj - today) / (1000 * 60 * 60 * 24),
-            );
-            const isExpiringOrExpired = !item.completed && diffDays < 10;
-            if (isExpiringOrExpired) expiringCount++;
-            dueDateBadge = `<span class="cat-badge" style="background-color: ${isExpiringOrExpired ? "var(--md-sys-color-error)" : "var(--md-sys-color-surface-container-high)"}; color: ${isExpiringOrExpired ? "#FFFFFF" : "var(--md-sys-color-on-surface)"}; display: flex; align-items: center; gap: 4px;"><span class="material-symbols-outlined" style="font-size: 14px;">calendar_month</span> ${dateStr}</span>`;
-          }
-
-          const card = document.createElement("div");
-          card.className = "qa-card"; // Reuse styling
-          card.style.opacity = item.completed ? "0.6" : "1";
-
-          const createdDateStr = new Date(item.id).toLocaleDateString("it-IT");
-
-          // 1. Header con Categoria, Badge, Scadenza, Data e Azioni
-          const headerDiv = document.createElement("div");
-          headerDiv.style.cssText =
-            "display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap;";
-          headerDiv.innerHTML = `
-                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                        <span class="cat-badge" style="background-color: ${topicBg}; color: ${topicColor}; font-size: 13px;">${category}</span>
-                        ${item.completed ? `<span class="cat-badge" style="background-color: var(--md-sys-color-success); color: #141218;">Completato</span>` : ""}
-                        ${dueDateBadge}
-                    </div>
-                    <div style="display: flex; gap: 4px; align-items: center;">
-                        <span style="font-size: 12px; color: var(--md-sys-color-outline); margin-right: 8px;">${createdDateStr}</span>
-                        <button class="btn-icon" onclick="toggleTaskStatus(${item.id})" title="${item.completed ? "Segna da completare" : "Segna come completato"}">
-                            <span class="material-symbols-outlined" style="color: ${item.completed ? "var(--md-sys-color-outline)" : "var(--md-sys-color-success)"};">${item.completed ? "undo" : "check_circle"}</span>
-                        </button>
-                        <button class="btn-icon" onclick="openEditTaskModal(${item.id})" title="Modifica"><span class="material-symbols-outlined">edit</span></button>
-                        <button class="btn-icon" onclick="deleteTaskItem(${item.id})" title="Elimina" style="color: var(--md-sys-color-error);"><span class="material-symbols-outlined">delete</span></button>
-                    </div>
-                `;
-          card.appendChild(headerDiv);
-
-          // 2. Titolo del Task
-          const titleDiv = document.createElement("div");
-          titleDiv.style.marginTop = "4px";
-          titleDiv.innerHTML = `
-                    <div style="font-size: 16px; font-weight: 700; color: var(--md-sys-color-on-surface); margin-bottom: 4px; text-decoration: ${item.completed ? "line-through" : "none"};">${item.title}</div>
-                `;
-          card.appendChild(titleDiv);
-
-          // 3. Immagini collegate al Task (posizionate tra titolo e descrizione)
-          if (item.images && item.images.length > 0) {
-            const imgGrid = document.createElement("div");
-            imgGrid.className = "note-images-grid";
-
-            item.images.forEach((imgUrl, idx) => {
-              const thumb = document.createElement("div");
-              thumb.className = "note-image-thumb";
-              thumb.title = "Clicca per ingrandire";
-              thumb.onclick = () => openLightbox(item.images, idx);
-
-              const img = document.createElement("img");
-              img.src = imgUrl;
-              img.alt = `Foto ${idx + 1}`;
-              img.loading = "lazy";
-
-              const delBtn = document.createElement("button");
-              delBtn.type = "button";
-              delBtn.className = "note-image-delete-btn";
-              delBtn.title = "Elimina immagine";
-              delBtn.innerHTML = `<span class="material-symbols-outlined">close</span>`;
-              delBtn.onclick = (e) => {
-                deleteTaskImageDirect(item.id, idx, e);
-              };
-
-              thumb.appendChild(img);
-              thumb.appendChild(delBtn);
-              imgGrid.appendChild(thumb);
-            });
-
-            card.appendChild(imgGrid);
-          }
-
-          // 4. Descrizione del Task
-          if (item.desc) {
-            const descDiv = document.createElement("div");
-            descDiv.style.cssText =
-              "font-size: 15px; color: var(--md-sys-color-on-surface); display: flex; gap: 8px; align-items: flex-start; white-space: pre-wrap; margin-top: 6px;";
-            descDiv.innerHTML = `
-                      <span class="material-symbols-outlined" style="color: var(--md-sys-color-outline); font-size: 20px;">notes</span>
-                      <span>${item.desc}</span>
-                  `;
-            card.appendChild(descDiv);
-          }
-
-          container.appendChild(card);
+          container.appendChild(createTaskCardElement(item, false));
         });
       });
   };
@@ -1429,6 +1643,35 @@ function renderTaskSection() {
 }
 
 let currentTaskImages = [];
+let currentTaskLinkedCostIds = [];
+
+function handleTaskAddLinkedCost(selectEl) {
+  const val = parseInt(selectEl.value);
+  if (!val) return;
+  if (!currentTaskLinkedCostIds.includes(val)) {
+    currentTaskLinkedCostIds.push(val);
+    renderTaskLinkedCostsPreview();
+  }
+  selectEl.value = "";
+}
+
+function removeTaskLinkedCost(costId) {
+  currentTaskLinkedCostIds = currentTaskLinkedCostIds.filter(
+    (id) => id !== costId,
+  );
+  renderTaskLinkedCostsPreview();
+}
+
+function renderTaskLinkedCostsPreview() {
+  const container = document.getElementById("task-modal-linked-costs-chips");
+  renderLinkedCostsChips(
+    container,
+    currentTaskLinkedCostIds,
+    removeTaskLinkedCost,
+  );
+  const select = document.getElementById("task-modal-linked-cost-select");
+  populateLinkedCostSelect(select, currentTaskLinkedCostIds);
+}
 
 async function handleTaskImageUpload(event) {
   const files = Array.from(event.target.files || []);
@@ -1538,11 +1781,19 @@ async function deleteTaskImageDirect(taskId, imgIndex, event) {
     item.images.splice(imgIndex, 1);
     saveDataLocally();
     renderTaskSection();
+    if (currentDetailId !== null) {
+      const curItem = appData.costi.find((c) => c.id === currentDetailId);
+      if (curItem) renderDetailView(curItem);
+    }
     showNotification("Immagine eliminata");
   }
 }
 
-function openAddTaskModal() {
+/**
+ * Apre la modale per inserire un nuovo task.
+ * @param {number|null} preselectedCostId - ID opzionale del costo da preselezionare.
+ */
+function openAddTaskModal(preselectedCostId = null) {
   document.getElementById("task-modal-id").value = "";
   document.getElementById("task-modal-header-title").innerText = "Nuovo Task";
   document.getElementById("task-modal-category").value = "Generale";
@@ -1552,6 +1803,10 @@ function openAddTaskModal() {
   document.getElementById("task-btn-delete").style.display = "none";
   currentTaskImages = [];
   renderTaskModalImagesPreview();
+  currentTaskLinkedCostIds = preselectedCostId
+    ? [Number(preselectedCostId)]
+    : [];
+  renderTaskLinkedCostsPreview();
   document.getElementById("taskModal").classList.add("active");
 }
 
@@ -1569,14 +1824,21 @@ function openEditTaskModal(id) {
   document.getElementById("task-btn-delete").style.display = "inline-flex";
   currentTaskImages = Array.isArray(item.images) ? [...item.images] : [];
   renderTaskModalImagesPreview();
+  currentTaskLinkedCostIds = Array.isArray(item.linkedCostIds)
+    ? [...item.linkedCostIds]
+    : [];
+  renderTaskLinkedCostsPreview();
   document.getElementById("taskModal").classList.add("active");
 }
 
 function closeTaskModal() {
   document.getElementById("taskModal").classList.remove("active");
   currentTaskImages = [];
+  currentTaskLinkedCostIds = [];
   const preview = document.getElementById("task-modal-images-preview");
   if (preview) preview.innerHTML = "";
+  const chips = document.getElementById("task-modal-linked-costs-chips");
+  if (chips) chips.innerHTML = "";
 }
 
 function saveTaskModalChanges() {
@@ -1602,6 +1864,7 @@ function saveTaskModalChanges() {
       item.dueDate = dueDate;
       item.desc = desc;
       item.images = [...currentTaskImages];
+      item.linkedCostIds = [...currentTaskLinkedCostIds];
     }
   } else {
     appData.tasks.unshift({
@@ -1611,12 +1874,17 @@ function saveTaskModalChanges() {
       dueDate,
       desc,
       images: [...currentTaskImages],
+      linkedCostIds: [...currentTaskLinkedCostIds],
       completed: false,
     });
   }
   closeTaskModal();
   saveDataLocally();
   renderTaskSection();
+  if (currentDetailId !== null) {
+    const curItem = appData.costi.find((c) => c.id === currentDetailId);
+    if (curItem) renderDetailView(curItem);
+  }
   showNotification("Task salvato!");
 }
 
@@ -1629,6 +1897,10 @@ async function deleteTaskItem(id) {
     appData.tasks = appData.tasks.filter((t) => t.id !== id);
     saveDataLocally();
     renderTaskSection();
+    if (currentDetailId !== null) {
+      const curItem = appData.costi.find((c) => c.id === currentDetailId);
+      if (curItem) renderDetailView(curItem);
+    }
     showNotification("Task eliminato");
   }
 }
@@ -1638,13 +1910,17 @@ async function deleteTaskFromModal() {
   if (!idVal) return;
   const result = await showConfirm(
     "Eliminare questo task?",
-    "Non sarà più possibile recuperarlo.",
+    "Non sarà più possibile recuperarla.",
   );
   if (result.isConfirmed) {
     appData.tasks = appData.tasks.filter((t) => t.id !== parseInt(idVal));
     closeTaskModal();
     saveDataLocally();
     renderTaskSection();
+    if (currentDetailId !== null) {
+      const curItem = appData.costi.find((c) => c.id === currentDetailId);
+      if (curItem) renderDetailView(curItem);
+    }
     showNotification("Task eliminato");
   }
 }
@@ -1655,6 +1931,10 @@ function toggleTaskStatus(id) {
     item.completed = !item.completed;
     saveDataLocally();
     renderTaskSection();
+    if (currentDetailId !== null) {
+      const curItem = appData.costi.find((c) => c.id === currentDetailId);
+      if (curItem) renderDetailView(curItem);
+    }
     showNotification(item.completed ? "Task completato!" : "Task ripristinato");
   }
 }
@@ -1819,8 +2099,112 @@ async function deleteNoteImageDirect(noteId, imgIndex, event) {
     note.images.splice(imgIndex, 1);
     saveDataLocally();
     renderNoteSection();
+    if (currentDetailId !== null) {
+      const curItem = appData.costi.find((c) => c.id === currentDetailId);
+      if (curItem) renderDetailView(curItem);
+    }
     showNotification("Immagine eliminata");
   }
+}
+
+/**
+ * Crea e restituisce l'elemento DOM card per un Appunto.
+ * @param {Object} item - Oggetto appunto da appData.notes.
+ * @param {boolean} isInsideDetailView - True se renderizzato all'interno della vista dettaglio costo.
+ * @returns {HTMLElement}
+ */
+function createNoteCardElement(item, isInsideDetailView = false) {
+  const card = document.createElement("div");
+  card.style.cssText =
+    "background-color: var(--md-sys-color-surface-container-low); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);";
+
+  const dateStr = item.date
+    ? new Date(item.date).toLocaleDateString("it-IT")
+    : "";
+
+  // 1. Intestazione con Titolo, data e pulsanti modifica/elimina
+  const headerDiv = document.createElement("div");
+  headerDiv.style.cssText =
+    "display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap;";
+  headerDiv.innerHTML = `
+      <div style="font-size: 16px; font-weight: 700; color: var(--md-sys-color-on-surface); margin-bottom: 4px;">${escapeHTML(item.title)}</div>
+      <div style="display: flex; gap: 4px; align-items: center;">
+          <span style="font-size: 12px; color: var(--md-sys-color-outline); margin-right: 8px;">${dateStr}</span>
+          <button class="btn-icon" onclick="openEditNoteModal(${item.id})" title="Modifica"><span class="material-symbols-outlined">edit</span></button>
+          <button class="btn-icon" onclick="deleteNoteItem(${item.id})" title="Elimina" style="color: var(--md-sys-color-error);"><span class="material-symbols-outlined">delete</span></button>
+      </div>
+  `;
+  card.appendChild(headerDiv);
+
+  // 1b. Badge Costi Casa collegati (se non siamo già dentro il dettaglio del costo)
+  if (
+    !isInsideDetailView &&
+    Array.isArray(item.linkedCostIds) &&
+    item.linkedCostIds.length > 0
+  ) {
+    const linkedCosts = item.linkedCostIds
+      .map((cid) => (appData.costi || []).find((c) => c.id === Number(cid)))
+      .filter(Boolean);
+    if (linkedCosts.length > 0) {
+      const linkedDiv = document.createElement("div");
+      linkedDiv.className = "card-linked-costs";
+      linkedDiv.innerHTML = linkedCosts
+        .map(
+          (cost) =>
+            `<a class="card-linked-cost-badge" onclick="event.stopPropagation(); openDetailView(${cost.id});" title="Apri dettaglio costo: ${escapeHTML(cost.desc)}">
+              <span class="material-symbols-outlined">euro</span>
+              <span>${escapeHTML(cost.desc)}</span>
+            </a>`,
+        )
+        .join("");
+      card.appendChild(linkedDiv);
+    }
+  }
+
+  // 2. Immagini collegate: posizionate esattamente tra il titolo e il testo
+  if (item.images && item.images.length > 0) {
+    const imgGrid = document.createElement("div");
+    imgGrid.className = "note-images-grid";
+
+    item.images.forEach((imgUrl, idx) => {
+      const thumb = document.createElement("div");
+      thumb.className = "note-image-thumb";
+      thumb.title = "Clicca per ingrandire";
+      thumb.onclick = () => openLightbox(item.images, idx);
+
+      const img = document.createElement("img");
+      img.src = imgUrl;
+      img.alt = `Foto ${idx + 1}`;
+      img.loading = "lazy";
+
+      // Pulsante "X" in alto a destra per eliminare la singola immagine
+      const delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.className = "note-image-delete-btn";
+      delBtn.title = "Elimina immagine";
+      delBtn.innerHTML = `<span class="material-symbols-outlined">close</span>`;
+      delBtn.onclick = (e) => {
+        deleteNoteImageDirect(item.id, idx, e);
+      };
+
+      thumb.appendChild(img);
+      thumb.appendChild(delBtn);
+      imgGrid.appendChild(thumb);
+    });
+
+    card.appendChild(imgGrid);
+  }
+
+  // 3. Testo dell'appunto
+  if (item.content) {
+    const contentDiv = document.createElement("div");
+    contentDiv.style.cssText =
+      "font-size: 15px; color: var(--md-sys-color-on-surface); margin-top: 6px; white-space: pre-wrap; line-height: 1.5;";
+    contentDiv.innerText = item.content;
+    card.appendChild(contentDiv);
+  }
+
+  return card;
 }
 
 function renderNoteSection() {
@@ -1830,11 +2214,11 @@ function renderNoteSection() {
 
   if (!appData.notes || appData.notes.length === 0) {
     container.innerHTML = `
-            <div style="text-align: center; color: var(--md-sys-color-outline); padding: 40px 16px;">
-                <span class="material-symbols-outlined" style="font-size: 48px; opacity: 0.5;">edit_note</span>
-                <p style="margin: 12px 0 0 0;">Nessun appunto presente. Clicca su "Aggiungi Appunto" per iniziare.</p>
-            </div>
-          `;
+      <div style="text-align: center; color: var(--md-sys-color-outline); padding: 40px 16px;">
+          <span class="material-symbols-outlined" style="font-size: 48px; opacity: 0.5;">edit_note</span>
+          <p style="margin: 12px 0 0 0;">Nessun appunto presente. Clicca su "Aggiungi Appunto" per iniziare.</p>
+      </div>
+    `;
     return;
   }
 
@@ -1869,75 +2253,46 @@ function renderNoteSection() {
       });
 
       groupedNotes[category].forEach((item) => {
-        const card = document.createElement("div");
-        card.style.cssText =
-          "background-color: var(--md-sys-color-surface-container-low); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);";
-
-        const dateStr = new Date(item.date).toLocaleDateString("it-IT");
-
-        // 1. Intestazione con Titolo, data e pulsanti modifica/elimina
-        const headerDiv = document.createElement("div");
-        headerDiv.style.cssText =
-          "display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap;";
-        headerDiv.innerHTML = `
-                  <div style="font-size: 16px; font-weight: 700; color: var(--md-sys-color-on-surface); margin-bottom: 4px;">${item.title}</div>
-                  <div style="display: flex; gap: 4px; align-items: center;">
-                      <span style="font-size: 12px; color: var(--md-sys-color-outline); margin-right: 8px;">${dateStr}</span>
-                      <button class="btn-icon" onclick="openEditNoteModal(${item.id})" title="Modifica"><span class="material-symbols-outlined">edit</span></button>
-                      <button class="btn-icon" onclick="deleteNoteItem(${item.id})" title="Elimina" style="color: var(--md-sys-color-error);"><span class="material-symbols-outlined">delete</span></button>
-                  </div>
-              `;
-        card.appendChild(headerDiv);
-
-        // 2. Immagini collegate: posizionate esattamente tra il titolo e il testo
-        if (item.images && item.images.length > 0) {
-          const imgGrid = document.createElement("div");
-          imgGrid.className = "note-images-grid";
-
-          item.images.forEach((imgUrl, idx) => {
-            const thumb = document.createElement("div");
-            thumb.className = "note-image-thumb";
-            thumb.title = "Clicca per ingrandire";
-            thumb.onclick = () => openLightbox(item.images, idx);
-
-            const img = document.createElement("img");
-            img.src = imgUrl;
-            img.alt = `Foto ${idx + 1}`;
-            img.loading = "lazy";
-
-            // Pulsante "X" in alto a destra per eliminare la singola immagine
-            const delBtn = document.createElement("button");
-            delBtn.type = "button";
-            delBtn.className = "note-image-delete-btn";
-            delBtn.title = "Elimina immagine";
-            delBtn.innerHTML = `<span class="material-symbols-outlined">close</span>`;
-            delBtn.onclick = (e) => {
-              deleteNoteImageDirect(item.id, idx, e);
-            };
-
-            thumb.appendChild(img);
-            thumb.appendChild(delBtn);
-            imgGrid.appendChild(thumb);
-          });
-
-          card.appendChild(imgGrid);
-        }
-
-        // 3. Testo dell'appunto
-        if (item.content) {
-          const contentDiv = document.createElement("div");
-          contentDiv.style.cssText =
-            "font-size: 15px; color: var(--md-sys-color-on-surface); margin-top: 6px; white-space: pre-wrap; line-height: 1.5;";
-          contentDiv.innerText = item.content;
-          card.appendChild(contentDiv);
-        }
-
-        container.appendChild(card);
+        container.appendChild(createNoteCardElement(item, false));
       });
     });
 }
 
-function openAddNoteModal() {
+let currentNoteLinkedCostIds = [];
+
+function handleNoteAddLinkedCost(selectEl) {
+  const val = parseInt(selectEl.value);
+  if (!val) return;
+  if (!currentNoteLinkedCostIds.includes(val)) {
+    currentNoteLinkedCostIds.push(val);
+    renderNoteLinkedCostsPreview();
+  }
+  selectEl.value = "";
+}
+
+function removeNoteLinkedCost(costId) {
+  currentNoteLinkedCostIds = currentNoteLinkedCostIds.filter(
+    (id) => id !== costId,
+  );
+  renderNoteLinkedCostsPreview();
+}
+
+function renderNoteLinkedCostsPreview() {
+  const container = document.getElementById("note-modal-linked-costs-chips");
+  renderLinkedCostsChips(
+    container,
+    currentNoteLinkedCostIds,
+    removeNoteLinkedCost,
+  );
+  const select = document.getElementById("note-modal-linked-cost-select");
+  populateLinkedCostSelect(select, currentNoteLinkedCostIds);
+}
+
+/**
+ * Apre la modale per inserire un nuovo appunto.
+ * @param {number|null} preselectedCostId - ID opzionale del costo da preselezionare.
+ */
+function openAddNoteModal(preselectedCostId = null) {
   document.getElementById("note-modal-id").value = "";
   document.getElementById("note-modal-header-title").innerText =
     "Nuovo Appunto";
@@ -1969,6 +2324,10 @@ function openAddNoteModal() {
   document.getElementById("note-btn-delete").style.display = "none";
   currentNoteImages = [];
   renderNoteModalImagesPreview();
+  currentNoteLinkedCostIds = preselectedCostId
+    ? [Number(preselectedCostId)]
+    : [];
+  renderNoteLinkedCostsPreview();
   document.getElementById("noteModal").classList.add("active");
 }
 
@@ -2003,14 +2362,21 @@ function openEditNoteModal(id) {
   document.getElementById("note-btn-delete").style.display = "flex";
   currentNoteImages = Array.isArray(item.images) ? [...item.images] : [];
   renderNoteModalImagesPreview();
+  currentNoteLinkedCostIds = Array.isArray(item.linkedCostIds)
+    ? [...item.linkedCostIds]
+    : [];
+  renderNoteLinkedCostsPreview();
   document.getElementById("noteModal").classList.add("active");
 }
 
 function closeNoteModal() {
   document.getElementById("noteModal").classList.remove("active");
   currentNoteImages = [];
+  currentNoteLinkedCostIds = [];
   const preview = document.getElementById("note-modal-images-preview");
   if (preview) preview.innerHTML = "";
+  const chips = document.getElementById("note-modal-linked-costs-chips");
+  if (chips) chips.innerHTML = "";
 }
 
 function saveNoteModalChanges() {
@@ -2031,6 +2397,7 @@ function saveNoteModalChanges() {
       item.title = title;
       item.content = content;
       item.images = [...currentNoteImages];
+      item.linkedCostIds = [...currentNoteLinkedCostIds];
     }
   } else {
     appData.notes.push({
@@ -2039,12 +2406,17 @@ function saveNoteModalChanges() {
       title: title,
       content: content,
       images: [...currentNoteImages],
+      linkedCostIds: [...currentNoteLinkedCostIds],
       date: new Date().toISOString(),
     });
   }
   closeNoteModal();
   saveDataLocally();
   renderNoteSection();
+  if (currentDetailId !== null) {
+    const curItem = appData.costi.find((c) => c.id === currentDetailId);
+    if (curItem) renderDetailView(curItem);
+  }
   showNotification("Appunto salvato");
 }
 
@@ -2057,6 +2429,10 @@ async function deleteNoteItem(id) {
     appData.notes = appData.notes.filter((t) => t.id !== id);
     saveDataLocally();
     renderNoteSection();
+    if (currentDetailId !== null) {
+      const curItem = appData.costi.find((c) => c.id === currentDetailId);
+      if (curItem) renderDetailView(curItem);
+    }
     showNotification("Appunto eliminato");
   }
 }
@@ -4832,6 +5208,12 @@ function openDetailView(id) {
 function closeDetailView() {
   currentDetailId = null;
   document.getElementById("view-detail").classList.remove("active");
+  const qaCard = document.getElementById("detail-linked-qa-card");
+  if (qaCard) qaCard.style.display = "none";
+  const taskCard = document.getElementById("detail-linked-tasks-card");
+  if (taskCard) taskCard.style.display = "none";
+  const noteCard = document.getElementById("detail-linked-notes-card");
+  if (noteCard) noteCard.style.display = "none";
   document
     .querySelectorAll(".view-section")
     .forEach((el) => el.classList.remove("active"));
@@ -4950,6 +5332,72 @@ function renderDetailView(item) {
 
   // Lista pagamenti
   renderPaymentList(item);
+  renderDetailLinkedSections(item);
+}
+
+/**
+ * Renderizza le sezioni collegate (Domande, Task, Appunti) nella pagina dettaglio del costo.
+ * Se una sezione non ha elementi collegati a questo costo, la relativa card viene nascosta.
+ * @param {Object} costItem - Voce di costo aperta.
+ */
+function renderDetailLinkedSections(costItem) {
+  if (!costItem) return;
+  const costId = costItem.id;
+
+  // Domande collegate
+  const qaCard = document.getElementById("detail-linked-qa-card");
+  const qaList = document.getElementById("detail-linked-qa-list");
+  if (qaCard && qaList) {
+    const linkedQA = (appData.qa || []).filter(
+      (q) => Array.isArray(q.linkedCostIds) && q.linkedCostIds.includes(costId),
+    );
+    if (linkedQA.length > 0) {
+      qaList.innerHTML = "";
+      linkedQA.forEach((q) => qaList.appendChild(createQACardElement(q, true)));
+      qaCard.style.display = "block";
+    } else {
+      qaCard.style.display = "none";
+      qaList.innerHTML = "";
+    }
+  }
+
+  // Task collegati
+  const taskCard = document.getElementById("detail-linked-tasks-card");
+  const taskList = document.getElementById("detail-linked-tasks-list");
+  if (taskCard && taskList) {
+    const linkedTasks = (appData.tasks || []).filter(
+      (t) => Array.isArray(t.linkedCostIds) && t.linkedCostIds.includes(costId),
+    );
+    if (linkedTasks.length > 0) {
+      taskList.innerHTML = "";
+      linkedTasks.forEach((t) =>
+        taskList.appendChild(createTaskCardElement(t, true)),
+      );
+      taskCard.style.display = "block";
+    } else {
+      taskCard.style.display = "none";
+      taskList.innerHTML = "";
+    }
+  }
+
+  // Appunti collegati
+  const noteCard = document.getElementById("detail-linked-notes-card");
+  const noteList = document.getElementById("detail-linked-notes-list");
+  if (noteCard && noteList) {
+    const linkedNotes = (appData.notes || []).filter(
+      (n) => Array.isArray(n.linkedCostIds) && n.linkedCostIds.includes(costId),
+    );
+    if (linkedNotes.length > 0) {
+      noteList.innerHTML = "";
+      linkedNotes.forEach((n) =>
+        noteList.appendChild(createNoteCardElement(n, true)),
+      );
+      noteCard.style.display = "block";
+    } else {
+      noteCard.style.display = "none";
+      noteList.innerHTML = "";
+    }
+  }
 }
 
 /**

@@ -1767,11 +1767,99 @@ input[type="color"] {
 .modal-images-area {
   margin-top: 18px;
   border-top: 1px dashed var(--md-sys-color-outline-variant);
-  padding-top: 14px;
+  /*padding-top: 14px;*/
 }
 .note-images-empty-hint {
   font-size: 13px;
   color: var(--md-sys-color-outline);
   font-style: italic;
   margin: 6px 0 0 0;
+}
+
+/* Stili Collegamento Costi Casa a Task, Domande e Appunti */
+.linked-costs-chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 28px;
+  align-items: center;
+  margin-top: 6px;
+}
+.linked-cost-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  padding: 4px 10px;
+  border-radius: var(--md-sys-shape-corner-full);
+  font-size: 12px;
+  font-weight: 500;
+  max-width: 100%;
+}
+.linked-cost-chip-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.linked-cost-chip-delete {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 2px;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  background: rgba(0, 0, 0, 0.1);
+  color: inherit;
+  border: none;
+  padding: 0;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+.linked-cost-chip-delete:hover {
+  background: var(--md-sys-color-error);
+  color: #ffffff;
+}
+.linked-cost-chip-delete .material-symbols-outlined {
+  font-size: 13px;
+  line-height: 1;
+}
+
+/* Badge costo collegato nelle card delle sezioni principali */
+.card-linked-costs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  margin-bottom: 2px;
+}
+.card-linked-cost-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-primary);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-full);
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+.card-linked-cost-badge:hover {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  border-color: var(--md-sys-color-primary);
+}
+.card-linked-cost-badge .material-symbols-outlined {
+  font-size: 13px;
 }
