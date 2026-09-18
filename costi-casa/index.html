@@ -29,7 +29,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./style.css?v=1.7.5" />
   </head>
   <body>
     <!-- WIZARD INIZIALE -->
@@ -190,13 +190,57 @@
 
     <!-- Lightbox -->
     <div id="lightbox" class="lightbox-overlay" onclick="closeLightbox(event)">
-      <div class="lightbox-content">
-        <button class="lightbox-close" onclick="closeLightbox(event, true)">
-          <span class="material-symbols-outlined" style="font-size: 32px"
+      <div class="lightbox-content" onclick="event.stopPropagation()">
+        <button
+          type="button"
+          class="lightbox-close"
+          onclick="closeLightbox(event, true)"
+          title="Chiudi"
+        >
+          <span class="material-symbols-outlined" style="font-size: 30px"
             >close</span
           >
         </button>
+
+        <button
+          type="button"
+          id="lightbox-prev"
+          class="lightbox-nav-btn lightbox-prev"
+          onclick="lightboxPrev(event)"
+          title="Precedente"
+          style="display: none"
+        >
+          <span
+            class="material-symbols-outlined"
+            style="font-size: 32px; margin-right: 1px"
+            >chevron_left</span
+          >
+        </button>
+
         <img id="lightbox-image" class="lightbox-img" src="" alt="Anteprima" />
+
+        <button
+          type="button"
+          id="lightbox-next"
+          class="lightbox-nav-btn lightbox-next"
+          onclick="lightboxNext(event)"
+          title="Successiva"
+          style="display: none"
+        >
+          <span
+            class="material-symbols-outlined"
+            style="font-size: 32px; margin-left: 3px"
+            >chevron_right</span
+          >
+        </button>
+
+        <div
+          id="lightbox-counter"
+          class="lightbox-counter"
+          style="display: none"
+        >
+          1 / 1
+        </div>
       </div>
     </div>
 
@@ -545,6 +589,84 @@
             ></textarea>
           </div>
         </div>
+        <!-- Sezione Immagini Domanda -->
+        <div class="note-modal-images-area modal-images-area">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 10px;
+              flex-wrap: wrap;
+              gap: 8px;
+            "
+          >
+            <label
+              style="
+                font-weight: 500;
+                font-size: 14px;
+                color: var(--md-sys-color-on-surface);
+                display: flex;
+                align-items: center;
+                gap: 6px;
+              "
+            >
+              <span class="material-symbols-outlined" style="font-size: 18px"
+                >photo_library</span
+              >
+              Immagini collegate
+            </label>
+            <div style="display: flex; gap: 8px">
+              <label
+                class="btn btn-tonal"
+                style="
+                  cursor: pointer;
+                  font-size: 13px;
+                  padding: 6px 12px;
+                  height: 36px;
+                  display: inline-flex;
+                  align-items: center;
+                  gap: 6px;
+                "
+              >
+                <input
+                  type="file"
+                  id="qa-image-file-input"
+                  accept="image/*"
+                  multiple
+                  style="display: none"
+                  onchange="handleQAImageUpload(event)"
+                />
+                <span class="material-symbols-outlined" style="font-size: 18px"
+                  >upload</span
+                >
+                Carica Foto
+              </label>
+              <button
+                type="button"
+                class="btn btn-tonal"
+                style="
+                  font-size: 13px;
+                  padding: 6px 12px;
+                  height: 36px;
+                  display: inline-flex;
+                  align-items: center;
+                  gap: 6px;
+                "
+                onclick="promptAddQAImageUrl()"
+              >
+                <span class="material-symbols-outlined" style="font-size: 18px"
+                  >link</span
+                >
+                URL
+              </button>
+            </div>
+          </div>
+          <div
+            id="qa-modal-images-preview"
+            class="note-images-grid modal-images-preview"
+          ></div>
+        </div>
         <div
           style="
             display: flex;
@@ -611,6 +733,84 @@
             ></textarea>
           </div>
         </div>
+        <!-- Sezione Immagini Task -->
+        <div class="note-modal-images-area modal-images-area">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 10px;
+              flex-wrap: wrap;
+              gap: 8px;
+            "
+          >
+            <label
+              style="
+                font-weight: 500;
+                font-size: 14px;
+                color: var(--md-sys-color-on-surface);
+                display: flex;
+                align-items: center;
+                gap: 6px;
+              "
+            >
+              <span class="material-symbols-outlined" style="font-size: 18px"
+                >photo_library</span
+              >
+              Immagini collegate
+            </label>
+            <div style="display: flex; gap: 8px">
+              <label
+                class="btn btn-tonal"
+                style="
+                  cursor: pointer;
+                  font-size: 13px;
+                  padding: 6px 12px;
+                  height: 36px;
+                  display: inline-flex;
+                  align-items: center;
+                  gap: 6px;
+                "
+              >
+                <input
+                  type="file"
+                  id="task-image-file-input"
+                  accept="image/*"
+                  multiple
+                  style="display: none"
+                  onchange="handleTaskImageUpload(event)"
+                />
+                <span class="material-symbols-outlined" style="font-size: 18px"
+                  >upload</span
+                >
+                Carica Foto
+              </label>
+              <button
+                type="button"
+                class="btn btn-tonal"
+                style="
+                  font-size: 13px;
+                  padding: 6px 12px;
+                  height: 36px;
+                  display: inline-flex;
+                  align-items: center;
+                  gap: 6px;
+                "
+                onclick="promptAddTaskImageUrl()"
+              >
+                <span class="material-symbols-outlined" style="font-size: 18px"
+                  >link</span
+                >
+                URL
+              </button>
+            </div>
+          </div>
+          <div
+            id="task-modal-images-preview"
+            class="note-images-grid modal-images-preview"
+          ></div>
+        </div>
         <div
           style="
             display: flex;
@@ -673,6 +873,84 @@
               style="min-height: 150px"
             ></textarea>
           </div>
+        </div>
+        <!-- Sezione Immagini Appunto -->
+        <div class="note-modal-images-area">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 10px;
+              flex-wrap: wrap;
+              gap: 8px;
+            "
+          >
+            <label
+              style="
+                font-weight: 500;
+                font-size: 14px;
+                color: var(--md-sys-color-on-surface);
+                display: flex;
+                align-items: center;
+                gap: 6px;
+              "
+            >
+              <span class="material-symbols-outlined" style="font-size: 18px"
+                >photo_library</span
+              >
+              Immagini collegate
+            </label>
+            <div style="display: flex; gap: 8px">
+              <label
+                class="btn btn-tonal"
+                style="
+                  cursor: pointer;
+                  font-size: 13px;
+                  padding: 6px 12px;
+                  height: 36px;
+                  display: inline-flex;
+                  align-items: center;
+                  gap: 6px;
+                "
+              >
+                <input
+                  type="file"
+                  id="note-image-file-input"
+                  accept="image/*"
+                  multiple
+                  style="display: none"
+                  onchange="handleNoteImageUpload(event)"
+                />
+                <span class="material-symbols-outlined" style="font-size: 18px"
+                  >upload</span
+                >
+                Carica Foto
+              </label>
+              <button
+                type="button"
+                class="btn btn-tonal"
+                style="
+                  font-size: 13px;
+                  padding: 6px 12px;
+                  height: 36px;
+                  display: inline-flex;
+                  align-items: center;
+                  gap: 6px;
+                "
+                onclick="promptAddNoteImageUrl()"
+              >
+                <span class="material-symbols-outlined" style="font-size: 18px"
+                  >link</span
+                >
+                URL
+              </button>
+            </div>
+          </div>
+          <div
+            id="note-modal-images-preview"
+            class="note-images-grid modal-images-preview"
+          ></div>
         </div>
         <div
           style="
@@ -2269,12 +2547,12 @@
             <a href="https://giovannilamarmora.github.io/" target="_blank"
               >Giovanni Lamarmora</a
             >
-            <span class="version-number">v1.7.2</span>
+            <span class="version-number">v1.7.5</span>
           </h4>
         </div>
       </div>
     </div>
 
-    <script src="./app.js"></script>
+    <script src="./app.js?v=1.7.5"></script>
   </body>
 </html>

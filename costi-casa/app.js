@@ -142,8 +142,22 @@
         }
       });
 
-      // Listener globale per la pressione del tasto ESC: chiude modali aperte, lightbox e menu mobili
+      // Listener globale per la pressione dei tasti: frecce per lightbox, ESC per chiusura modali
       window.addEventListener("keydown", function (e) {
+        const lightbox = document.getElementById("lightbox");
+        if (lightbox && lightbox.classList.contains("active")) {
+          if (e.key === "ArrowLeft") {
+            e.preventDefault();
+            lightboxPrev();
+            return;
+          }
+          if (e.key === "ArrowRight") {
+            e.preventDefault();
+            lightboxNext();
+            return;
+          }
+        }
+
         if (e.key === "Escape" || e.keyCode === 27) {
           closeLightbox(null, true);
           closeModal();
@@ -339,8 +353,23 @@
         }
 
         if (!appData.qa) appData.qa = [];
+        appData.qa.forEach((q) => {
+          if (!q.images) {
+            q.images = q.image ? [q.image] : [];
+          }
+        });
         if (!appData.tasks) appData.tasks = [];
+        appData.tasks.forEach((t) => {
+          if (!t.images) {
+            t.images = t.image ? [t.image] : [];
+          }
+        });
         if (!appData.notes) appData.notes = [];
+        appData.notes.forEach((n) => {
+          if (!n.images) {
+            n.images = n.image ? [n.image] : [];
+          }
+        });
 
         if (!appData.settings.renders) appData.settings.renders = [];
 
@@ -861,45 +890,206 @@
 
               const card = document.createElement("div");
               card.className = "qa-card";
-              card.innerHTML = `
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap;">
-                            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                                <span class="cat-badge" style="background-color: ${topicBg}; color: ${topicColor}; font-size: 13px;">${category}</span>
-                                ${statusBadge}
-                            </div>
-                            <div style="display: flex; gap: 4px; align-items: center;">
-                                <span style="font-size: 12px; color: var(--md-sys-color-outline); margin-right: 8px;">${item.date || ""}</span>
-                                <button class="btn-icon" onclick="openEditQAModal(${item.id})" title="Modifica"><span class="material-symbols-outlined">edit</span></button>
-                                <button class="btn-icon" onclick="deleteQAItem(${item.id})" title="Elimina" style="color: var(--md-sys-color-error);"><span class="material-symbols-outlined">delete</span></button>
-                            </div>
-                        </div>
-                        <div style="margin-top: 4px;">
-                            ${item.topic ? `<div style="font-size: 16px; font-weight: 700; color: var(--md-sys-color-on-surface); margin-bottom: 10px;">${item.topic}</div>` : ""}
-                            <div style="font-size: 15px; color: var(--md-sys-color-on-surface); display: flex; gap: 8px; align-items: flex-start;">
-                                <span class="material-symbols-outlined" style="color: var(--md-sys-color-primary); font-size: 20px;">help</span>
-                                <span style="white-space: pre-wrap;">${item.question}</span>
-                            </div>
-                        </div>
-                        ${
-                          isAnswered
-                            ? `
-                            <div style="background: var(--md-sys-color-surface-container-high); border-radius: var(--md-sys-shape-corner-medium); padding: 14px 16px; margin-top: 4px; border-left: 4px solid var(--md-sys-color-success);">
-                                <div style="font-size: 12px; font-weight: 600; color: var(--md-sys-color-success); margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
-                                    <span class="material-symbols-outlined" style="font-size: 16px;">check_circle</span> Risposta:
-                                </div>
-                                <div style="font-size: 14px; line-height: 1.5; white-space: pre-wrap;">${item.answer}</div>
-                            </div>
-                        `
-                            : `
-                            <div style="font-size: 13px; color: var(--md-sys-color-outline); font-style: italic; display: flex; align-items: center; gap: 6px;">
-                                <span class="material-symbols-outlined" style="font-size: 16px;">pending</span> In attesa di risposta dal fornitore o professionista.
-                            </div>
-                        `
-                        }
-                    `;
+
+              // 1. Intestazione con Categoria, Status, data e pulsanti azione
+              const headerDiv = document.createElement("div");
+              headerDiv.style.cssText =
+                "display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap;";
+              headerDiv.innerHTML = `
+                  <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                      <span class="cat-badge" style="background-color: ${topicBg}; color: ${topicColor}; font-size: 13px;">${category}</span>
+                      ${statusBadge}
+                  </div>
+                  <div style="display: flex; gap: 4px; align-items: center;">
+                      <span style="font-size: 12px; color: var(--md-sys-color-outline); margin-right: 8px;">${item.date || ""}</span>
+                      <button class="btn-icon" onclick="openEditQAModal(${item.id})" title="Modifica"><span class="material-symbols-outlined">edit</span></button>
+                      <button class="btn-icon" onclick="deleteQAItem(${item.id})" title="Elimina" style="color: var(--md-sys-color-error);"><span class="material-symbols-outlined">delete</span></button>
+                  </div>
+              `;
+              card.appendChild(headerDiv);
+
+              // 2. Argomento e Testo della Domanda
+              const bodyDiv = document.createElement("div");
+              bodyDiv.style.marginTop = "4px";
+              bodyDiv.innerHTML = `
+                  ${item.topic ? `<div style="font-size: 16px; font-weight: 700; color: var(--md-sys-color-on-surface); margin-bottom: 8px;">${item.topic}</div>` : ""}
+                  <div style="font-size: 15px; color: var(--md-sys-color-on-surface); display: flex; gap: 8px; align-items: flex-start;">
+                      <span class="material-symbols-outlined" style="color: var(--md-sys-color-primary); font-size: 20px;">help</span>
+                      <span style="white-space: pre-wrap;">${item.question}</span>
+                  </div>
+              `;
+              card.appendChild(bodyDiv);
+
+              // 3. Immagini collegate alla Domanda (tra domanda e risposta)
+              if (item.images && item.images.length > 0) {
+                const imgGrid = document.createElement("div");
+                imgGrid.className = "note-images-grid";
+
+                item.images.forEach((imgUrl, idx) => {
+                  const thumb = document.createElement("div");
+                  thumb.className = "note-image-thumb";
+                  thumb.title = "Clicca per ingrandire";
+                  thumb.onclick = () => openLightbox(item.images, idx);
+
+                  const img = document.createElement("img");
+                  img.src = imgUrl;
+                  img.alt = `Foto ${idx + 1}`;
+                  img.loading = "lazy";
+
+                  const delBtn = document.createElement("button");
+                  delBtn.type = "button";
+                  delBtn.className = "note-image-delete-btn";
+                  delBtn.title = "Elimina immagine";
+                  delBtn.innerHTML = `<span class="material-symbols-outlined">close</span>`;
+                  delBtn.onclick = (e) => {
+                    deleteQAImageDirect(item.id, idx, e);
+                  };
+
+                  thumb.appendChild(img);
+                  thumb.appendChild(delBtn);
+                  imgGrid.appendChild(thumb);
+                });
+
+                card.appendChild(imgGrid);
+              }
+
+              // 4. Risposta o messaggio di attesa
+              const answerDiv = document.createElement("div");
+              if (isAnswered) {
+                answerDiv.style.cssText =
+                  "background: var(--md-sys-color-surface-container-high); border-radius: var(--md-sys-shape-corner-medium); padding: 14px 16px; margin-top: 8px; border-left: 4px solid var(--md-sys-color-success);";
+                answerDiv.innerHTML = `
+                    <div style="font-size: 12px; font-weight: 600; color: var(--md-sys-color-success); margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+                        <span class="material-symbols-outlined" style="font-size: 16px;">check_circle</span> Risposta:
+                    </div>
+                    <div style="font-size: 14px; line-height: 1.5; white-space: pre-wrap;">${item.answer}</div>
+                `;
+              } else {
+                answerDiv.style.cssText =
+                  "font-size: 13px; color: var(--md-sys-color-outline); font-style: italic; display: flex; align-items: center; gap: 6px; margin-top: 8px;";
+                answerDiv.innerHTML = `
+                    <span class="material-symbols-outlined" style="font-size: 16px;">pending</span> In attesa di risposta dal fornitore o professionista.
+                `;
+              }
+              card.appendChild(answerDiv);
+
               container.appendChild(card);
             });
           });
+      }
+
+      let currentQAImages = [];
+
+      async function handleQAImageUpload(event) {
+        const files = Array.from(event.target.files || []);
+        if (files.length === 0) return;
+
+        let addedCount = 0;
+        for (const file of files) {
+          try {
+            const compressedUrl = await compressImageFile(file);
+            currentQAImages.push(compressedUrl);
+            addedCount++;
+          } catch (err) {
+            console.error("Errore compressione immagine domanda:", err);
+            showNotification(
+              "Errore caricamento",
+              "Impossibile elaborare " + file.name,
+              "error",
+            );
+          }
+        }
+        event.target.value = "";
+        renderQAModalImagesPreview();
+        if (addedCount > 0) {
+          showNotification(
+            addedCount === 1
+              ? "Immagine caricata"
+              : `${addedCount} immagini caricate`,
+          );
+        }
+      }
+
+      async function promptAddQAImageUrl() {
+        const result = await M3Swal.fire({
+          title: "Aggiungi Immagine via Link",
+          input: "url",
+          inputLabel: "Inserisci l'indirizzo web dell'immagine o link Drive",
+          inputPlaceholder: "https://...",
+          showCancelButton: true,
+          confirmButtonText: "Aggiungi",
+          cancelButtonText: "Annulla",
+          inputValidator: (value) => {
+            if (!value || !value.trim()) {
+              return "Inserisci un URL valido";
+            }
+          },
+        });
+        if (result.isConfirmed && result.value) {
+          const formatted = formatFileUrl(result.value.trim());
+          currentQAImages.push(formatted.url || result.value.trim());
+          renderQAModalImagesPreview();
+        }
+      }
+
+      function renderQAModalImagesPreview() {
+        const preview = document.getElementById("qa-modal-images-preview");
+        if (!preview) return;
+        preview.innerHTML = "";
+
+        if (!currentQAImages || currentQAImages.length === 0) {
+          preview.innerHTML = `<p class="note-images-empty-hint">Nessuna immagine allegata. Carica una foto o inserisci un link.</p>`;
+          return;
+        }
+
+        currentQAImages.forEach((imgUrl, index) => {
+          const thumb = document.createElement("div");
+          thumb.className = "note-image-thumb";
+          thumb.title = "Clicca per ingrandire";
+          thumb.onclick = () => openLightbox(currentQAImages, index);
+
+          const img = document.createElement("img");
+          img.src = imgUrl;
+          img.alt = `Allegato ${index + 1}`;
+          img.loading = "lazy";
+
+          const delBtn = document.createElement("button");
+          delBtn.type = "button";
+          delBtn.className = "note-image-delete-btn";
+          delBtn.title = "Rimuovi immagine";
+          delBtn.innerHTML = `<span class="material-symbols-outlined">close</span>`;
+          delBtn.onclick = (e) => {
+            e.stopPropagation();
+            removeQAModalImage(index);
+          };
+
+          thumb.appendChild(img);
+          thumb.appendChild(delBtn);
+          preview.appendChild(thumb);
+        });
+      }
+
+      function removeQAModalImage(index) {
+        currentQAImages.splice(index, 1);
+        renderQAModalImagesPreview();
+      }
+
+      async function deleteQAImageDirect(qaId, imgIndex, event) {
+        if (event) event.stopPropagation();
+        const item = appData.qa.find((q) => q.id === qaId);
+        if (!item || !item.images || !item.images[imgIndex]) return;
+
+        const result = await showConfirm(
+          "Eliminare questa immagine?",
+          "L'immagine verrà rimossa definitivamente da questa domanda.",
+          "Elimina",
+        );
+        if (result.isConfirmed) {
+          item.images.splice(imgIndex, 1);
+          saveDataLocally();
+          renderQASection();
+          showNotification("Immagine eliminata");
+        }
       }
 
       /**
@@ -913,6 +1103,8 @@
         document.getElementById("qa-modal-question").value = "";
         document.getElementById("qa-modal-answer").value = "";
         document.getElementById("qa-btn-delete").style.display = "none";
+        currentQAImages = [];
+        renderQAModalImagesPreview();
         document.getElementById("qaModal").classList.add("active");
       }
 
@@ -933,6 +1125,8 @@
           item.question || "";
         document.getElementById("qa-modal-answer").value = item.answer || "";
         document.getElementById("qa-btn-delete").style.display = "inline-flex";
+        currentQAImages = Array.isArray(item.images) ? [...item.images] : [];
+        renderQAModalImagesPreview();
         document.getElementById("qaModal").classList.add("active");
       }
 
@@ -941,6 +1135,9 @@
        */
       function closeQAModal() {
         document.getElementById("qaModal").classList.remove("active");
+        currentQAImages = [];
+        const preview = document.getElementById("qa-modal-images-preview");
+        if (preview) preview.innerHTML = "";
       }
 
       /**
@@ -970,6 +1167,7 @@
             item.topic = topic;
             item.question = question;
             item.answer = answer;
+            item.images = [...currentQAImages];
           }
         } else {
           const today = new Date();
@@ -980,11 +1178,13 @@
             topic,
             question,
             answer,
+            images: [...currentQAImages],
             date: dateStr,
           });
         }
         closeQAModal();
         saveDataLocally();
+        renderQASection();
         showNotification("Domanda salvata!");
       }
 
@@ -1000,6 +1200,7 @@
         if (result.isConfirmed) {
           appData.qa = appData.qa.filter((q) => q.id !== id);
           saveDataLocally();
+          renderQASection();
           showNotification("Domanda eliminata");
         }
       }
@@ -1018,6 +1219,7 @@
           appData.qa = appData.qa.filter((q) => q.id !== parseInt(idVal));
           closeQAModal();
           saveDataLocally();
+          renderQASection();
           showNotification("Domanda eliminata");
         }
       }
@@ -1149,36 +1351,81 @@
                 const createdDateStr = new Date(item.id).toLocaleDateString(
                   "it-IT",
                 );
-                card.innerHTML = `
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap;">
-                                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                                    <span class="cat-badge" style="background-color: ${topicBg}; color: ${topicColor}; font-size: 13px;">${category}</span>
-                                    ${item.completed ? `<span class="cat-badge" style="background-color: var(--md-sys-color-success); color: #141218;">Completato</span>` : ""}
-                                    ${dueDateBadge}
-                                </div>
-                                <div style="display: flex; gap: 4px; align-items: center;">
-                                    <span style="font-size: 12px; color: var(--md-sys-color-outline); margin-right: 8px;">${createdDateStr}</span>
-                                    <button class="btn-icon" onclick="toggleTaskStatus(${item.id})" title="${item.completed ? "Segna da completare" : "Segna come completato"}">
-                                        <span class="material-symbols-outlined" style="color: ${item.completed ? "var(--md-sys-color-outline)" : "var(--md-sys-color-success)"};">${item.completed ? "undo" : "check_circle"}</span>
-                                    </button>
-                                    <button class="btn-icon" onclick="openEditTaskModal(${item.id})" title="Modifica"><span class="material-symbols-outlined">edit</span></button>
-                                    <button class="btn-icon" onclick="deleteTaskItem(${item.id})" title="Elimina" style="color: var(--md-sys-color-error);"><span class="material-symbols-outlined">delete</span></button>
-                                </div>
-                            </div>
-                            <div style="margin-top: 4px;">
-                                <div style="font-size: 16px; font-weight: 700; color: var(--md-sys-color-on-surface); margin-bottom: 4px; text-decoration: ${item.completed ? "line-through" : "none"};">${item.title}</div>
-                                ${
-                                  item.desc
-                                    ? `
-                                    <div style="font-size: 15px; color: var(--md-sys-color-on-surface); display: flex; gap: 8px; align-items: flex-start; white-space: pre-wrap;">
-                                        <span class="material-symbols-outlined" style="color: var(--md-sys-color-outline); font-size: 20px;">notes</span>
-                                        <span>${item.desc}</span>
-                                    </div>
-                                `
-                                    : ""
-                                }
-                            </div>
-                        `;
+
+                // 1. Header con Categoria, Badge, Scadenza, Data e Azioni
+                const headerDiv = document.createElement("div");
+                headerDiv.style.cssText =
+                  "display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap;";
+                headerDiv.innerHTML = `
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <span class="cat-badge" style="background-color: ${topicBg}; color: ${topicColor}; font-size: 13px;">${category}</span>
+                        ${item.completed ? `<span class="cat-badge" style="background-color: var(--md-sys-color-success); color: #141218;">Completato</span>` : ""}
+                        ${dueDateBadge}
+                    </div>
+                    <div style="display: flex; gap: 4px; align-items: center;">
+                        <span style="font-size: 12px; color: var(--md-sys-color-outline); margin-right: 8px;">${createdDateStr}</span>
+                        <button class="btn-icon" onclick="toggleTaskStatus(${item.id})" title="${item.completed ? "Segna da completare" : "Segna come completato"}">
+                            <span class="material-symbols-outlined" style="color: ${item.completed ? "var(--md-sys-color-outline)" : "var(--md-sys-color-success)"};">${item.completed ? "undo" : "check_circle"}</span>
+                        </button>
+                        <button class="btn-icon" onclick="openEditTaskModal(${item.id})" title="Modifica"><span class="material-symbols-outlined">edit</span></button>
+                        <button class="btn-icon" onclick="deleteTaskItem(${item.id})" title="Elimina" style="color: var(--md-sys-color-error);"><span class="material-symbols-outlined">delete</span></button>
+                    </div>
+                `;
+                card.appendChild(headerDiv);
+
+                // 2. Titolo del Task
+                const titleDiv = document.createElement("div");
+                titleDiv.style.marginTop = "4px";
+                titleDiv.innerHTML = `
+                    <div style="font-size: 16px; font-weight: 700; color: var(--md-sys-color-on-surface); margin-bottom: 4px; text-decoration: ${item.completed ? "line-through" : "none"};">${item.title}</div>
+                `;
+                card.appendChild(titleDiv);
+
+                // 3. Immagini collegate al Task (posizionate tra titolo e descrizione)
+                if (item.images && item.images.length > 0) {
+                  const imgGrid = document.createElement("div");
+                  imgGrid.className = "note-images-grid";
+
+                  item.images.forEach((imgUrl, idx) => {
+                    const thumb = document.createElement("div");
+                    thumb.className = "note-image-thumb";
+                    thumb.title = "Clicca per ingrandire";
+                    thumb.onclick = () => openLightbox(item.images, idx);
+
+                    const img = document.createElement("img");
+                    img.src = imgUrl;
+                    img.alt = `Foto ${idx + 1}`;
+                    img.loading = "lazy";
+
+                    const delBtn = document.createElement("button");
+                    delBtn.type = "button";
+                    delBtn.className = "note-image-delete-btn";
+                    delBtn.title = "Elimina immagine";
+                    delBtn.innerHTML = `<span class="material-symbols-outlined">close</span>`;
+                    delBtn.onclick = (e) => {
+                      deleteTaskImageDirect(item.id, idx, e);
+                    };
+
+                    thumb.appendChild(img);
+                    thumb.appendChild(delBtn);
+                    imgGrid.appendChild(thumb);
+                  });
+
+                  card.appendChild(imgGrid);
+                }
+
+                // 4. Descrizione del Task
+                if (item.desc) {
+                  const descDiv = document.createElement("div");
+                  descDiv.style.cssText =
+                    "font-size: 15px; color: var(--md-sys-color-on-surface); display: flex; gap: 8px; align-items: flex-start; white-space: pre-wrap; margin-top: 6px;";
+                  descDiv.innerHTML = `
+                      <span class="material-symbols-outlined" style="color: var(--md-sys-color-outline); font-size: 20px;">notes</span>
+                      <span>${item.desc}</span>
+                  `;
+                  card.appendChild(descDiv);
+                }
+
                 container.appendChild(card);
               });
             });
@@ -1201,6 +1448,120 @@
         }
       }
 
+      let currentTaskImages = [];
+
+      async function handleTaskImageUpload(event) {
+        const files = Array.from(event.target.files || []);
+        if (files.length === 0) return;
+
+        let addedCount = 0;
+        for (const file of files) {
+          try {
+            const compressedUrl = await compressImageFile(file);
+            currentTaskImages.push(compressedUrl);
+            addedCount++;
+          } catch (err) {
+            console.error("Errore compressione immagine task:", err);
+            showNotification(
+              "Errore caricamento",
+              "Impossibile elaborare " + file.name,
+              "error",
+            );
+          }
+        }
+        event.target.value = "";
+        renderTaskModalImagesPreview();
+        if (addedCount > 0) {
+          showNotification(
+            addedCount === 1
+              ? "Immagine caricata"
+              : `${addedCount} immagini caricate`,
+          );
+        }
+      }
+
+      async function promptAddTaskImageUrl() {
+        const result = await M3Swal.fire({
+          title: "Aggiungi Immagine via Link",
+          input: "url",
+          inputLabel: "Inserisci l'indirizzo web dell'immagine o link Drive",
+          inputPlaceholder: "https://...",
+          showCancelButton: true,
+          confirmButtonText: "Aggiungi",
+          cancelButtonText: "Annulla",
+          inputValidator: (value) => {
+            if (!value || !value.trim()) {
+              return "Inserisci un URL valido";
+            }
+          },
+        });
+        if (result.isConfirmed && result.value) {
+          const formatted = formatFileUrl(result.value.trim());
+          currentTaskImages.push(formatted.url || result.value.trim());
+          renderTaskModalImagesPreview();
+        }
+      }
+
+      function renderTaskModalImagesPreview() {
+        const preview = document.getElementById("task-modal-images-preview");
+        if (!preview) return;
+        preview.innerHTML = "";
+
+        if (!currentTaskImages || currentTaskImages.length === 0) {
+          preview.innerHTML = `<p class="note-images-empty-hint">Nessuna immagine allegata. Carica una foto o inserisci un link.</p>`;
+          return;
+        }
+
+        currentTaskImages.forEach((imgUrl, index) => {
+          const thumb = document.createElement("div");
+          thumb.className = "note-image-thumb";
+          thumb.title = "Clicca per ingrandire";
+          thumb.onclick = () => openLightbox(currentTaskImages, index);
+
+          const img = document.createElement("img");
+          img.src = imgUrl;
+          img.alt = `Allegato ${index + 1}`;
+          img.loading = "lazy";
+
+          const delBtn = document.createElement("button");
+          delBtn.type = "button";
+          delBtn.className = "note-image-delete-btn";
+          delBtn.title = "Rimuovi immagine";
+          delBtn.innerHTML = `<span class="material-symbols-outlined">close</span>`;
+          delBtn.onclick = (e) => {
+            e.stopPropagation();
+            removeTaskModalImage(index);
+          };
+
+          thumb.appendChild(img);
+          thumb.appendChild(delBtn);
+          preview.appendChild(thumb);
+        });
+      }
+
+      function removeTaskModalImage(index) {
+        currentTaskImages.splice(index, 1);
+        renderTaskModalImagesPreview();
+      }
+
+      async function deleteTaskImageDirect(taskId, imgIndex, event) {
+        if (event) event.stopPropagation();
+        const item = appData.tasks.find((t) => t.id === taskId);
+        if (!item || !item.images || !item.images[imgIndex]) return;
+
+        const result = await showConfirm(
+          "Eliminare questa immagine?",
+          "L'immagine verrà rimossa definitivamente da questo task.",
+          "Elimina",
+        );
+        if (result.isConfirmed) {
+          item.images.splice(imgIndex, 1);
+          saveDataLocally();
+          renderTaskSection();
+          showNotification("Immagine eliminata");
+        }
+      }
+
       function openAddTaskModal() {
         document.getElementById("task-modal-id").value = "";
         document.getElementById("task-modal-header-title").innerText =
@@ -1210,6 +1571,8 @@
         document.getElementById("task-modal-dueDate").value = "";
         document.getElementById("task-modal-desc").value = "";
         document.getElementById("task-btn-delete").style.display = "none";
+        currentTaskImages = [];
+        renderTaskModalImagesPreview();
         document.getElementById("taskModal").classList.add("active");
       }
 
@@ -1227,11 +1590,16 @@
         document.getElementById("task-modal-desc").value = item.desc || "";
         document.getElementById("task-btn-delete").style.display =
           "inline-flex";
+        currentTaskImages = Array.isArray(item.images) ? [...item.images] : [];
+        renderTaskModalImagesPreview();
         document.getElementById("taskModal").classList.add("active");
       }
 
       function closeTaskModal() {
         document.getElementById("taskModal").classList.remove("active");
+        currentTaskImages = [];
+        const preview = document.getElementById("task-modal-images-preview");
+        if (preview) preview.innerHTML = "";
       }
 
       function saveTaskModalChanges() {
@@ -1256,6 +1624,7 @@
             item.title = title;
             item.dueDate = dueDate;
             item.desc = desc;
+            item.images = [...currentTaskImages];
           }
         } else {
           appData.tasks.unshift({
@@ -1264,11 +1633,13 @@
             title,
             dueDate,
             desc,
+            images: [...currentTaskImages],
             completed: false,
           });
         }
         closeTaskModal();
         saveDataLocally();
+        renderTaskSection();
         showNotification("Task salvato!");
       }
 
@@ -1280,6 +1651,7 @@
         if (result.isConfirmed) {
           appData.tasks = appData.tasks.filter((t) => t.id !== id);
           saveDataLocally();
+          renderTaskSection();
           showNotification("Task eliminato");
         }
       }
@@ -1295,6 +1667,7 @@
           appData.tasks = appData.tasks.filter((t) => t.id !== parseInt(idVal));
           closeTaskModal();
           saveDataLocally();
+          renderTaskSection();
           showNotification("Task eliminato");
         }
       }
@@ -1304,6 +1677,7 @@
         if (item) {
           item.completed = !item.completed;
           saveDataLocally();
+          renderTaskSection();
           showNotification(
             item.completed ? "Task completato!" : "Task ripristinato",
           );
@@ -1311,6 +1685,169 @@
       }
 
       // --- APPUNTI ---
+      let currentNoteImages = [];
+
+      /**
+       * Comprime un'immagine lato client su canvas prima del salvataggio.
+       * Riduce la risoluzione max a 1280px e converte in JPEG con qualità 0.8 per limitare la dimensione a ~80-150KB.
+       */
+      function compressImageFile(
+        file,
+        maxWidth = 1280,
+        maxHeight = 1280,
+        quality = 0.8,
+      ) {
+        return new Promise((resolve, reject) => {
+          if (!file || !file.type.startsWith("image/")) {
+            reject(new Error("Il file selezionato non è un'immagine valida."));
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+              let width = img.width;
+              let height = img.height;
+
+              if (width > maxWidth || height > maxHeight) {
+                if (width / height > maxWidth / maxHeight) {
+                  height = Math.round((height * maxWidth) / width);
+                  width = maxWidth;
+                } else {
+                  width = Math.round((width * maxHeight) / height);
+                  height = maxHeight;
+                }
+              }
+
+              const canvas = document.createElement("canvas");
+              canvas.width = width;
+              canvas.height = height;
+              const ctx = canvas.getContext("2d");
+              ctx.drawImage(img, 0, 0, width, height);
+
+              const dataUrl = canvas.toDataURL("image/jpeg", quality);
+              resolve(dataUrl);
+            };
+            img.onerror = (err) => reject(err);
+            img.src = e.target.result;
+          };
+          reader.onerror = (err) => reject(err);
+          reader.readAsDataURL(file);
+        });
+      }
+
+      async function handleNoteImageUpload(event) {
+        const files = Array.from(event.target.files || []);
+        if (files.length === 0) return;
+
+        let addedCount = 0;
+        for (const file of files) {
+          try {
+            const compressedUrl = await compressImageFile(file);
+            currentNoteImages.push(compressedUrl);
+            addedCount++;
+          } catch (err) {
+            console.error("Errore compressione immagine appunto:", err);
+            showNotification(
+              "Errore caricamento",
+              "Impossibile elaborare " + file.name,
+              "error",
+            );
+          }
+        }
+        event.target.value = "";
+        renderNoteModalImagesPreview();
+        if (addedCount > 0) {
+          showNotification(
+            addedCount === 1
+              ? "Immagine caricata"
+              : `${addedCount} immagini caricate`,
+          );
+        }
+      }
+
+      async function promptAddNoteImageUrl() {
+        const result = await M3Swal.fire({
+          title: "Aggiungi Immagine via Link",
+          input: "url",
+          inputLabel: "Inserisci l'indirizzo web dell'immagine o link Drive",
+          inputPlaceholder: "https://...",
+          showCancelButton: true,
+          confirmButtonText: "Aggiungi",
+          cancelButtonText: "Annulla",
+          inputValidator: (value) => {
+            if (!value || !value.trim()) {
+              return "Inserisci un URL valido";
+            }
+          },
+        });
+        if (result.isConfirmed && result.value) {
+          const formatted = formatFileUrl(result.value.trim());
+          currentNoteImages.push(formatted.url || result.value.trim());
+          renderNoteModalImagesPreview();
+        }
+      }
+
+      function renderNoteModalImagesPreview() {
+        const preview = document.getElementById("note-modal-images-preview");
+        if (!preview) return;
+        preview.innerHTML = "";
+
+        if (!currentNoteImages || currentNoteImages.length === 0) {
+          preview.innerHTML = `<p class="note-images-empty-hint">Nessuna immagine allegata. Carica una foto o inserisci un link.</p>`;
+          return;
+        }
+
+        currentNoteImages.forEach((imgUrl, index) => {
+          const thumb = document.createElement("div");
+          thumb.className = "note-image-thumb";
+          thumb.title = "Clicca per ingrandire";
+          thumb.onclick = () => openLightbox(currentNoteImages, index);
+
+          const img = document.createElement("img");
+          img.src = imgUrl;
+          img.alt = `Allegato ${index + 1}`;
+          img.loading = "lazy";
+
+          const delBtn = document.createElement("button");
+          delBtn.type = "button";
+          delBtn.className = "note-image-delete-btn";
+          delBtn.title = "Rimuovi immagine";
+          delBtn.innerHTML = `<span class="material-symbols-outlined">close</span>`;
+          delBtn.onclick = (e) => {
+            e.stopPropagation();
+            removeNoteModalImage(index);
+          };
+
+          thumb.appendChild(img);
+          thumb.appendChild(delBtn);
+          preview.appendChild(thumb);
+        });
+      }
+
+      function removeNoteModalImage(index) {
+        currentNoteImages.splice(index, 1);
+        renderNoteModalImagesPreview();
+      }
+
+      async function deleteNoteImageDirect(noteId, imgIndex, event) {
+        if (event) event.stopPropagation();
+        const note = appData.notes.find((n) => n.id === noteId);
+        if (!note || !note.images || !note.images[imgIndex]) return;
+
+        const result = await showConfirm(
+          "Eliminare questa immagine?",
+          "L'immagine verrà rimossa definitivamente da questo appunto.",
+          "Elimina",
+        );
+        if (result.isConfirmed) {
+          note.images.splice(imgIndex, 1);
+          saveDataLocally();
+          renderNoteSection();
+          showNotification("Immagine eliminata");
+        }
+      }
+
       function renderNoteSection() {
         const container = document.getElementById("notes-container");
         if (!container) return;
@@ -1363,17 +1900,63 @@
 
               const dateStr = new Date(item.date).toLocaleDateString("it-IT");
 
-              card.innerHTML = `
-                  <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap;">
-                      <div style="font-size: 16px; font-weight: 700; color: var(--md-sys-color-on-surface); margin-bottom: 4px;">${item.title}</div>
-                      <div style="display: flex; gap: 4px; align-items: center;">
-                          <span style="font-size: 12px; color: var(--md-sys-color-outline); margin-right: 8px;">${dateStr}</span>
-                          <button class="btn-icon" onclick="openEditNoteModal(${item.id})" title="Modifica"><span class="material-symbols-outlined">edit</span></button>
-                          <button class="btn-icon" onclick="deleteNoteItem(${item.id})" title="Elimina" style="color: var(--md-sys-color-error);"><span class="material-symbols-outlined">delete</span></button>
-                      </div>
+              // 1. Intestazione con Titolo, data e pulsanti modifica/elimina
+              const headerDiv = document.createElement("div");
+              headerDiv.style.cssText =
+                "display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap;";
+              headerDiv.innerHTML = `
+                  <div style="font-size: 16px; font-weight: 700; color: var(--md-sys-color-on-surface); margin-bottom: 4px;">${item.title}</div>
+                  <div style="display: flex; gap: 4px; align-items: center;">
+                      <span style="font-size: 12px; color: var(--md-sys-color-outline); margin-right: 8px;">${dateStr}</span>
+                      <button class="btn-icon" onclick="openEditNoteModal(${item.id})" title="Modifica"><span class="material-symbols-outlined">edit</span></button>
+                      <button class="btn-icon" onclick="deleteNoteItem(${item.id})" title="Elimina" style="color: var(--md-sys-color-error);"><span class="material-symbols-outlined">delete</span></button>
                   </div>
-                  <div style="font-size: 15px; color: var(--md-sys-color-on-surface); margin-top: 8px; white-space: pre-wrap; line-height: 1.5;">${item.content}</div>
               `;
+              card.appendChild(headerDiv);
+
+              // 2. Immagini collegate: posizionate esattamente tra il titolo e il testo
+              if (item.images && item.images.length > 0) {
+                const imgGrid = document.createElement("div");
+                imgGrid.className = "note-images-grid";
+
+                item.images.forEach((imgUrl, idx) => {
+                  const thumb = document.createElement("div");
+                  thumb.className = "note-image-thumb";
+                  thumb.title = "Clicca per ingrandire";
+                  thumb.onclick = () => openLightbox(item.images, idx);
+
+                  const img = document.createElement("img");
+                  img.src = imgUrl;
+                  img.alt = `Foto ${idx + 1}`;
+                  img.loading = "lazy";
+
+                  // Pulsante "X" in alto a destra per eliminare la singola immagine
+                  const delBtn = document.createElement("button");
+                  delBtn.type = "button";
+                  delBtn.className = "note-image-delete-btn";
+                  delBtn.title = "Elimina immagine";
+                  delBtn.innerHTML = `<span class="material-symbols-outlined">close</span>`;
+                  delBtn.onclick = (e) => {
+                    deleteNoteImageDirect(item.id, idx, e);
+                  };
+
+                  thumb.appendChild(img);
+                  thumb.appendChild(delBtn);
+                  imgGrid.appendChild(thumb);
+                });
+
+                card.appendChild(imgGrid);
+              }
+
+              // 3. Testo dell'appunto
+              if (item.content) {
+                const contentDiv = document.createElement("div");
+                contentDiv.style.cssText =
+                  "font-size: 15px; color: var(--md-sys-color-on-surface); margin-top: 6px; white-space: pre-wrap; line-height: 1.5;";
+                contentDiv.innerText = item.content;
+                card.appendChild(contentDiv);
+              }
+
               container.appendChild(card);
             });
           });
@@ -1411,6 +1994,8 @@
         document.getElementById("note-modal-title").value = "";
         document.getElementById("note-modal-content").value = "";
         document.getElementById("note-btn-delete").style.display = "none";
+        currentNoteImages = [];
+        renderNoteModalImagesPreview();
         document.getElementById("noteModal").classList.add("active");
       }
 
@@ -1446,11 +2031,16 @@
         document.getElementById("note-modal-content").value =
           item.content || "";
         document.getElementById("note-btn-delete").style.display = "flex";
+        currentNoteImages = Array.isArray(item.images) ? [...item.images] : [];
+        renderNoteModalImagesPreview();
         document.getElementById("noteModal").classList.add("active");
       }
 
       function closeNoteModal() {
         document.getElementById("noteModal").classList.remove("active");
+        currentNoteImages = [];
+        const preview = document.getElementById("note-modal-images-preview");
+        if (preview) preview.innerHTML = "";
       }
 
       function saveNoteModalChanges() {
@@ -1472,6 +2062,7 @@
             item.category = cat;
             item.title = title;
             item.content = content;
+            item.images = [...currentNoteImages];
           }
         } else {
           appData.notes.push({
@@ -1479,11 +2070,13 @@
             category: cat,
             title: title,
             content: content,
+            images: [...currentNoteImages],
             date: new Date().toISOString(),
           });
         }
         closeNoteModal();
         saveDataLocally();
+        renderNoteSection();
         showNotification("Appunto salvato");
       }
 
@@ -1495,6 +2088,7 @@
         if (result.isConfirmed) {
           appData.notes = appData.notes.filter((t) => t.id !== id);
           saveDataLocally();
+          renderNoteSection();
           showNotification("Appunto eliminato");
         }
       }
@@ -3477,13 +4071,95 @@
         }, 50);
       }
 
+      let currentLightboxImages = [];
+      let currentLightboxIndex = 0;
+
       /**
-       * Apre il Lightbox a schermo intero per visualizzare un'immagine ad alta risoluzione.
-       * @param {string} url - URL dell'immagine.
+       * Apre il Lightbox a schermo intero per visualizzare una o più immagini ad alta risoluzione.
+       * @param {string|string[]} imagesOrUrl - Singolo URL o array di URL.
+       * @param {number} [startIndex=0] - Indice dell'immagine iniziale.
        */
-      function openLightbox(url) {
-        document.getElementById("lightbox-image").src = url;
-        document.getElementById("lightbox").classList.add("active");
+      function openLightbox(imagesOrUrl, startIndex = 0) {
+        if (Array.isArray(imagesOrUrl)) {
+          currentLightboxImages = imagesOrUrl
+            .map((item) =>
+              typeof item === "string" ? item : item && item.url ? item.url : "",
+            )
+            .filter(Boolean);
+          currentLightboxIndex = Math.max(
+            0,
+            Math.min(startIndex, currentLightboxImages.length - 1),
+          );
+        } else if (typeof imagesOrUrl === "string" && imagesOrUrl) {
+          currentLightboxImages = [imagesOrUrl];
+          currentLightboxIndex = 0;
+        } else {
+          currentLightboxImages = [];
+          currentLightboxIndex = 0;
+        }
+
+        updateLightboxDisplay();
+        const lightbox = document.getElementById("lightbox");
+        if (lightbox) lightbox.classList.add("active");
+      }
+
+      /**
+       * Aggiorna immagine visibile, contatore e visibilità freccette nel Lightbox.
+       * La freccia sinistra scompare se siamo sulla prima immagine, la destra se siamo sull'ultima.
+       */
+      function updateLightboxDisplay() {
+        const imgElem = document.getElementById("lightbox-image");
+        const prevBtn = document.getElementById("lightbox-prev");
+        const nextBtn = document.getElementById("lightbox-next");
+        const counterElem = document.getElementById("lightbox-counter");
+
+        if (!currentLightboxImages || currentLightboxImages.length === 0) {
+          if (imgElem) imgElem.src = "";
+          if (prevBtn) prevBtn.style.display = "none";
+          if (nextBtn) nextBtn.style.display = "none";
+          if (counterElem) counterElem.style.display = "none";
+          return;
+        }
+
+        const currentUrl = currentLightboxImages[currentLightboxIndex] || "";
+        if (imgElem) {
+          imgElem.src = currentUrl;
+        }
+
+        const total = currentLightboxImages.length;
+        if (total > 1) {
+          if (counterElem) {
+            counterElem.innerText = `${currentLightboxIndex + 1} / ${total}`;
+            counterElem.style.display = "block";
+          }
+          if (prevBtn) {
+            prevBtn.style.display = currentLightboxIndex > 0 ? "flex" : "none";
+          }
+          if (nextBtn) {
+            nextBtn.style.display =
+              currentLightboxIndex < total - 1 ? "flex" : "none";
+          }
+        } else {
+          if (prevBtn) prevBtn.style.display = "none";
+          if (nextBtn) nextBtn.style.display = "none";
+          if (counterElem) counterElem.style.display = "none";
+        }
+      }
+
+      function lightboxPrev(event) {
+        if (event) event.stopPropagation();
+        if (currentLightboxIndex > 0) {
+          currentLightboxIndex--;
+          updateLightboxDisplay();
+        }
+      }
+
+      function lightboxNext(event) {
+        if (event) event.stopPropagation();
+        if (currentLightboxIndex < currentLightboxImages.length - 1) {
+          currentLightboxIndex++;
+          updateLightboxDisplay();
+        }
       }
 
       /**
@@ -3492,13 +4168,87 @@
        * @param {boolean} [force=false] - Se true, forza la chiusura.
        */
       function closeLightbox(event, force = false) {
-        if (force || (event && event.target.id === "lightbox")) {
-          document.getElementById("lightbox").classList.remove("active");
+        if (
+          force ||
+          (event &&
+            (event.target.id === "lightbox" ||
+              event.target.closest(".lightbox-close")))
+        ) {
+          const lightbox = document.getElementById("lightbox");
+          if (lightbox) lightbox.classList.remove("active");
           setTimeout(() => {
-            document.getElementById("lightbox-image").src = "";
+            const imgElem = document.getElementById("lightbox-image");
+            if (imgElem) imgElem.src = "";
+            currentLightboxImages = [];
+            currentLightboxIndex = 0;
+            const prevBtn = document.getElementById("lightbox-prev");
+            const nextBtn = document.getElementById("lightbox-next");
+            const counterElem = document.getElementById("lightbox-counter");
+            if (prevBtn) prevBtn.style.display = "none";
+            if (nextBtn) nextBtn.style.display = "none";
+            if (counterElem) counterElem.style.display = "none";
           }, 200);
         }
       }
+
+      // Supporto swipe per scorrere le immagini del Lightbox da mobile
+      (function initLightboxTouchSwipe() {
+        let touchStartX = 0;
+        let touchEndX = 0;
+        let touchStartY = 0;
+        let touchEndY = 0;
+
+        function attachSwipeListener() {
+          const lightbox = document.getElementById("lightbox");
+          if (!lightbox) return;
+
+          lightbox.addEventListener(
+            "touchstart",
+            (e) => {
+              if (e.touches && e.touches.length === 1) {
+                touchStartX = e.touches[0].clientX;
+                touchStartY = e.touches[0].clientY;
+                touchEndX = touchStartX;
+                touchEndY = touchStartY;
+              }
+            },
+            { passive: true },
+          );
+
+          lightbox.addEventListener(
+            "touchmove",
+            (e) => {
+              if (e.touches && e.touches.length === 1) {
+                touchEndX = e.touches[0].clientX;
+                touchEndY = e.touches[0].clientY;
+              }
+            },
+            { passive: true },
+          );
+
+          lightbox.addEventListener(
+            "touchend",
+            () => {
+              const dx = touchEndX - touchStartX;
+              const dy = touchEndY - touchStartY;
+              if (Math.abs(dx) > 40 && Math.abs(dy) < 75) {
+                if (dx < 0) {
+                  lightboxNext();
+                } else {
+                  lightboxPrev();
+                }
+              }
+            },
+            { passive: true },
+          );
+        }
+
+        if (document.readyState === "loading") {
+          window.addEventListener("DOMContentLoaded", attachSwipeListener);
+        } else {
+          attachSwipeListener();
+        }
+      })();
 
       /**
        * Aggiunge una nuova categoria di spesa con colore associato e flag immobile.
@@ -4866,7 +5616,7 @@
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
           navigator.serviceWorker
-            .register("./service-worker.js?v=1.7.2")
+            .register("./service-worker.js?v=1.7.4")
             .then((registration) => {
               console.log(
                 "ServiceWorker registrato con successo: ",

@@ -1,4 +1,4 @@
-const CACHE_NAME = "casa-app-v1.7.2";
+const CACHE_NAME = "casa-app-v1.7.5";
 const MEDIA_CACHE = "casa-media-v1"; // Does not get deleted on version bumps
 const urlsToCache = [
   "./index.html",
