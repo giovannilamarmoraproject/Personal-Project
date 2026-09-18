@@ -1,901 +1,886 @@
+/**
+ * Istanza base personalizzata di SweetAlert2 configurata secondo lo stile Material Expressive 3.
+ * Applica le classi CSS definite per modali, titoli, pulsanti e contenitori.
+ */
+const M3Swal = Swal.mixin({
+  customClass: {
+    popup: "m3-swal-popup",
+    title: "m3-swal-title",
+    htmlContainer: "m3-swal-html",
+    actions: "m3-swal-actions",
+    confirmButton: "btn btn-filled m3-swal-confirm",
+    cancelButton: "btn btn-tonal m3-swal-cancel",
+  },
+  buttonsStyling: false,
+});
 
-      /**
-       * Istanza base personalizzata di SweetAlert2 configurata secondo lo stile Material Expressive 3.
-       * Applica le classi CSS definite per modali, titoli, pulsanti e contenitori.
-       */
-      const M3Swal = Swal.mixin({
-        customClass: {
-          popup: "m3-swal-popup",
-          title: "m3-swal-title",
-          htmlContainer: "m3-swal-html",
-          actions: "m3-swal-actions",
-          confirmButton: "btn btn-filled m3-swal-confirm",
-          cancelButton: "btn btn-tonal m3-swal-cancel",
-        },
-        buttonsStyling: false,
-      });
+/**
+ * Mostra una notifica toast temporanea di successo o informazione.
+ * @param {string} title - Titolo principale della notifica.
+ * @param {string} [text=''] - Testo descrittivo opzionale.
+ * @param {string} [icon='success'] - Icona di SweetAlert (success, warning, error, info).
+ * @returns {Promise} Promise restituita da Swal.fire.
+ */
+const Toast = Swal.mixin({
+  toast: true,
+  position: "top-end",
+  showConfirmButton: false,
+  timer: 3000,
+  timerProgressBar: true,
+  customClass: {
+    popup: "m3-swal-toast",
+  },
+  didOpen: (toast) => {
+    toast.onmouseenter = Swal.stopTimer;
+    toast.onmouseleave = Swal.resumeTimer;
+  },
+});
 
-      /**
-       * Mostra una notifica toast temporanea di successo o informazione.
-       * @param {string} title - Titolo principale della notifica.
-       * @param {string} [text=''] - Testo descrittivo opzionale.
-       * @param {string} [icon='success'] - Icona di SweetAlert (success, warning, error, info).
-       * @returns {Promise} Promise restituita da Swal.fire.
-       */
-      const Toast = Swal.mixin({
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        customClass: {
-          popup: "m3-swal-toast",
-        },
-        didOpen: (toast) => {
-          toast.onmouseenter = Swal.stopTimer;
-          toast.onmouseleave = Swal.resumeTimer;
-        },
-      });
+function showNotification(title, text = "", icon = "success") {
+  return Toast.fire({
+    icon: icon,
+    title: title,
+    text: text,
+  });
+}
 
-      function showNotification(title, text = "", icon = "success") {
-        return Toast.fire({
-          icon: icon,
-          title: title,
-          text: text,
-        });
-      }
+/**
+ * Mostra una finestra modale di conferma per azioni distruttive (es. eliminazioni).
+ * @param {string} title - Domanda o avviso principale.
+ * @param {string} text - Descrizione delle conseguenze dell'azione.
+ * @param {string} [confirmBtnText='Elimina'] - Etichetta del pulsante di conferma.
+ * @returns {Promise<SweetAlertResult>} Risultato contenente `isConfirmed`.
+ */
+function showConfirm(title, text, confirmBtnText = "Elimina") {
+  return M3Swal.fire({
+    title: title,
+    text: text,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: confirmBtnText,
+    cancelButtonText: "Annulla",
+    reverseButtons: true,
+    customClass: {
+      popup: "m3-swal-popup",
+      title: "m3-swal-title",
+      htmlContainer: "m3-swal-html",
+      actions: "m3-swal-actions",
+      confirmButton: "btn btn-error m3-swal-confirm",
+      cancelButton: "btn btn-tonal m3-swal-cancel",
+    },
+  });
+}
 
-      /**
-       * Mostra una finestra modale di conferma per azioni distruttive (es. eliminazioni).
-       * @param {string} title - Domanda o avviso principale.
-       * @param {string} text - Descrizione delle conseguenze dell'azione.
-       * @param {string} [confirmBtnText='Elimina'] - Etichetta del pulsante di conferma.
-       * @returns {Promise<SweetAlertResult>} Risultato contenente `isConfirmed`.
-       */
-      function showConfirm(title, text, confirmBtnText = "Elimina") {
-        return M3Swal.fire({
-          title: title,
-          text: text,
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonText: confirmBtnText,
-          cancelButtonText: "Annulla",
-          reverseButtons: true,
-          customClass: {
-            popup: "m3-swal-popup",
-            title: "m3-swal-title",
-            htmlContainer: "m3-swal-html",
-            actions: "m3-swal-actions",
-            confirmButton: "btn btn-error m3-swal-confirm",
-            cancelButton: "btn btn-tonal m3-swal-cancel",
-          },
-        });
-      }
+/**
+ * Attiva o disattiva la modalità scura (Dark Mode) sul body dell'applicazione.
+ * Salva la preferenza all'interno del localStorage.
+ */
+function toggleDarkMode() {
+  const isDark = document.body.classList.toggle("dark-mode");
+  localStorage.setItem("casaDarkMode", isDark ? "true" : "false");
+  updateThemeIcons(isDark);
+}
 
-      /**
-       * Attiva o disattiva la modalità scura (Dark Mode) sul body dell'applicazione.
-       * Salva la preferenza all'interno del localStorage.
-       */
-      function toggleDarkMode() {
-        const isDark = document.body.classList.toggle("dark-mode");
-        localStorage.setItem("casaDarkMode", isDark ? "true" : "false");
-        updateThemeIcons(isDark);
-      }
+/**
+ * Aggiorna le icone della modalità chiara/scura sia nella vista Desktop che Mobile.
+ * @param {boolean} isDark - True se la modalità scura è attiva, false altrimenti.
+ */
+function updateThemeIcons(isDark) {
+  const icon = document.getElementById("theme-icon");
+  const iconMobile = document.getElementById("theme-icon-mobile");
+  const iconName = isDark ? "dark_mode" : "light_mode";
+  if (icon) icon.innerText = iconName;
+  if (iconMobile) iconMobile.innerText = iconName;
+}
 
-      /**
-       * Aggiorna le icone della modalità chiara/scura sia nella vista Desktop che Mobile.
-       * @param {boolean} isDark - True se la modalità scura è attiva, false altrimenti.
-       */
-      function updateThemeIcons(isDark) {
-        const icon = document.getElementById("theme-icon");
-        const iconMobile = document.getElementById("theme-icon-mobile");
-        const iconName = isDark ? "dark_mode" : "light_mode";
-        if (icon) icon.innerText = iconName;
-        if (iconMobile) iconMobile.innerText = iconName;
-      }
+/**
+ * Attiva o disattiva la modalità Privacy (nasconde importi sensibili).
+ * Salva la preferenza solo in localStorage (non nel JSON / Gist).
+ */
+function togglePrivacyMode() {
+  const isPrivacy = document.body.classList.toggle("privacy-mode");
+  localStorage.setItem("casaPrivacyMode", isPrivacy ? "true" : "false");
+  updatePrivacyIcons(isPrivacy);
+}
 
-      /**
-       * Attiva o disattiva la modalità Privacy (nasconde importi sensibili).
-       * Salva la preferenza solo in localStorage (non nel JSON / Gist).
-       */
-      function togglePrivacyMode() {
-        const isPrivacy = document.body.classList.toggle("privacy-mode");
-        localStorage.setItem("casaPrivacyMode", isPrivacy ? "true" : "false");
-        updatePrivacyIcons(isPrivacy);
-      }
+function updatePrivacyIcons(isPrivacy) {
+  const iconDesk = document.getElementById("privacy-icon-desktop");
+  const iconMob = document.getElementById("privacy-icon-mobile");
+  const iconName = isPrivacy ? "visibility_off" : "visibility";
+  if (iconDesk) iconDesk.innerText = iconName;
+  if (iconMob) iconMob.innerText = iconName;
+}
 
-      function updatePrivacyIcons(isPrivacy) {
-        const iconDesk = document.getElementById("privacy-icon-desktop");
-        const iconMob = document.getElementById("privacy-icon-mobile");
-        const iconName = isPrivacy ? "visibility_off" : "visibility";
-        if (iconDesk) iconDesk.innerText = iconName;
-        if (iconMob) iconMob.innerText = iconName;
-      }
+function initPrivacyMode() {
+  const isPrivacy = localStorage.getItem("casaPrivacyMode") === "true";
+  if (isPrivacy) {
+    document.body.classList.add("privacy-mode");
+  } else {
+    document.body.classList.remove("privacy-mode");
+  }
+  updatePrivacyIcons(isPrivacy);
+}
 
-      function initPrivacyMode() {
-        const isPrivacy = localStorage.getItem("casaPrivacyMode") === "true";
-        if (isPrivacy) {
-          document.body.classList.add("privacy-mode");
-        } else {
-          document.body.classList.remove("privacy-mode");
-        }
-        updatePrivacyIcons(isPrivacy);
-      }
+/**
+ * Apre o chiude il menu contestuale dropdown per dispositivi mobili.
+ * @param {Event} [event] - Evento click scatenante.
+ */
+function toggleMobileMenu(event) {
+  if (event) event.stopPropagation();
+  const menu = document.getElementById("mobile-dropdown-menu");
+  if (menu) menu.classList.toggle("active");
+}
 
-      /**
-       * Apre o chiude il menu contestuale dropdown per dispositivi mobili.
-       * @param {Event} [event] - Evento click scatenante.
-       */
-      function toggleMobileMenu(event) {
-        if (event) event.stopPropagation();
-        const menu = document.getElementById("mobile-dropdown-menu");
-        if (menu) menu.classList.toggle("active");
-      }
+// Listener globale: chiude il menu a tendina mobile se si clicca fuori dall'area del menu
+document.addEventListener("click", function (e) {
+  const menu = document.getElementById("mobile-dropdown-menu");
+  if (menu && menu.classList.contains("active")) {
+    if (!e.target.closest(".header-actions-mobile")) {
+      menu.classList.remove("active");
+    }
+  }
+});
 
-      // Listener globale: chiude il menu a tendina mobile se si clicca fuori dall'area del menu
-      document.addEventListener("click", function (e) {
-        const menu = document.getElementById("mobile-dropdown-menu");
-        if (menu && menu.classList.contains("active")) {
-          if (!e.target.closest(".header-actions-mobile")) {
-            menu.classList.remove("active");
-          }
-        }
-      });
+// Listener globale per la pressione dei tasti: frecce per lightbox, ESC per chiusura modali
+window.addEventListener("keydown", function (e) {
+  const lightbox = document.getElementById("lightbox");
+  if (lightbox && lightbox.classList.contains("active")) {
+    if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      lightboxPrev();
+      return;
+    }
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      lightboxNext();
+      return;
+    }
+  }
 
-      // Listener globale per la pressione dei tasti: frecce per lightbox, ESC per chiusura modali
-      window.addEventListener("keydown", function (e) {
-        const lightbox = document.getElementById("lightbox");
-        if (lightbox && lightbox.classList.contains("active")) {
-          if (e.key === "ArrowLeft") {
-            e.preventDefault();
-            lightboxPrev();
-            return;
-          }
-          if (e.key === "ArrowRight") {
-            e.preventDefault();
-            lightboxNext();
-            return;
-          }
-        }
+  if (e.key === "Escape" || e.keyCode === 27) {
+    closeLightbox(null, true);
+    closeModal();
+    closeQAModal();
+    let driveModal = document.getElementById("driveModal");
+    if (driveModal) driveModal.classList.remove("active");
+    let catModal = document.getElementById("catModal");
+    if (catModal) catModal.classList.remove("active");
+    let menu = document.getElementById("mobile-dropdown-menu");
+    if (menu) menu.classList.remove("active");
+  }
+});
 
-        if (e.key === "Escape" || e.keyCode === 27) {
-          closeLightbox(null, true);
-          closeModal();
-          closeQAModal();
-          let driveModal = document.getElementById("driveModal");
-          if (driveModal) driveModal.classList.remove("active");
-          let catModal = document.getElementById("catModal");
-          if (catModal) catModal.classList.remove("active");
-          let menu = document.getElementById("mobile-dropdown-menu");
-          if (menu) menu.classList.remove("active");
-        }
-      });
+/**
+ * Analizza e normalizza gli URL (inclusi link diretti o condivisioni di Google Drive).
+ * @param {string|Object} urlInput - Stringa URL o oggetto contenente proprietà URL.
+ * @returns {{type: string, url: string, rawUrl: string, viewUrl: string}} Dati normalizzati del file.
+ */
+function formatFileUrl(urlInput) {
+  let url = "";
+  if (typeof urlInput === "string") {
+    url = urlInput;
+  } else if (urlInput && typeof urlInput === "object") {
+    url = urlInput.url || urlInput.viewUrl || urlInput.rawUrl || "";
+  }
+  if (!url || typeof url !== "string")
+    return { type: "unknown", url: "", rawUrl: "", viewUrl: "" };
 
-      /**
-       * Analizza e normalizza gli URL (inclusi link diretti o condivisioni di Google Drive).
-       * @param {string|Object} urlInput - Stringa URL o oggetto contenente proprietà URL.
-       * @returns {{type: string, url: string, rawUrl: string, viewUrl: string}} Dati normalizzati del file.
-       */
-      function formatFileUrl(urlInput) {
-        let url = "";
-        if (typeof urlInput === "string") {
-          url = urlInput;
-        } else if (urlInput && typeof urlInput === "object") {
-          url = urlInput.url || urlInput.viewUrl || urlInput.rawUrl || "";
-        }
-        if (!url || typeof url !== "string")
-          return { type: "unknown", url: "", rawUrl: "", viewUrl: "" };
+  let fileId = null;
+  // Estrazione dell'ID file di Google Drive da pattern classici
+  let match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (match && match[1]) fileId = match[1];
+  if (!fileId) {
+    match = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    if (match && match[1]) fileId = match[1];
+  }
+  if (!fileId) {
+    match = url.match(/googleusercontent\.com\/d\/([a-zA-Z0-9_-]+)/);
+    if (match && match[1]) fileId = match[1];
+  }
 
-        let fileId = null;
-        // Estrazione dell'ID file di Google Drive da pattern classici
-        let match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-        if (match && match[1]) fileId = match[1];
-        if (!fileId) {
-          match = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-          if (match && match[1]) fileId = match[1];
-        }
-        if (!fileId) {
-          match = url.match(/googleusercontent\.com\/d\/([a-zA-Z0-9_-]+)/);
-          if (match && match[1]) fileId = match[1];
-        }
-
-        if (fileId) {
-          // Riconoscimento file PDF su Google Drive
-          if (
-            url.toLowerCase().includes("pdf") ||
-            url.toLowerCase().includes("document")
-          ) {
-            return {
-              type: "pdf",
-              viewUrl: `https://drive.google.com/file/d/${fileId}/view`,
-              rawUrl: url,
-              url: `https://drive.google.com/file/d/${fileId}/view`,
-            };
-          }
-          // Trasformazione in thumbnail ad alta risoluzione per immagini Drive
-          return {
-            type: "image",
-            url: `https://drive.google.com/thumbnail?id=${fileId}&sz=w2560`,
-            rawUrl: url,
-            viewUrl: `https://drive.google.com/thumbnail?id=${fileId}&sz=w2560`,
-          };
-        }
-        if (url.toLowerCase().endsWith(".pdf")) {
-          return { type: "pdf", viewUrl: url, rawUrl: url, url: url };
-        }
-        return { type: "image", url: url, rawUrl: url, viewUrl: url };
-      }
-
-      // Configurazioni e strutture dati di default per inizializzazione pulita
-      const defaultCats = {
-        Immobili: { color: "#3F51B5", isImmobile: true },
-        Extra: { color: "#FF9800", isImmobile: false },
-        "Spese Acquisto": { color: "#9C27B0", isImmobile: false },
-        "Lavori e Utenze": { color: "#00BCD4", isImmobile: false },
-        Arredo: { color: "#E91E63", isImmobile: false },
+  if (fileId) {
+    // Riconoscimento file PDF su Google Drive
+    if (
+      url.toLowerCase().includes("pdf") ||
+      url.toLowerCase().includes("document")
+    ) {
+      return {
+        type: "pdf",
+        viewUrl: `https://drive.google.com/file/d/${fileId}/view`,
+        rawUrl: url,
+        url: `https://drive.google.com/file/d/${fileId}/view`,
       };
-      const defaultRooms = [
-        "Generale Casa",
-        "Cucina",
-        "Soggiorno",
-        "Bagno",
-        "Zona Notte",
-      ];
-      const defaultMortgage = {
-        years: 30,
-        rate: 3.25,
-        mode: "auto",
-        singleUser: "",
+    }
+    // Trasformazione in thumbnail ad alta risoluzione per immagini Drive
+    return {
+      type: "image",
+      url: `https://drive.google.com/thumbnail?id=${fileId}&sz=w2560`,
+      rawUrl: url,
+      viewUrl: `https://drive.google.com/thumbnail?id=${fileId}&sz=w2560`,
+    };
+  }
+  if (url.toLowerCase().endsWith(".pdf")) {
+    return { type: "pdf", viewUrl: url, rawUrl: url, url: url };
+  }
+  return { type: "image", url: url, rawUrl: url, viewUrl: url };
+}
+
+// Configurazioni e strutture dati di default per inizializzazione pulita
+const defaultCats = {
+  Immobili: { color: "#3F51B5", isImmobile: true },
+  Extra: { color: "#FF9800", isImmobile: false },
+  "Spese Acquisto": { color: "#9C27B0", isImmobile: false },
+  "Lavori e Utenze": { color: "#00BCD4", isImmobile: false },
+  Arredo: { color: "#E91E63", isImmobile: false },
+};
+const defaultRooms = [
+  "Generale Casa",
+  "Cucina",
+  "Soggiorno",
+  "Bagno",
+  "Zona Notte",
+];
+const defaultMortgage = {
+  years: 30,
+  rate: 3.25,
+  mode: "auto",
+  singleUser: "",
+};
+
+const defaultData = {
+  budget: [],
+  costi: [],
+  qa: [],
+  tasks: [],
+  notes: [],
+  settings: {
+    configured: false,
+    darkMode: false,
+    users: [{ id: "u1", name: "Utente", share: 100, safetyFund: 5000 }],
+    heroImage: "",
+    driveLink: "",
+    roomCategories: defaultRooms,
+    renders: [],
+    categories: defaultCats,
+    mortgage: defaultMortgage,
+  },
+};
+
+// Caricamento dello stato persistito da localStorage o fallback su defaultData
+let appData = JSON.parse(localStorage.getItem("casaData")) || defaultData;
+let barChartInstance = null;
+let pieChartInstance = null;
+let catBarChartInstance = null;
+let currentSort = { table: null, column: null, asc: true };
+const autoColors = [
+  "#E91E63",
+  "#9C27B0",
+  "#3F51B5",
+  "#2196F3",
+  "#00BCD4",
+  "#009688",
+  "#4CAF50",
+  "#FF9800",
+  "#FF5722",
+  "#795548",
+];
+
+let isMutuoManualEdit = false;
+let manualCustomMortgage = null;
+let isMortgageEditing = false;
+
+// Flag to prevent infinite loops when saving from gist
+let isSyncingToGist = false;
+
+let casaGithubConfig = { enabled: false, token: "", gistId: "" };
+try {
+  let storedGh = localStorage.getItem("casaGithubConfig");
+  if (storedGh) {
+    casaGithubConfig = JSON.parse(storedGh);
+    // Rimuovi dai vecchi appData per non inviarlo in cloud
+    if (appData.settings && appData.settings.githubSync) {
+      delete appData.settings.githubSync;
+      localStorage.setItem("casaData", JSON.stringify(appData));
+    }
+  } else {
+    if (appData.settings && appData.settings.githubSync) {
+      casaGithubConfig = appData.settings.githubSync;
+      localStorage.setItem(
+        "casaGithubConfig",
+        JSON.stringify(casaGithubConfig),
+      );
+      delete appData.settings.githubSync;
+      localStorage.setItem("casaData", JSON.stringify(appData));
+    }
+  }
+} catch (e) {
+  console.error("Errore migrazione Github config", e);
+}
+
+function saveGithubConfig() {
+  localStorage.setItem("casaGithubConfig", JSON.stringify(casaGithubConfig));
+}
+
+/**
+ * Pulisce e assicura l'integrità strutturale dell'oggetto appData prima di ogni operazione.
+ * Garantisce che gli array esistano e i campi legacy vengano migrati coerentemente.
+ */
+function sanitizeData() {
+  if (!appData.settings)
+    appData.settings = JSON.parse(JSON.stringify(defaultData.settings));
+  if (
+    !appData.settings.roomCategories ||
+    appData.settings.roomCategories.length === 0
+  ) {
+    appData.settings.roomCategories = [...defaultRooms];
+  }
+  appData.settings.roomCategories = appData.settings.roomCategories.filter(
+    (r) => r !== "Piantine & Schemi" && r !== "Preventivi & Contratti",
+  );
+  if (appData.settings.roomCategories.length === 0) {
+    appData.settings.roomCategories = [...defaultRooms];
+  }
+
+  if (!appData.settings.mortgage) {
+    appData.settings.mortgage = JSON.parse(JSON.stringify(defaultMortgage));
+  }
+
+  if (!appData.qa) appData.qa = [];
+  appData.qa.forEach((q) => {
+    if (!q.images) {
+      q.images = q.image ? [q.image] : [];
+    }
+  });
+  if (!appData.tasks) appData.tasks = [];
+  appData.tasks.forEach((t) => {
+    if (!t.images) {
+      t.images = t.image ? [t.image] : [];
+    }
+  });
+  if (!appData.notes) appData.notes = [];
+  appData.notes.forEach((n) => {
+    if (!n.images) {
+      n.images = n.image ? [n.image] : [];
+    }
+  });
+
+  if (!appData.settings.renders) appData.settings.renders = [];
+
+  // Normalizzazione elementi multimediali della galleria
+  appData.settings.renders = appData.settings.renders.map((r) => {
+    if (typeof r === "string") {
+      let info = formatFileUrl(r);
+      return {
+        url: r,
+        type: info.type === "pdf" ? "pdf" : "image",
+        room: "Generale Casa",
+        title: "Documento / Render",
       };
+    }
+    let rawUrl = r && typeof r.url === "string" ? r.url : "";
+    let info = formatFileUrl(rawUrl);
+    let type = r.type || (info.type === "pdf" ? "pdf" : "image");
+    let room = r.room || "Generale Casa";
+    if (room === "Piantine & Schemi") {
+      type = "plan";
+      room = "Generale Casa";
+    } else if (room === "Preventivi & Contratti") {
+      type = "pdf";
+      room = "Generale Casa";
+    }
+    return {
+      url: rawUrl,
+      type: type,
+      room: room,
+      title: r.title || "Allegato",
+    };
+  });
 
-      const defaultData = {
-        budget: [],
-        costi: [],
-        qa: [],
-        tasks: [],
-        notes: [],
-        settings: {
-          configured: false,
-          darkMode: false,
-          users: [{ id: "u1", name: "Utente", share: 100, safetyFund: 5000 }],
-          heroImage: "",
-          driveLink: "",
-          roomCategories: defaultRooms,
-          renders: [],
-          categories: defaultCats,
-          mortgage: defaultMortgage,
-        },
+  if (
+    !appData.settings.categories ||
+    Object.keys(appData.settings.categories).length === 0
+  ) {
+    appData.settings.categories = JSON.parse(JSON.stringify(defaultCats));
+  }
+
+  // Migrazione categorie legacy da stringa colore ad oggetto { color, isImmobile }
+  Object.keys(appData.settings.categories).forEach((cat) => {
+    let val = appData.settings.categories[cat];
+    if (typeof val === "string") {
+      appData.settings.categories[cat] = {
+        color: val,
+        isImmobile: cat === "Immobili",
       };
+    }
+  });
 
-      // Caricamento dello stato persistito da localStorage o fallback su defaultData
-      let appData = JSON.parse(localStorage.getItem("casaData")) || defaultData;
-      let barChartInstance = null;
-      let pieChartInstance = null;
-      let catBarChartInstance = null;
-      let currentSort = { table: null, column: null, asc: true };
-      const autoColors = [
-        "#E91E63",
-        "#9C27B0",
-        "#3F51B5",
-        "#2196F3",
-        "#00BCD4",
-        "#009688",
-        "#4CAF50",
-        "#FF9800",
-        "#FF5722",
-        "#795548",
-      ];
+  if (!appData.settings.users || appData.settings.users.length === 0) {
+    appData.settings.users = [
+      { id: "u1", name: "Utente", share: 100, safetyFund: 5000 },
+    ];
+  } else {
+    appData.settings.users.forEach((u) => {
+      if (u.safetyFund === undefined) u.safetyFund = 5000;
+    });
+  }
 
-      let isMutuoManualEdit = false;
-      let manualCustomMortgage = null;
-      let isMortgageEditing = false;
+  // Normalizzazione tabella costi
+  if (!appData.costi) appData.costi = [];
+  appData.costi = appData.costi.filter(
+    (c) => c && c.desc && c.desc.trim().toLowerCase() !== "totale",
+  );
+  let colorIndex = 0;
+  appData.costi.forEach((c) => {
+    if (c.gio !== undefined) {
+      c.u1 = c.gio;
+      delete c.gio;
+    }
+    if (c.fede !== undefined) {
+      c.u2 = c.fede;
+      delete c.fede;
+    }
+    // Retrocompatibilità: inizializza array pagamenti se assente
+    if (!c.pagamenti) c.pagamenti = [];
 
-      // Flag to prevent infinite loops when saving from gist
-      let isSyncingToGist = false;
+    // Tracciamento quote originarie/dichiarate per rilevare pagamenti non ancora registrati a rate
+    if (!c.originQuote) {
+      c.originQuote = {};
+      appData.settings.users.forEach((u) => {
+        c.originQuote[u.id] = parseFloat(c[u.id]) || 0;
+      });
+    }
+    const sumOrigin = appData.settings.users.reduce(
+      (acc, u) => acc + (c.originQuote[u.id] || 0),
+      0,
+    );
+    if (c.originPaid === undefined) {
+      c.originPaid = sumOrigin;
+    }
 
-      let casaGithubConfig = { enabled: false, token: "", gistId: "" };
-      try {
-        let storedGh = localStorage.getItem("casaGithubConfig");
-        if (storedGh) {
-          casaGithubConfig = JSON.parse(storedGh);
-          // Rimuovi dai vecchi appData per non inviarlo in cloud
-          if (appData.settings && appData.settings.githubSync) {
-            delete appData.settings.githubSync;
-            localStorage.setItem("casaData", JSON.stringify(appData));
-          }
-        } else {
-          if (appData.settings && appData.settings.githubSync) {
-            casaGithubConfig = appData.settings.githubSync;
-            localStorage.setItem(
-              "casaGithubConfig",
-              JSON.stringify(casaGithubConfig),
-            );
-            delete appData.settings.githubSync;
-            localStorage.setItem("casaData", JSON.stringify(appData));
-          }
-        }
-      } catch (e) {
-        console.error("Errore migrazione Github config", e);
-      }
+    let catName = c.cat ? c.cat.trim() : "Senza Categoria";
+    c.cat = catName;
+    if (!appData.settings.categories[catName]) {
+      appData.settings.categories[catName] = {
+        color: autoColors[colorIndex % autoColors.length],
+        isImmobile: catName === "Immobili",
+      };
+      colorIndex++;
+    }
+  });
 
-      function saveGithubConfig() {
-        localStorage.setItem(
-          "casaGithubConfig",
-          JSON.stringify(casaGithubConfig),
-        );
-      }
+  // Normalizzazione tabella budget
+  if (!appData.budget) appData.budget = [];
+  appData.budget = appData.budget.filter(
+    (b) =>
+      b &&
+      b.desc &&
+      b.desc.trim().toLowerCase() !== "totale" &&
+      b.desc.trim().toLowerCase() !== "risparmi accumulati",
+  );
+  appData.budget.forEach((b) => {
+    if (b.gio !== undefined) {
+      b.u1 = b.gio;
+      delete b.gio;
+    }
+    if (b.fede !== undefined) {
+      b.u2 = b.fede;
+      delete b.fede;
+    }
+    if (b.isMutuo === undefined) b.isMutuo = false;
+  });
+}
 
-      /**
-       * Pulisce e assicura l'integrità strutturale dell'oggetto appData prima di ogni operazione.
-       * Garantisce che gli array esistano e i campi legacy vengano migrati coerentemente.
-       */
-      function sanitizeData() {
-        if (!appData.settings)
-          appData.settings = JSON.parse(JSON.stringify(defaultData.settings));
-        if (
-          !appData.settings.roomCategories ||
-          appData.settings.roomCategories.length === 0
-        ) {
-          appData.settings.roomCategories = [...defaultRooms];
-        }
-        appData.settings.roomCategories =
-          appData.settings.roomCategories.filter(
-            (r) => r !== "Piantine & Schemi" && r !== "Preventivi & Contratti",
-          );
-        if (appData.settings.roomCategories.length === 0) {
-          appData.settings.roomCategories = [...defaultRooms];
-        }
+/**
+ * Salva l'URL dell'immagine di copertina (Hero) nelle impostazioni.
+ */
+function saveHeroImage() {
+  let urlInput = document.getElementById("hero-image-url");
+  if (!urlInput) return;
+  let url = urlInput.value;
+  appData.settings.heroImage =
+    formatFileUrl(url).url || formatFileUrl(url).rawUrl;
+  urlInput.value = appData.settings.heroImage;
+  saveDataLocally();
+  showNotification("Immagine copertina salvata!");
+}
 
-        if (!appData.settings.mortgage) {
-          appData.settings.mortgage = JSON.parse(
-            JSON.stringify(defaultMortgage),
-          );
-        }
+/**
+ * Aggiunge un nuovo ambiente personalizzato per categorizzare render e piantine.
+ */
+function addRoomCategory() {
+  const input = document.getElementById("new-room-name");
+  const val = input.value.trim();
+  if (!val)
+    return M3Swal.fire({
+      title: "Attenzione",
+      text: "Inserisci un nome per l'ambiente",
+      icon: "warning",
+    });
+  if (appData.settings.roomCategories.includes(val))
+    return M3Swal.fire({
+      title: "Attenzione",
+      text: "Ambiente già presente",
+      icon: "warning",
+    });
+  appData.settings.roomCategories.push(val);
+  input.value = "";
+  saveDataLocally();
+  showNotification("Ambiente aggiunto!");
+}
 
-        if (!appData.qa) appData.qa = [];
-        appData.qa.forEach((q) => {
-          if (!q.images) {
-            q.images = q.image ? [q.image] : [];
-          }
-        });
-        if (!appData.tasks) appData.tasks = [];
-        appData.tasks.forEach((t) => {
-          if (!t.images) {
-            t.images = t.image ? [t.image] : [];
-          }
-        });
-        if (!appData.notes) appData.notes = [];
-        appData.notes.forEach((n) => {
-          if (!n.images) {
-            n.images = n.image ? [n.image] : [];
-          }
-        });
+/**
+ * Rimuove un ambiente esistente riassegnando i file a 'Generale Casa'.
+ * @param {number} idx - Indice dell'ambiente nell'array `roomCategories`.
+ */
+async function removeRoomCategory(idx) {
+  const room = appData.settings.roomCategories[idx];
+  const result = await showConfirm(
+    `Rimuovere "${room}"?`,
+    "I file associati verranno spostati in 'Generale Casa'.",
+  );
+  if (result.isConfirmed) {
+    appData.settings.roomCategories.splice(idx, 1);
+    appData.settings.renders.forEach((r) => {
+      if (r.room === room) r.room = "Generale Casa";
+    });
+    saveDataLocally();
+    showNotification("Ambiente rimosso");
+  }
+}
 
-        if (!appData.settings.renders) appData.settings.renders = [];
+/**
+ * Aggiunge un elemento multimediale (immagine, render o PDF) alla galleria.
+ */
+function addRenderItem() {
+  const urlInput = document.getElementById("new-render-url");
+  const titleInput = document.getElementById("new-render-title");
+  const roomSelect = document.getElementById("new-render-room");
+  const typeSelect = document.getElementById("new-render-type");
 
-        // Normalizzazione elementi multimediali della galleria
-        appData.settings.renders = appData.settings.renders.map((r) => {
-          if (typeof r === "string") {
-            let info = formatFileUrl(r);
-            return {
-              url: r,
-              type: info.type === "pdf" ? "pdf" : "image",
-              room: "Generale Casa",
-              title: "Documento / Render",
-            };
-          }
-          let rawUrl = r && typeof r.url === "string" ? r.url : "";
-          let info = formatFileUrl(rawUrl);
-          let type = r.type || (info.type === "pdf" ? "pdf" : "image");
-          let room = r.room || "Generale Casa";
-          if (room === "Piantine & Schemi") {
-            type = "plan";
-            room = "Generale Casa";
-          } else if (room === "Preventivi & Contratti") {
-            type = "pdf";
-            room = "Generale Casa";
-          }
-          return {
-            url: rawUrl,
-            type: type,
-            room: room,
-            title: r.title || "Allegato",
-          };
-        });
+  if (!urlInput || !urlInput.value.trim())
+    return M3Swal.fire({
+      title: "Attenzione",
+      text: "Inserisci l'URL del file",
+      icon: "warning",
+    });
 
-        if (
-          !appData.settings.categories ||
-          Object.keys(appData.settings.categories).length === 0
-        ) {
-          appData.settings.categories = JSON.parse(JSON.stringify(defaultCats));
-        }
+  const url = urlInput.value.trim();
+  const title = titleInput.value.trim() || "Allegato";
+  const room = roomSelect ? roomSelect.value : "Generale Casa";
+  const type = typeSelect ? typeSelect.value : "image";
 
-        // Migrazione categorie legacy da stringa colore ad oggetto { color, isImmobile }
-        Object.keys(appData.settings.categories).forEach((cat) => {
-          let val = appData.settings.categories[cat];
-          if (typeof val === "string") {
-            appData.settings.categories[cat] = {
-              color: val,
-              isImmobile: cat === "Immobili",
-            };
-          }
-        });
+  appData.settings.renders.push({ url, title, room, type });
+  urlInput.value = "";
+  titleInput.value = "";
+  saveDataLocally();
+  showNotification("Elemento multimediale aggiunto!");
+}
 
-        if (!appData.settings.users || appData.settings.users.length === 0) {
-          appData.settings.users = [
-            { id: "u1", name: "Utente", share: 100, safetyFund: 5000 },
-          ];
-        } else {
-          appData.settings.users.forEach((u) => {
-            if (u.safetyFund === undefined) u.safetyFund = 5000;
-          });
-        }
+/**
+ * Elimina un elemento dalla galleria multimediale.
+ * @param {number} index - Indice dell'elemento nell'array `renders`.
+ */
+async function removeRender(index) {
+  const result = await showConfirm(
+    "Rimuovere questo file?",
+    "Il file non sarà più visibile nella galleria.",
+  );
+  if (result.isConfirmed) {
+    appData.settings.renders.splice(index, 1);
+    saveDataLocally();
+    showNotification("File rimosso");
+  }
+}
 
-        // Normalizzazione tabella costi
-        if (!appData.costi) appData.costi = [];
-        appData.costi = appData.costi.filter(
-          (c) => c && c.desc && c.desc.trim().toLowerCase() !== "totale",
-        );
-        let colorIndex = 0;
-        appData.costi.forEach((c) => {
-          if (c.gio !== undefined) {
-            c.u1 = c.gio;
-            delete c.gio;
-          }
-          if (c.fede !== undefined) {
-            c.u2 = c.fede;
-            delete c.fede;
-          }
-          // Retrocompatibilità: inizializza array pagamenti se assente
-          if (!c.pagamenti) c.pagamenti = [];
+/**
+ * Aggiunge una nuova voce nei Costi o nel Budget leggendo i valori dai form.
+ * @param {'costo'|'budget'} type - Tipologia della voce da inserire.
+ */
+function addEntry(type) {
+  if (type === "costo") {
+    const cat = document.getElementById("add-costo-cat").value;
+    const desc = document.getElementById("add-costo-desc").value.trim();
+    const prezzo =
+      parseFloat(document.getElementById("add-costo-prezzo").value) || 0;
+    const note = document.getElementById("add-costo-note").value;
 
-          // Tracciamento quote originarie/dichiarate per rilevare pagamenti non ancora registrati a rate
-          if (!c.originQuote) {
-            c.originQuote = {};
-            appData.settings.users.forEach((u) => {
-              c.originQuote[u.id] = parseFloat(c[u.id]) || 0;
-            });
-          }
-          const sumOrigin = appData.settings.users.reduce(
-            (acc, u) => acc + (c.originQuote[u.id] || 0),
-            0,
-          );
-          if (c.originPaid === undefined) {
-            c.originPaid = sumOrigin;
-          }
+    if (!desc)
+      return M3Swal.fire({
+        title: "Attenzione",
+        text: "Inserisci una descrizione valida",
+        icon: "warning",
+      });
 
-          let catName = c.cat ? c.cat.trim() : "Senza Categoria";
-          c.cat = catName;
-          if (!appData.settings.categories[catName]) {
-            appData.settings.categories[catName] = {
-              color: autoColors[colorIndex % autoColors.length],
-              isImmobile: catName === "Immobili",
-            };
-            colorIndex++;
-          }
-        });
+    let item = { id: Date.now(), cat, desc, prezzo, note };
+    appData.settings.users.forEach((u) => {
+      let val =
+        parseFloat(document.getElementById(`add-costo-${u.id}`)?.value) || 0;
+      item[u.id] = val;
+    });
 
-        // Normalizzazione tabella budget
-        if (!appData.budget) appData.budget = [];
-        appData.budget = appData.budget.filter(
-          (b) =>
-            b &&
-            b.desc &&
-            b.desc.trim().toLowerCase() !== "totale" &&
-            b.desc.trim().toLowerCase() !== "risparmi accumulati",
-        );
-        appData.budget.forEach((b) => {
-          if (b.gio !== undefined) {
-            b.u1 = b.gio;
-            delete b.gio;
-          }
-          if (b.fede !== undefined) {
-            b.u2 = b.fede;
-            delete b.fede;
-          }
-          if (b.isMutuo === undefined) b.isMutuo = false;
-        });
-      }
+    appData.costi.push(item);
+    document.getElementById("add-costo-desc").value = "";
+    document.getElementById("add-costo-prezzo").value = "";
+    document.getElementById("add-costo-note").value = "";
+    appData.settings.users.forEach((u) => {
+      let inp = document.getElementById(`add-costo-${u.id}`);
+      if (inp) inp.value = "";
+    });
+    showNotification("Costo aggiunto con successo!");
+  } else {
+    const desc = document.getElementById("add-budget-desc").value.trim();
+    const note = document.getElementById("add-budget-note").value;
+    const isMutuo = document.getElementById("add-budget-is-mutuo").checked;
 
-      /**
-       * Salva l'URL dell'immagine di copertina (Hero) nelle impostazioni.
-       */
-      function saveHeroImage() {
-        let urlInput = document.getElementById("hero-image-url");
-        if (!urlInput) return;
-        let url = urlInput.value;
-        appData.settings.heroImage =
-          formatFileUrl(url).url || formatFileUrl(url).rawUrl;
-        urlInput.value = appData.settings.heroImage;
-        saveDataLocally();
-        showNotification("Immagine copertina salvata!");
-      }
+    if (!desc)
+      return M3Swal.fire({
+        title: "Attenzione",
+        text: "Inserisci una descrizione valida",
+        icon: "warning",
+      });
 
-      /**
-       * Aggiunge un nuovo ambiente personalizzato per categorizzare render e piantine.
-       */
-      function addRoomCategory() {
-        const input = document.getElementById("new-room-name");
-        const val = input.value.trim();
-        if (!val)
-          return M3Swal.fire({
-            title: "Attenzione",
-            text: "Inserisci un nome per l'ambiente",
-            icon: "warning",
-          });
-        if (appData.settings.roomCategories.includes(val))
-          return M3Swal.fire({
-            title: "Attenzione",
-            text: "Ambiente già presente",
-            icon: "warning",
-          });
-        appData.settings.roomCategories.push(val);
-        input.value = "";
-        saveDataLocally();
-        showNotification("Ambiente aggiunto!");
-      }
+    let item = { id: Date.now(), desc, note, isMutuo };
+    appData.settings.users.forEach((u) => {
+      let val =
+        parseFloat(document.getElementById(`add-budget-${u.id}`)?.value) || 0;
+      item[u.id] = val;
+    });
 
-      /**
-       * Rimuove un ambiente esistente riassegnando i file a 'Generale Casa'.
-       * @param {number} idx - Indice dell'ambiente nell'array `roomCategories`.
-       */
-      async function removeRoomCategory(idx) {
-        const room = appData.settings.roomCategories[idx];
-        const result = await showConfirm(
-          `Rimuovere "${room}"?`,
-          "I file associati verranno spostati in 'Generale Casa'.",
-        );
-        if (result.isConfirmed) {
-          appData.settings.roomCategories.splice(idx, 1);
-          appData.settings.renders.forEach((r) => {
-            if (r.room === room) r.room = "Generale Casa";
-          });
-          saveDataLocally();
-          showNotification("Ambiente rimosso");
-        }
-      }
+    appData.budget.push(item);
+    document.getElementById("add-budget-desc").value = "";
+    document.getElementById("add-budget-note").value = "";
+    document.getElementById("add-budget-is-mutuo").checked = false;
+    appData.settings.users.forEach((u) => {
+      let inp = document.getElementById(`add-budget-${u.id}`);
+      if (inp) inp.value = "";
+    });
+    showNotification("Voce di budget aggiunta!");
+  }
+  saveDataLocally();
+}
 
-      /**
-       * Aggiunge un elemento multimediale (immagine, render o PDF) alla galleria.
-       */
-      function addRenderItem() {
-        const urlInput = document.getElementById("new-render-url");
-        const titleInput = document.getElementById("new-render-title");
-        const roomSelect = document.getElementById("new-render-room");
-        const typeSelect = document.getElementById("new-render-type");
+/**
+ * Apre la finestra modale per modificare una voce esistente di costo o budget.
+ * @param {'costo'|'budget'} type - Tipo della voce da modificare.
+ * @param {number} id - ID univoco dell'elemento.
+ */
+function openEditModal(type, id) {
+  const modal = document.getElementById("editModal");
+  document.getElementById("modal-id").value = id;
+  document.getElementById("modal-type").value = type;
+  let item;
+  if (type === "costo") {
+    item = appData.costi.find((c) => c.id === id);
+    document.getElementById("modal-title").innerText = "Modifica Costo";
+    document.getElementById("modal-cat-group").style.display = "flex";
+    document.getElementById("modal-prezzo-group").style.display = "flex";
+    document.getElementById("modal-is-mutuo-group").style.display = "none";
+    document.getElementById("modal-cat").value = item.cat || "";
+    document.getElementById("modal-prezzo").value = (item.prezzo || 0).toFixed(
+      2,
+    );
+    const sumPaid = appData.settings.users.reduce(
+      (acc, u) => acc + (item[u.id] || 0),
+      0,
+    );
+    const isSaldato = (item.prezzo || 0) > 0 && item.prezzo - sumPaid <= 0.005;
+    // Mostra bottone pagamento solo per i costi non ancora saldati al 100%
+    document.getElementById("modal-add-payment-btn").style.display = isSaldato
+      ? "none"
+      : "inline-flex";
+  } else {
+    item = appData.budget.find((b) => b.id === id);
+    document.getElementById("modal-title").innerText = "Modifica Budget";
+    document.getElementById("modal-cat-group").style.display = "none";
+    document.getElementById("modal-prezzo-group").style.display = "none";
+    document.getElementById("modal-is-mutuo-group").style.display = "block";
+    document.getElementById("modal-is-mutuo").checked = !!item.isMutuo;
+    // Nasconde bottone pagamento per il budget
+    document.getElementById("modal-add-payment-btn").style.display = "none";
+  }
+  document.getElementById("modal-desc").value = item.desc || "";
+  document.getElementById("modal-note").value = item.note || "";
 
-        if (!urlInput || !urlInput.value.trim())
-          return M3Swal.fire({
-            title: "Attenzione",
-            text: "Inserisci l'URL del file",
-            icon: "warning",
-          });
+  // Se il costo ha pagamenti registrati, disabilita i campi quota utente
+  // (i totali vengono calcolati automaticamente dalla somma dei pagamenti)
+  const hasPagamenti =
+    type === "costo" && item.pagamenti && item.pagamenti.length > 0;
+  let modalUsersNote = document.getElementById("modal-users-note");
+  if (!modalUsersNote) {
+    modalUsersNote = document.createElement("p");
+    modalUsersNote.id = "modal-users-note";
+    modalUsersNote.style.cssText =
+      "font-size: 12px; color: var(--md-sys-color-outline); margin: -8px 0 8px 0; display: flex; align-items: center; gap: 4px;";
+    modalUsersNote.innerHTML =
+      '<span class="material-symbols-outlined" style="font-size:14px">info</span> Calcolati automaticamente dai pagamenti registrati';
+    const usersContainer = document.getElementById("modal-users-inputs");
+    if (usersContainer) usersContainer.after(modalUsersNote);
+  }
+  modalUsersNote.style.display = hasPagamenti ? "flex" : "none";
+  // Nasconde il bottone di divisione automatica se i campi sono disabilitati
+  const splitBtn = document.getElementById("modal-split-btn");
+  if (splitBtn) splitBtn.style.display = hasPagamenti ? "none" : "";
 
-        const url = urlInput.value.trim();
-        const title = titleInput.value.trim() || "Allegato";
-        const room = roomSelect ? roomSelect.value : "Generale Casa";
-        const type = typeSelect ? typeSelect.value : "image";
+  appData.settings.users.forEach((u) => {
+    let inp = document.getElementById(`modal-${u.id}`);
+    if (inp) {
+      inp.value = (item[u.id] || 0).toFixed(2);
+      inp.disabled = hasPagamenti;
+      inp.style.opacity = hasPagamenti ? "0.5" : "";
+      inp.style.cursor = hasPagamenti ? "not-allowed" : "";
+    }
+  });
 
-        appData.settings.renders.push({ url, title, room, type });
-        urlInput.value = "";
-        titleInput.value = "";
-        saveDataLocally();
-        showNotification("Elemento multimediale aggiunto!");
-      }
+  modal.classList.add("active");
+}
 
-      /**
-       * Elimina un elemento dalla galleria multimediale.
-       * @param {number} index - Indice dell'elemento nell'array `renders`.
-       */
-      async function removeRender(index) {
-        const result = await showConfirm(
-          "Rimuovere questo file?",
-          "Il file non sarà più visibile nella galleria.",
-        );
-        if (result.isConfirmed) {
-          appData.settings.renders.splice(index, 1);
-          saveDataLocally();
-          showNotification("File rimosso");
-        }
-      }
+/**
+ * Chiude la modale di modifica voce.
+ */
+function closeModal() {
+  document.getElementById("editModal").classList.remove("active");
+}
 
-      /**
-       * Aggiunge una nuova voce nei Costi o nel Budget leggendo i valori dai form.
-       * @param {'costo'|'budget'} type - Tipologia della voce da inserire.
-       */
-      function addEntry(type) {
-        if (type === "costo") {
-          const cat = document.getElementById("add-costo-cat").value;
-          const desc = document.getElementById("add-costo-desc").value.trim();
-          const prezzo =
-            parseFloat(document.getElementById("add-costo-prezzo").value) || 0;
-          const note = document.getElementById("add-costo-note").value;
+/**
+ * Salva le modifiche apportate nella modale di modifica voce.
+ */
+function saveModalChanges() {
+  const id = parseInt(document.getElementById("modal-id").value);
+  const type = document.getElementById("modal-type").value;
+  if (type === "costo") {
+    let item = appData.costi.find((c) => c.id === id);
+    item.cat = document.getElementById("modal-cat").value;
+    item.desc = document.getElementById("modal-desc").value;
+    item.prezzo =
+      parseFloat(document.getElementById("modal-prezzo").value) || 0;
+    item.note = document.getElementById("modal-note").value;
+    // Aggiorna le quote utente solo se i campi non sono disabilitati
+    // (se ci sono pagamenti registrati, i totali vengono da recalcUserTotals)
+    const hasPagamenti = item.pagamenti && item.pagamenti.length > 0;
+    if (!hasPagamenti) {
+      item.originQuote = {};
+      appData.settings.users.forEach((u) => {
+        let inp = document.getElementById(`modal-${u.id}`);
+        const val = inp ? parseFloat(inp.value) || 0 : 0;
+        item[u.id] = val;
+        item.originQuote[u.id] = val;
+      });
+      item.originPaid = appData.settings.users.reduce(
+        (acc, u) => acc + (item[u.id] || 0),
+        0,
+      );
+    }
+  } else {
+    let item = appData.budget.find((b) => b.id === id);
+    item.desc = document.getElementById("modal-desc").value;
+    item.note = document.getElementById("modal-note").value;
+    item.isMutuo = document.getElementById("modal-is-mutuo").checked;
+    appData.settings.users.forEach((u) => {
+      let inp = document.getElementById(`modal-${u.id}`);
+      item[u.id] = inp ? parseFloat(inp.value) || 0 : 0;
+    });
+  }
+  closeModal();
+  saveDataLocally();
+  showNotification("Modifiche salvate!");
+}
 
-          if (!desc)
-            return M3Swal.fire({
-              title: "Attenzione",
-              text: "Inserisci una descrizione valida",
-              icon: "warning",
-            });
+/**
+ * Elimina una voce direttamente dalla modale di modifica.
+ */
+async function deleteFromModal() {
+  const result = await showConfirm(
+    "Eliminare questa voce?",
+    "Questa azione rimuoverà definitivamente la voce.",
+  );
+  if (result.isConfirmed) {
+    const id = parseInt(document.getElementById("modal-id").value);
+    const type = document.getElementById("modal-type").value;
+    if (type === "costo")
+      appData.costi = appData.costi.filter((c) => c.id !== id);
+    else appData.budget = appData.budget.filter((b) => b.id !== id);
+    closeModal();
+    saveDataLocally();
+    showNotification("Voce eliminata");
+  }
+}
 
-          let item = { id: Date.now(), cat, desc, prezzo, note };
-          appData.settings.users.forEach((u) => {
-            let val =
-              parseFloat(document.getElementById(`add-costo-${u.id}`)?.value) ||
-              0;
-            item[u.id] = val;
-          });
+/**
+ * Esegue il rendering della lista di domande e risposte (Q&A).
+ */
+function renderQASection() {
+  const container = document.getElementById("qa-container");
+  if (!container) return;
+  container.innerHTML = "";
 
-          appData.costi.push(item);
-          document.getElementById("add-costo-desc").value = "";
-          document.getElementById("add-costo-prezzo").value = "";
-          document.getElementById("add-costo-note").value = "";
-          appData.settings.users.forEach((u) => {
-            let inp = document.getElementById(`add-costo-${u.id}`);
-            if (inp) inp.value = "";
-          });
-          showNotification("Costo aggiunto con successo!");
-        } else {
-          const desc = document.getElementById("add-budget-desc").value.trim();
-          const note = document.getElementById("add-budget-note").value;
-          const isMutuo = document.getElementById(
-            "add-budget-is-mutuo",
-          ).checked;
-
-          if (!desc)
-            return M3Swal.fire({
-              title: "Attenzione",
-              text: "Inserisci una descrizione valida",
-              icon: "warning",
-            });
-
-          let item = { id: Date.now(), desc, note, isMutuo };
-          appData.settings.users.forEach((u) => {
-            let val =
-              parseFloat(
-                document.getElementById(`add-budget-${u.id}`)?.value,
-              ) || 0;
-            item[u.id] = val;
-          });
-
-          appData.budget.push(item);
-          document.getElementById("add-budget-desc").value = "";
-          document.getElementById("add-budget-note").value = "";
-          document.getElementById("add-budget-is-mutuo").checked = false;
-          appData.settings.users.forEach((u) => {
-            let inp = document.getElementById(`add-budget-${u.id}`);
-            if (inp) inp.value = "";
-          });
-          showNotification("Voce di budget aggiunta!");
-        }
-        saveDataLocally();
-      }
-
-      /**
-       * Apre la finestra modale per modificare una voce esistente di costo o budget.
-       * @param {'costo'|'budget'} type - Tipo della voce da modificare.
-       * @param {number} id - ID univoco dell'elemento.
-       */
-      function openEditModal(type, id) {
-        const modal = document.getElementById("editModal");
-        document.getElementById("modal-id").value = id;
-        document.getElementById("modal-type").value = type;
-        let item;
-        if (type === "costo") {
-          item = appData.costi.find((c) => c.id === id);
-          document.getElementById("modal-title").innerText = "Modifica Costo";
-          document.getElementById("modal-cat-group").style.display = "flex";
-          document.getElementById("modal-prezzo-group").style.display = "flex";
-          document.getElementById("modal-is-mutuo-group").style.display =
-            "none";
-          document.getElementById("modal-cat").value = item.cat || "";
-          document.getElementById("modal-prezzo").value = (
-            item.prezzo || 0
-          ).toFixed(2);
-          const sumPaid = appData.settings.users.reduce(
-            (acc, u) => acc + (item[u.id] || 0),
-            0,
-          );
-          const isSaldato =
-            (item.prezzo || 0) > 0 && (item.prezzo - sumPaid) <= 0.005;
-          // Mostra bottone pagamento solo per i costi non ancora saldati al 100%
-          document.getElementById("modal-add-payment-btn").style.display =
-            isSaldato ? "none" : "inline-flex";
-        } else {
-          item = appData.budget.find((b) => b.id === id);
-          document.getElementById("modal-title").innerText = "Modifica Budget";
-          document.getElementById("modal-cat-group").style.display = "none";
-          document.getElementById("modal-prezzo-group").style.display = "none";
-          document.getElementById("modal-is-mutuo-group").style.display =
-            "block";
-          document.getElementById("modal-is-mutuo").checked = !!item.isMutuo;
-          // Nasconde bottone pagamento per il budget
-          document.getElementById("modal-add-payment-btn").style.display =
-            "none";
-        }
-        document.getElementById("modal-desc").value = item.desc || "";
-        document.getElementById("modal-note").value = item.note || "";
-
-        // Se il costo ha pagamenti registrati, disabilita i campi quota utente
-        // (i totali vengono calcolati automaticamente dalla somma dei pagamenti)
-        const hasPagamenti =
-          type === "costo" && item.pagamenti && item.pagamenti.length > 0;
-        let modalUsersNote = document.getElementById("modal-users-note");
-        if (!modalUsersNote) {
-          modalUsersNote = document.createElement("p");
-          modalUsersNote.id = "modal-users-note";
-          modalUsersNote.style.cssText =
-            "font-size: 12px; color: var(--md-sys-color-outline); margin: -8px 0 8px 0; display: flex; align-items: center; gap: 4px;";
-          modalUsersNote.innerHTML =
-            '<span class="material-symbols-outlined" style="font-size:14px">info</span> Calcolati automaticamente dai pagamenti registrati';
-          const usersContainer = document.getElementById("modal-users-inputs");
-          if (usersContainer) usersContainer.after(modalUsersNote);
-        }
-        modalUsersNote.style.display = hasPagamenti ? "flex" : "none";
-        // Nasconde il bottone di divisione automatica se i campi sono disabilitati
-        const splitBtn = document.getElementById("modal-split-btn");
-        if (splitBtn) splitBtn.style.display = hasPagamenti ? "none" : "";
-
-        appData.settings.users.forEach((u) => {
-          let inp = document.getElementById(`modal-${u.id}`);
-          if (inp) {
-            inp.value = (item[u.id] || 0).toFixed(2);
-            inp.disabled = hasPagamenti;
-            inp.style.opacity = hasPagamenti ? "0.5" : "";
-            inp.style.cursor = hasPagamenti ? "not-allowed" : "";
-          }
-        });
-
-        modal.classList.add("active");
-      }
-
-      /**
-       * Chiude la modale di modifica voce.
-       */
-      function closeModal() {
-        document.getElementById("editModal").classList.remove("active");
-      }
-
-      /**
-       * Salva le modifiche apportate nella modale di modifica voce.
-       */
-      function saveModalChanges() {
-        const id = parseInt(document.getElementById("modal-id").value);
-        const type = document.getElementById("modal-type").value;
-        if (type === "costo") {
-          let item = appData.costi.find((c) => c.id === id);
-          item.cat = document.getElementById("modal-cat").value;
-          item.desc = document.getElementById("modal-desc").value;
-          item.prezzo =
-            parseFloat(document.getElementById("modal-prezzo").value) || 0;
-          item.note = document.getElementById("modal-note").value;
-          // Aggiorna le quote utente solo se i campi non sono disabilitati
-          // (se ci sono pagamenti registrati, i totali vengono da recalcUserTotals)
-          const hasPagamenti = item.pagamenti && item.pagamenti.length > 0;
-          if (!hasPagamenti) {
-            item.originQuote = {};
-            appData.settings.users.forEach((u) => {
-              let inp = document.getElementById(`modal-${u.id}`);
-              const val = inp ? parseFloat(inp.value) || 0 : 0;
-              item[u.id] = val;
-              item.originQuote[u.id] = val;
-            });
-            item.originPaid = appData.settings.users.reduce(
-              (acc, u) => acc + (item[u.id] || 0),
-              0,
-            );
-          }
-        } else {
-          let item = appData.budget.find((b) => b.id === id);
-          item.desc = document.getElementById("modal-desc").value;
-          item.note = document.getElementById("modal-note").value;
-          item.isMutuo = document.getElementById("modal-is-mutuo").checked;
-          appData.settings.users.forEach((u) => {
-            let inp = document.getElementById(`modal-${u.id}`);
-            item[u.id] = inp ? parseFloat(inp.value) || 0 : 0;
-          });
-        }
-        closeModal();
-        saveDataLocally();
-        showNotification("Modifiche salvate!");
-      }
-
-      /**
-       * Elimina una voce direttamente dalla modale di modifica.
-       */
-      async function deleteFromModal() {
-        const result = await showConfirm(
-          "Eliminare questa voce?",
-          "Questa azione rimuoverà definitivamente la voce.",
-        );
-        if (result.isConfirmed) {
-          const id = parseInt(document.getElementById("modal-id").value);
-          const type = document.getElementById("modal-type").value;
-          if (type === "costo")
-            appData.costi = appData.costi.filter((c) => c.id !== id);
-          else appData.budget = appData.budget.filter((b) => b.id !== id);
-          closeModal();
-          saveDataLocally();
-          showNotification("Voce eliminata");
-        }
-      }
-
-      /**
-       * Esegue il rendering della lista di domande e risposte (Q&A).
-       */
-      function renderQASection() {
-        const container = document.getElementById("qa-container");
-        if (!container) return;
-        container.innerHTML = "";
-
-        if (!appData.qa || appData.qa.length === 0) {
-          container.innerHTML = `
+  if (!appData.qa || appData.qa.length === 0) {
+    container.innerHTML = `
                     <div style="text-align: center; color: var(--md-sys-color-outline); padding: 40px 16px;">
                         <span class="material-symbols-outlined" style="font-size: 48px; opacity: 0.5;">quiz</span>
                         <p style="margin: 12px 0 0 0;">Nessuna domanda presente. Clicca su "Aggiungi Domanda" per iniziare.</p>
                     </div>
                 `;
-          return;
+    return;
+  }
+
+  const groupedQA = {};
+  appData.qa.forEach((item) => {
+    const category = item.category || "Generale";
+    if (!groupedQA[category]) groupedQA[category] = [];
+    groupedQA[category].push(item);
+  });
+
+  Object.keys(groupedQA)
+    .sort()
+    .forEach((category) => {
+      let catColor = "var(--md-sys-color-primary)";
+      if (
+        appData.settings &&
+        appData.settings.categories &&
+        appData.settings.categories[category]
+      ) {
+        catColor = appData.settings.categories[category].color;
+      }
+
+      const groupHeader = document.createElement("h3");
+      groupHeader.style.cssText =
+        "margin-top: 24px; margin-bottom: 12px; font-size: 18px; border-bottom: 1px solid var(--md-sys-color-outline-variant); padding-bottom: 8px; display: flex; align-items: center; gap: 8px;";
+      groupHeader.innerHTML = `<span style="display: inline-block; width: 14px; height: 14px; border-radius: 50%; background-color: ${catColor};"></span>${category}`;
+      container.appendChild(groupHeader);
+
+      groupedQA[category].sort((a, b) => {
+        const aAnswered = a.answer && a.answer.trim().length > 0;
+        const bAnswered = b.answer && b.answer.trim().length > 0;
+        if (aAnswered === bAnswered) return 0;
+        return aAnswered ? 1 : -1;
+      });
+
+      groupedQA[category].forEach((item) => {
+        const isAnswered = item.answer && item.answer.trim().length > 0;
+        const statusBadge = isAnswered
+          ? `<span class="cat-badge" style="background-color: var(--md-sys-color-success); color: #141218;">Risposta Ricevuta</span>`
+          : `<span class="cat-badge" style="background-color: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface);">In Attesa</span>`;
+
+        let topicBg = "var(--md-sys-color-primary-container)";
+        let topicColor = "var(--md-sys-color-on-primary-container)";
+        if (
+          category !== "Generale" &&
+          appData.settings &&
+          appData.settings.categories &&
+          appData.settings.categories[category]
+        ) {
+          topicBg = appData.settings.categories[category].color;
+          topicColor = "#FFFFFF";
         }
 
-        const groupedQA = {};
-        appData.qa.forEach((item) => {
-          const category = item.category || "Generale";
-          if (!groupedQA[category]) groupedQA[category] = [];
-          groupedQA[category].push(item);
-        });
+        const card = document.createElement("div");
+        card.className = "qa-card";
 
-        Object.keys(groupedQA)
-          .sort()
-          .forEach((category) => {
-            let catColor = "var(--md-sys-color-primary)";
-            if (
-              appData.settings &&
-              appData.settings.categories &&
-              appData.settings.categories[category]
-            ) {
-              catColor = appData.settings.categories[category].color;
-            }
-
-            const groupHeader = document.createElement("h3");
-            groupHeader.style.cssText =
-              "margin-top: 24px; margin-bottom: 12px; font-size: 18px; border-bottom: 1px solid var(--md-sys-color-outline-variant); padding-bottom: 8px; display: flex; align-items: center; gap: 8px;";
-            groupHeader.innerHTML = `<span style="display: inline-block; width: 14px; height: 14px; border-radius: 50%; background-color: ${catColor};"></span>${category}`;
-            container.appendChild(groupHeader);
-
-            groupedQA[category].sort((a, b) => {
-              const aAnswered = a.answer && a.answer.trim().length > 0;
-              const bAnswered = b.answer && b.answer.trim().length > 0;
-              if (aAnswered === bAnswered) return 0;
-              return aAnswered ? 1 : -1;
-            });
-
-            groupedQA[category].forEach((item) => {
-              const isAnswered = item.answer && item.answer.trim().length > 0;
-              const statusBadge = isAnswered
-                ? `<span class="cat-badge" style="background-color: var(--md-sys-color-success); color: #141218;">Risposta Ricevuta</span>`
-                : `<span class="cat-badge" style="background-color: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface);">In Attesa</span>`;
-
-              let topicBg = "var(--md-sys-color-primary-container)";
-              let topicColor = "var(--md-sys-color-on-primary-container)";
-              if (
-                category !== "Generale" &&
-                appData.settings &&
-                appData.settings.categories &&
-                appData.settings.categories[category]
-              ) {
-                topicBg = appData.settings.categories[category].color;
-                topicColor = "#FFFFFF";
-              }
-
-              const card = document.createElement("div");
-              card.className = "qa-card";
-
-              // 1. Intestazione con Categoria, Status, data e pulsanti azione
-              const headerDiv = document.createElement("div");
-              headerDiv.style.cssText =
-                "display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap;";
-              headerDiv.innerHTML = `
+        // 1. Intestazione con Categoria, Status, data e pulsanti azione
+        const headerDiv = document.createElement("div");
+        headerDiv.style.cssText =
+          "display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap;";
+        headerDiv.innerHTML = `
                   <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                       <span class="cat-badge" style="background-color: ${topicBg}; color: ${topicColor}; font-size: 13px;">${category}</span>
                       ${statusBadge}
@@ -906,457 +891,452 @@
                       <button class="btn-icon" onclick="deleteQAItem(${item.id})" title="Elimina" style="color: var(--md-sys-color-error);"><span class="material-symbols-outlined">delete</span></button>
                   </div>
               `;
-              card.appendChild(headerDiv);
+        card.appendChild(headerDiv);
 
-              // 2. Argomento e Testo della Domanda
-              const bodyDiv = document.createElement("div");
-              bodyDiv.style.marginTop = "4px";
-              bodyDiv.innerHTML = `
+        // 2. Argomento e Testo della Domanda
+        const bodyDiv = document.createElement("div");
+        bodyDiv.style.marginTop = "4px";
+        bodyDiv.innerHTML = `
                   ${item.topic ? `<div style="font-size: 16px; font-weight: 700; color: var(--md-sys-color-on-surface); margin-bottom: 8px;">${item.topic}</div>` : ""}
                   <div style="font-size: 15px; color: var(--md-sys-color-on-surface); display: flex; gap: 8px; align-items: flex-start;">
                       <span class="material-symbols-outlined" style="color: var(--md-sys-color-primary); font-size: 20px;">help</span>
                       <span style="white-space: pre-wrap;">${item.question}</span>
                   </div>
               `;
-              card.appendChild(bodyDiv);
+        card.appendChild(bodyDiv);
 
-              // 3. Immagini collegate alla Domanda (tra domanda e risposta)
-              if (item.images && item.images.length > 0) {
-                const imgGrid = document.createElement("div");
-                imgGrid.className = "note-images-grid";
+        // 3. Immagini collegate alla Domanda (tra domanda e risposta)
+        if (item.images && item.images.length > 0) {
+          const imgGrid = document.createElement("div");
+          imgGrid.className = "note-images-grid";
 
-                item.images.forEach((imgUrl, idx) => {
-                  const thumb = document.createElement("div");
-                  thumb.className = "note-image-thumb";
-                  thumb.title = "Clicca per ingrandire";
-                  thumb.onclick = () => openLightbox(item.images, idx);
+          item.images.forEach((imgUrl, idx) => {
+            const thumb = document.createElement("div");
+            thumb.className = "note-image-thumb";
+            thumb.title = "Clicca per ingrandire";
+            thumb.onclick = () => openLightbox(item.images, idx);
 
-                  const img = document.createElement("img");
-                  img.src = imgUrl;
-                  img.alt = `Foto ${idx + 1}`;
-                  img.loading = "lazy";
+            const img = document.createElement("img");
+            img.src = imgUrl;
+            img.alt = `Foto ${idx + 1}`;
+            img.loading = "lazy";
 
-                  const delBtn = document.createElement("button");
-                  delBtn.type = "button";
-                  delBtn.className = "note-image-delete-btn";
-                  delBtn.title = "Elimina immagine";
-                  delBtn.innerHTML = `<span class="material-symbols-outlined">close</span>`;
-                  delBtn.onclick = (e) => {
-                    deleteQAImageDirect(item.id, idx, e);
-                  };
+            const delBtn = document.createElement("button");
+            delBtn.type = "button";
+            delBtn.className = "note-image-delete-btn";
+            delBtn.title = "Elimina immagine";
+            delBtn.innerHTML = `<span class="material-symbols-outlined">close</span>`;
+            delBtn.onclick = (e) => {
+              deleteQAImageDirect(item.id, idx, e);
+            };
 
-                  thumb.appendChild(img);
-                  thumb.appendChild(delBtn);
-                  imgGrid.appendChild(thumb);
-                });
+            thumb.appendChild(img);
+            thumb.appendChild(delBtn);
+            imgGrid.appendChild(thumb);
+          });
 
-                card.appendChild(imgGrid);
-              }
+          card.appendChild(imgGrid);
+        }
 
-              // 4. Risposta o messaggio di attesa
-              const answerDiv = document.createElement("div");
-              if (isAnswered) {
-                answerDiv.style.cssText =
-                  "background: var(--md-sys-color-surface-container-high); border-radius: var(--md-sys-shape-corner-medium); padding: 14px 16px; margin-top: 8px; border-left: 4px solid var(--md-sys-color-success);";
-                answerDiv.innerHTML = `
+        // 4. Risposta o messaggio di attesa
+        const answerDiv = document.createElement("div");
+        if (isAnswered) {
+          answerDiv.style.cssText =
+            "background: var(--md-sys-color-surface-container-high); border-radius: var(--md-sys-shape-corner-medium); padding: 14px 16px; margin-top: 8px; border-left: 4px solid var(--md-sys-color-success);";
+          answerDiv.innerHTML = `
                     <div style="font-size: 12px; font-weight: 600; color: var(--md-sys-color-success); margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
                         <span class="material-symbols-outlined" style="font-size: 16px;">check_circle</span> Risposta:
                     </div>
                     <div style="font-size: 14px; line-height: 1.5; white-space: pre-wrap;">${item.answer}</div>
                 `;
-              } else {
-                answerDiv.style.cssText =
-                  "font-size: 13px; color: var(--md-sys-color-outline); font-style: italic; display: flex; align-items: center; gap: 6px; margin-top: 8px;";
-                answerDiv.innerHTML = `
+        } else {
+          answerDiv.style.cssText =
+            "font-size: 13px; color: var(--md-sys-color-outline); font-style: italic; display: flex; align-items: center; gap: 6px; margin-top: 8px;";
+          answerDiv.innerHTML = `
                     <span class="material-symbols-outlined" style="font-size: 16px;">pending</span> In attesa di risposta dal fornitore o professionista.
                 `;
-              }
-              card.appendChild(answerDiv);
-
-              container.appendChild(card);
-            });
-          });
-      }
-
-      let currentQAImages = [];
-
-      async function handleQAImageUpload(event) {
-        const files = Array.from(event.target.files || []);
-        if (files.length === 0) return;
-
-        let addedCount = 0;
-        for (const file of files) {
-          try {
-            const compressedUrl = await compressImageFile(file);
-            currentQAImages.push(compressedUrl);
-            addedCount++;
-          } catch (err) {
-            console.error("Errore compressione immagine domanda:", err);
-            showNotification(
-              "Errore caricamento",
-              "Impossibile elaborare " + file.name,
-              "error",
-            );
-          }
         }
-        event.target.value = "";
-        renderQAModalImagesPreview();
-        if (addedCount > 0) {
-          showNotification(
-            addedCount === 1
-              ? "Immagine caricata"
-              : `${addedCount} immagini caricate`,
-          );
-        }
+        card.appendChild(answerDiv);
+
+        container.appendChild(card);
+      });
+    });
+}
+
+let currentQAImages = [];
+
+async function handleQAImageUpload(event) {
+  const files = Array.from(event.target.files || []);
+  if (files.length === 0) return;
+
+  let addedCount = 0;
+  for (const file of files) {
+    try {
+      const compressedUrl = await compressImageFile(file);
+      currentQAImages.push(compressedUrl);
+      addedCount++;
+    } catch (err) {
+      console.error("Errore compressione immagine domanda:", err);
+      showNotification(
+        "Errore caricamento",
+        "Impossibile elaborare " + file.name,
+        "error",
+      );
+    }
+  }
+  event.target.value = "";
+  renderQAModalImagesPreview();
+  if (addedCount > 0) {
+    showNotification(
+      addedCount === 1
+        ? "Immagine caricata"
+        : `${addedCount} immagini caricate`,
+    );
+  }
+}
+
+async function promptAddQAImageUrl() {
+  const result = await M3Swal.fire({
+    title: "Aggiungi Immagine via Link",
+    input: "url",
+    inputLabel: "Inserisci l'indirizzo web dell'immagine o link Drive",
+    inputPlaceholder: "https://...",
+    showCancelButton: true,
+    confirmButtonText: "Aggiungi",
+    cancelButtonText: "Annulla",
+    inputValidator: (value) => {
+      if (!value || !value.trim()) {
+        return "Inserisci un URL valido";
       }
+    },
+  });
+  if (result.isConfirmed && result.value) {
+    const formatted = formatFileUrl(result.value.trim());
+    currentQAImages.push(formatted.url || result.value.trim());
+    renderQAModalImagesPreview();
+  }
+}
 
-      async function promptAddQAImageUrl() {
-        const result = await M3Swal.fire({
-          title: "Aggiungi Immagine via Link",
-          input: "url",
-          inputLabel: "Inserisci l'indirizzo web dell'immagine o link Drive",
-          inputPlaceholder: "https://...",
-          showCancelButton: true,
-          confirmButtonText: "Aggiungi",
-          cancelButtonText: "Annulla",
-          inputValidator: (value) => {
-            if (!value || !value.trim()) {
-              return "Inserisci un URL valido";
-            }
-          },
-        });
-        if (result.isConfirmed && result.value) {
-          const formatted = formatFileUrl(result.value.trim());
-          currentQAImages.push(formatted.url || result.value.trim());
-          renderQAModalImagesPreview();
-        }
-      }
+function renderQAModalImagesPreview() {
+  const preview = document.getElementById("qa-modal-images-preview");
+  if (!preview) return;
+  preview.innerHTML = "";
 
-      function renderQAModalImagesPreview() {
-        const preview = document.getElementById("qa-modal-images-preview");
-        if (!preview) return;
-        preview.innerHTML = "";
+  if (!currentQAImages || currentQAImages.length === 0) {
+    preview.innerHTML = `<p class="note-images-empty-hint">Nessuna immagine allegata. Carica una foto o inserisci un link.</p>`;
+    return;
+  }
 
-        if (!currentQAImages || currentQAImages.length === 0) {
-          preview.innerHTML = `<p class="note-images-empty-hint">Nessuna immagine allegata. Carica una foto o inserisci un link.</p>`;
-          return;
-        }
+  currentQAImages.forEach((imgUrl, index) => {
+    const thumb = document.createElement("div");
+    thumb.className = "note-image-thumb";
+    thumb.title = "Clicca per ingrandire";
+    thumb.onclick = () => openLightbox(currentQAImages, index);
 
-        currentQAImages.forEach((imgUrl, index) => {
-          const thumb = document.createElement("div");
-          thumb.className = "note-image-thumb";
-          thumb.title = "Clicca per ingrandire";
-          thumb.onclick = () => openLightbox(currentQAImages, index);
+    const img = document.createElement("img");
+    img.src = imgUrl;
+    img.alt = `Allegato ${index + 1}`;
+    img.loading = "lazy";
 
-          const img = document.createElement("img");
-          img.src = imgUrl;
-          img.alt = `Allegato ${index + 1}`;
-          img.loading = "lazy";
+    const delBtn = document.createElement("button");
+    delBtn.type = "button";
+    delBtn.className = "note-image-delete-btn";
+    delBtn.title = "Rimuovi immagine";
+    delBtn.innerHTML = `<span class="material-symbols-outlined">close</span>`;
+    delBtn.onclick = (e) => {
+      e.stopPropagation();
+      removeQAModalImage(index);
+    };
 
-          const delBtn = document.createElement("button");
-          delBtn.type = "button";
-          delBtn.className = "note-image-delete-btn";
-          delBtn.title = "Rimuovi immagine";
-          delBtn.innerHTML = `<span class="material-symbols-outlined">close</span>`;
-          delBtn.onclick = (e) => {
-            e.stopPropagation();
-            removeQAModalImage(index);
-          };
+    thumb.appendChild(img);
+    thumb.appendChild(delBtn);
+    preview.appendChild(thumb);
+  });
+}
 
-          thumb.appendChild(img);
-          thumb.appendChild(delBtn);
-          preview.appendChild(thumb);
-        });
-      }
+function removeQAModalImage(index) {
+  currentQAImages.splice(index, 1);
+  renderQAModalImagesPreview();
+}
 
-      function removeQAModalImage(index) {
-        currentQAImages.splice(index, 1);
-        renderQAModalImagesPreview();
-      }
+async function deleteQAImageDirect(qaId, imgIndex, event) {
+  if (event) event.stopPropagation();
+  const item = appData.qa.find((q) => q.id === qaId);
+  if (!item || !item.images || !item.images[imgIndex]) return;
 
-      async function deleteQAImageDirect(qaId, imgIndex, event) {
-        if (event) event.stopPropagation();
-        const item = appData.qa.find((q) => q.id === qaId);
-        if (!item || !item.images || !item.images[imgIndex]) return;
+  const result = await showConfirm(
+    "Eliminare questa immagine?",
+    "L'immagine verrà rimossa definitivamente da questa domanda.",
+    "Elimina",
+  );
+  if (result.isConfirmed) {
+    item.images.splice(imgIndex, 1);
+    saveDataLocally();
+    renderQASection();
+    showNotification("Immagine eliminata");
+  }
+}
 
-        const result = await showConfirm(
-          "Eliminare questa immagine?",
-          "L'immagine verrà rimossa definitivamente da questa domanda.",
-          "Elimina",
-        );
-        if (result.isConfirmed) {
-          item.images.splice(imgIndex, 1);
-          saveDataLocally();
-          renderQASection();
-          showNotification("Immagine eliminata");
-        }
-      }
+/**
+ * Apre la modale per inserire una nuova domanda.
+ */
+function openAddQAModal() {
+  document.getElementById("qa-modal-id").value = "";
+  document.getElementById("qa-modal-title").innerText = "Nuova Domanda";
+  document.getElementById("qa-modal-category").value = "Generale";
+  document.getElementById("qa-modal-topic").value = "";
+  document.getElementById("qa-modal-question").value = "";
+  document.getElementById("qa-modal-answer").value = "";
+  document.getElementById("qa-btn-delete").style.display = "none";
+  currentQAImages = [];
+  renderQAModalImagesPreview();
+  document.getElementById("qaModal").classList.add("active");
+}
 
-      /**
-       * Apre la modale per inserire una nuova domanda.
-       */
-      function openAddQAModal() {
-        document.getElementById("qa-modal-id").value = "";
-        document.getElementById("qa-modal-title").innerText = "Nuova Domanda";
-        document.getElementById("qa-modal-category").value = "Generale";
-        document.getElementById("qa-modal-topic").value = "";
-        document.getElementById("qa-modal-question").value = "";
-        document.getElementById("qa-modal-answer").value = "";
-        document.getElementById("qa-btn-delete").style.display = "none";
-        currentQAImages = [];
-        renderQAModalImagesPreview();
-        document.getElementById("qaModal").classList.add("active");
-      }
+/**
+ * Apre la modale per modificare una domanda/risposta esistente.
+ * @param {number} id - ID univoco dell'elemento Q&A.
+ */
+function openEditQAModal(id) {
+  const item = appData.qa.find((q) => q.id === id);
+  if (!item) return;
+  document.getElementById("qa-modal-id").value = id;
+  document.getElementById("qa-modal-title").innerText =
+    "Modifica Domanda & Risposta";
+  document.getElementById("qa-modal-category").value =
+    item.category || "Generale";
+  document.getElementById("qa-modal-topic").value = item.topic || "";
+  document.getElementById("qa-modal-question").value = item.question || "";
+  document.getElementById("qa-modal-answer").value = item.answer || "";
+  document.getElementById("qa-btn-delete").style.display = "inline-flex";
+  currentQAImages = Array.isArray(item.images) ? [...item.images] : [];
+  renderQAModalImagesPreview();
+  document.getElementById("qaModal").classList.add("active");
+}
 
-      /**
-       * Apre la modale per modificare una domanda/risposta esistente.
-       * @param {number} id - ID univoco dell'elemento Q&A.
-       */
-      function openEditQAModal(id) {
-        const item = appData.qa.find((q) => q.id === id);
-        if (!item) return;
-        document.getElementById("qa-modal-id").value = id;
-        document.getElementById("qa-modal-title").innerText =
-          "Modifica Domanda & Risposta";
-        document.getElementById("qa-modal-category").value =
-          item.category || "Generale";
-        document.getElementById("qa-modal-topic").value = item.topic || "";
-        document.getElementById("qa-modal-question").value =
-          item.question || "";
-        document.getElementById("qa-modal-answer").value = item.answer || "";
-        document.getElementById("qa-btn-delete").style.display = "inline-flex";
-        currentQAImages = Array.isArray(item.images) ? [...item.images] : [];
-        renderQAModalImagesPreview();
-        document.getElementById("qaModal").classList.add("active");
-      }
+/**
+ * Chiude la modale di modifica o creazione Q&A.
+ */
+function closeQAModal() {
+  document.getElementById("qaModal").classList.remove("active");
+  currentQAImages = [];
+  const preview = document.getElementById("qa-modal-images-preview");
+  if (preview) preview.innerHTML = "";
+}
 
-      /**
-       * Chiude la modale di modifica o creazione Q&A.
-       */
-      function closeQAModal() {
-        document.getElementById("qaModal").classList.remove("active");
-        currentQAImages = [];
-        const preview = document.getElementById("qa-modal-images-preview");
-        if (preview) preview.innerHTML = "";
-      }
+/**
+ * Salva le modifiche o crea una nuova domanda nel database locale.
+ */
+function saveQAModalChanges() {
+  const idVal = document.getElementById("qa-modal-id").value;
+  const category =
+    document.getElementById("qa-modal-category").value || "Generale";
+  const topic = document.getElementById("qa-modal-topic").value.trim();
+  const question = document.getElementById("qa-modal-question").value.trim();
+  const answer = document.getElementById("qa-modal-answer").value.trim();
 
-      /**
-       * Salva le modifiche o crea una nuova domanda nel database locale.
-       */
-      function saveQAModalChanges() {
-        const idVal = document.getElementById("qa-modal-id").value;
-        const category =
-          document.getElementById("qa-modal-category").value || "Generale";
-        const topic = document.getElementById("qa-modal-topic").value.trim();
-        const question = document
-          .getElementById("qa-modal-question")
-          .value.trim();
-        const answer = document.getElementById("qa-modal-answer").value.trim();
+  if (!question)
+    return M3Swal.fire({
+      title: "Attenzione",
+      text: "Inserisci il testo della domanda",
+      icon: "warning",
+    });
 
-        if (!question)
-          return M3Swal.fire({
-            title: "Attenzione",
-            text: "Inserisci il testo della domanda",
-            icon: "warning",
-          });
+  if (idVal) {
+    const item = appData.qa.find((q) => q.id === parseInt(idVal));
+    if (item) {
+      item.category = category;
+      item.topic = topic;
+      item.question = question;
+      item.answer = answer;
+      item.images = [...currentQAImages];
+    }
+  } else {
+    const today = new Date();
+    const dateStr = today.toLocaleDateString("it-IT");
+    appData.qa.unshift({
+      id: Date.now(),
+      category,
+      topic,
+      question,
+      answer,
+      images: [...currentQAImages],
+      date: dateStr,
+    });
+  }
+  closeQAModal();
+  saveDataLocally();
+  renderQASection();
+  showNotification("Domanda salvata!");
+}
 
-        if (idVal) {
-          const item = appData.qa.find((q) => q.id === parseInt(idVal));
-          if (item) {
-            item.category = category;
-            item.topic = topic;
-            item.question = question;
-            item.answer = answer;
-            item.images = [...currentQAImages];
-          }
-        } else {
-          const today = new Date();
-          const dateStr = today.toLocaleDateString("it-IT");
-          appData.qa.unshift({
-            id: Date.now(),
-            category,
-            topic,
-            question,
-            answer,
-            images: [...currentQAImages],
-            date: dateStr,
-          });
-        }
-        closeQAModal();
-        saveDataLocally();
-        renderQASection();
-        showNotification("Domanda salvata!");
-      }
+/**
+ * Elimina un elemento Q&A identificato dal suo ID.
+ * @param {number} id - ID della domanda.
+ */
+async function deleteQAItem(id) {
+  const result = await showConfirm(
+    "Eliminare questa domanda?",
+    "Non sarà più possibile recuperarla.",
+  );
+  if (result.isConfirmed) {
+    appData.qa = appData.qa.filter((q) => q.id !== id);
+    saveDataLocally();
+    renderQASection();
+    showNotification("Domanda eliminata");
+  }
+}
 
-      /**
-       * Elimina un elemento Q&A identificato dal suo ID.
-       * @param {number} id - ID della domanda.
-       */
-      async function deleteQAItem(id) {
-        const result = await showConfirm(
-          "Eliminare questa domanda?",
-          "Non sarà più possibile recuperarla.",
-        );
-        if (result.isConfirmed) {
-          appData.qa = appData.qa.filter((q) => q.id !== id);
-          saveDataLocally();
-          renderQASection();
-          showNotification("Domanda eliminata");
-        }
-      }
+/**
+ * Elimina la domanda visualizzata all'interno della modale Q&A.
+ */
+async function deleteQAFromModal() {
+  const idVal = document.getElementById("qa-modal-id").value;
+  if (!idVal) return;
+  const result = await showConfirm(
+    "Eliminare questa domanda?",
+    "Non sarà più possibile recuperarla.",
+  );
+  if (result.isConfirmed) {
+    appData.qa = appData.qa.filter((q) => q.id !== parseInt(idVal));
+    closeQAModal();
+    saveDataLocally();
+    renderQASection();
+    showNotification("Domanda eliminata");
+  }
+}
 
-      /**
-       * Elimina la domanda visualizzata all'interno della modale Q&A.
-       */
-      async function deleteQAFromModal() {
-        const idVal = document.getElementById("qa-modal-id").value;
-        if (!idVal) return;
-        const result = await showConfirm(
-          "Eliminare questa domanda?",
-          "Non sarà più possibile recuperarla.",
-        );
-        if (result.isConfirmed) {
-          appData.qa = appData.qa.filter((q) => q.id !== parseInt(idVal));
-          closeQAModal();
-          saveDataLocally();
-          renderQASection();
-          showNotification("Domanda eliminata");
-        }
-      }
+/**
+ * Esegue il rendering della sezione Task.
+ */
+function renderTaskSection() {
+  const activeContainer = document.getElementById("task-container");
+  const completedContainer = document.getElementById(
+    "completed-task-container",
+  );
+  if (!activeContainer || !completedContainer) return;
+  activeContainer.innerHTML = "";
+  completedContainer.innerHTML = "";
 
-      /**
-       * Esegue il rendering della sezione Task.
-       */
-      function renderTaskSection() {
-        const activeContainer = document.getElementById("task-container");
-        const completedContainer = document.getElementById(
-          "completed-task-container",
-        );
-        if (!activeContainer || !completedContainer) return;
-        activeContainer.innerHTML = "";
-        completedContainer.innerHTML = "";
-
-        if (!appData.tasks || appData.tasks.length === 0) {
-          activeContainer.innerHTML = `
+  if (!appData.tasks || appData.tasks.length === 0) {
+    activeContainer.innerHTML = `
                     <div style="text-align: center; color: var(--md-sys-color-outline); padding: 40px 16px;">
                         <span class="material-symbols-outlined" style="font-size: 48px; opacity: 0.5;">task</span>
                         <p style="margin: 12px 0 0 0;">Nessun task presente. Clicca su "Aggiungi Task" per iniziare.</p>
                     </div>
                 `;
-          const deskB = document.getElementById("task-badge-desktop");
-          const mobB = document.getElementById("task-badge-mobile");
-          if (deskB) deskB.style.display = "none";
-          if (mobB) mobB.style.display = "none";
-          return;
+    const deskB = document.getElementById("task-badge-desktop");
+    const mobB = document.getElementById("task-badge-mobile");
+    if (deskB) deskB.style.display = "none";
+    if (mobB) mobB.style.display = "none";
+    return;
+  }
+
+  const activeTasks = appData.tasks.filter((t) => !t.completed);
+  const completedTasks = appData.tasks.filter((t) => t.completed);
+
+  let totalExpiring = 0;
+  const todayReset = new Date();
+  todayReset.setHours(0, 0, 0, 0);
+  activeTasks.forEach((item) => {
+    if (item.dueDate) {
+      const diffDays = Math.ceil(
+        (new Date(item.dueDate) - todayReset) / (1000 * 60 * 60 * 24),
+      );
+      if (diffDays < 10) totalExpiring++;
+    }
+  });
+
+  const desktopBadge = document.getElementById("task-badge-desktop");
+  const mobileBadge = document.getElementById("task-badge-mobile");
+  if (totalExpiring > 0) {
+    if (desktopBadge) {
+      desktopBadge.innerText = totalExpiring;
+      desktopBadge.style.display = "block";
+    }
+    if (mobileBadge) {
+      mobileBadge.innerText = totalExpiring;
+      mobileBadge.style.display = "block";
+    }
+  } else {
+    if (desktopBadge) desktopBadge.style.display = "none";
+    if (mobileBadge) mobileBadge.style.display = "none";
+  }
+
+  const renderTasks = (tasks, container) => {
+    const groupedTasks = {};
+    tasks.forEach((item) => {
+      const category = item.category || "Generale";
+      if (!groupedTasks[category]) groupedTasks[category] = [];
+      groupedTasks[category].push(item);
+    });
+
+    Object.keys(groupedTasks)
+      .sort()
+      .forEach((category) => {
+        let catColor = "var(--md-sys-color-primary)";
+        if (
+          appData.settings &&
+          appData.settings.categories &&
+          appData.settings.categories[category]
+        ) {
+          catColor = appData.settings.categories[category].color;
         }
 
-        const activeTasks = appData.tasks.filter((t) => !t.completed);
-        const completedTasks = appData.tasks.filter((t) => t.completed);
+        const groupHeader = document.createElement("h3");
+        groupHeader.style.cssText =
+          "margin-top: 24px; margin-bottom: 12px; font-size: 18px; border-bottom: 1px solid var(--md-sys-color-outline-variant); padding-bottom: 8px; display: flex; align-items: center; gap: 8px;";
+        groupHeader.innerHTML = `<span style="display: inline-block; width: 14px; height: 14px; border-radius: 50%; background-color: ${catColor};"></span>${category}`;
+        container.appendChild(groupHeader);
 
-        let totalExpiring = 0;
-        const todayReset = new Date();
-        todayReset.setHours(0, 0, 0, 0);
-        activeTasks.forEach((item) => {
-          if (item.dueDate) {
-            const diffDays = Math.ceil(
-              (new Date(item.dueDate) - todayReset) / (1000 * 60 * 60 * 24),
-            );
-            if (diffDays < 10) totalExpiring++;
+        groupedTasks[category].sort((a, b) => {
+          if (a.dueDate && !b.dueDate) return -1;
+          if (!a.dueDate && b.dueDate) return 1;
+          if (a.dueDate && b.dueDate) {
+            return new Date(a.dueDate) - new Date(b.dueDate);
           }
+          return 0;
         });
 
-        const desktopBadge = document.getElementById("task-badge-desktop");
-        const mobileBadge = document.getElementById("task-badge-mobile");
-        if (totalExpiring > 0) {
-          if (desktopBadge) {
-            desktopBadge.innerText = totalExpiring;
-            desktopBadge.style.display = "block";
+        let expiringCount = 0;
+        groupedTasks[category].forEach((item) => {
+          let topicBg = "var(--md-sys-color-primary-container)";
+          let topicColor = "var(--md-sys-color-on-primary-container)";
+          if (
+            category !== "Generale" &&
+            appData.settings &&
+            appData.settings.categories &&
+            appData.settings.categories[category]
+          ) {
+            topicBg = appData.settings.categories[category].color;
+            topicColor = "#FFFFFF";
           }
-          if (mobileBadge) {
-            mobileBadge.innerText = totalExpiring;
-            mobileBadge.style.display = "block";
+
+          let dueDateBadge = "";
+          if (item.dueDate) {
+            const dateObj = new Date(item.dueDate);
+            const dateStr = dateObj.toLocaleDateString("it-IT");
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const diffDays = Math.ceil(
+              (dateObj - today) / (1000 * 60 * 60 * 24),
+            );
+            const isExpiringOrExpired = !item.completed && diffDays < 10;
+            if (isExpiringOrExpired) expiringCount++;
+            dueDateBadge = `<span class="cat-badge" style="background-color: ${isExpiringOrExpired ? "var(--md-sys-color-error)" : "var(--md-sys-color-surface-container-high)"}; color: ${isExpiringOrExpired ? "#FFFFFF" : "var(--md-sys-color-on-surface)"}; display: flex; align-items: center; gap: 4px;"><span class="material-symbols-outlined" style="font-size: 14px;">calendar_month</span> ${dateStr}</span>`;
           }
-        } else {
-          if (desktopBadge) desktopBadge.style.display = "none";
-          if (mobileBadge) mobileBadge.style.display = "none";
-        }
 
-        const renderTasks = (tasks, container) => {
-          const groupedTasks = {};
-          tasks.forEach((item) => {
-            const category = item.category || "Generale";
-            if (!groupedTasks[category]) groupedTasks[category] = [];
-            groupedTasks[category].push(item);
-          });
+          const card = document.createElement("div");
+          card.className = "qa-card"; // Reuse styling
+          card.style.opacity = item.completed ? "0.6" : "1";
 
-          Object.keys(groupedTasks)
-            .sort()
-            .forEach((category) => {
-              let catColor = "var(--md-sys-color-primary)";
-              if (
-                appData.settings &&
-                appData.settings.categories &&
-                appData.settings.categories[category]
-              ) {
-                catColor = appData.settings.categories[category].color;
-              }
+          const createdDateStr = new Date(item.id).toLocaleDateString("it-IT");
 
-              const groupHeader = document.createElement("h3");
-              groupHeader.style.cssText =
-                "margin-top: 24px; margin-bottom: 12px; font-size: 18px; border-bottom: 1px solid var(--md-sys-color-outline-variant); padding-bottom: 8px; display: flex; align-items: center; gap: 8px;";
-              groupHeader.innerHTML = `<span style="display: inline-block; width: 14px; height: 14px; border-radius: 50%; background-color: ${catColor};"></span>${category}`;
-              container.appendChild(groupHeader);
-
-              groupedTasks[category].sort((a, b) => {
-                if (a.dueDate && !b.dueDate) return -1;
-                if (!a.dueDate && b.dueDate) return 1;
-                if (a.dueDate && b.dueDate) {
-                  return new Date(a.dueDate) - new Date(b.dueDate);
-                }
-                return 0;
-              });
-
-              let expiringCount = 0;
-              groupedTasks[category].forEach((item) => {
-                let topicBg = "var(--md-sys-color-primary-container)";
-                let topicColor = "var(--md-sys-color-on-primary-container)";
-                if (
-                  category !== "Generale" &&
-                  appData.settings &&
-                  appData.settings.categories &&
-                  appData.settings.categories[category]
-                ) {
-                  topicBg = appData.settings.categories[category].color;
-                  topicColor = "#FFFFFF";
-                }
-
-                let dueDateBadge = "";
-                if (item.dueDate) {
-                  const dateObj = new Date(item.dueDate);
-                  const dateStr = dateObj.toLocaleDateString("it-IT");
-                  const today = new Date();
-                  today.setHours(0, 0, 0, 0);
-                  const diffDays = Math.ceil(
-                    (dateObj - today) / (1000 * 60 * 60 * 24),
-                  );
-                  const isExpiringOrExpired = !item.completed && diffDays < 10;
-                  if (isExpiringOrExpired) expiringCount++;
-                  dueDateBadge = `<span class="cat-badge" style="background-color: ${isExpiringOrExpired ? "var(--md-sys-color-error)" : "var(--md-sys-color-surface-container-high)"}; color: ${isExpiringOrExpired ? "#FFFFFF" : "var(--md-sys-color-on-surface)"}; display: flex; align-items: center; gap: 4px;"><span class="material-symbols-outlined" style="font-size: 14px;">calendar_month</span> ${dateStr}</span>`;
-                }
-
-                const card = document.createElement("div");
-                card.className = "qa-card"; // Reuse styling
-                card.style.opacity = item.completed ? "0.6" : "1";
-
-                const createdDateStr = new Date(item.id).toLocaleDateString(
-                  "it-IT",
-                );
-
-                // 1. Header con Categoria, Badge, Scadenza, Data e Azioni
-                const headerDiv = document.createElement("div");
-                headerDiv.style.cssText =
-                  "display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap;";
-                headerDiv.innerHTML = `
+          // 1. Header con Categoria, Badge, Scadenza, Data e Azioni
+          const headerDiv = document.createElement("div");
+          headerDiv.style.cssText =
+            "display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap;";
+          headerDiv.innerHTML = `
                     <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                         <span class="cat-badge" style="background-color: ${topicBg}; color: ${topicColor}; font-size: 13px;">${category}</span>
                         ${item.completed ? `<span class="cat-badge" style="background-color: var(--md-sys-color-success); color: #141218;">Completato</span>` : ""}
@@ -1371,540 +1351,535 @@
                         <button class="btn-icon" onclick="deleteTaskItem(${item.id})" title="Elimina" style="color: var(--md-sys-color-error);"><span class="material-symbols-outlined">delete</span></button>
                     </div>
                 `;
-                card.appendChild(headerDiv);
+          card.appendChild(headerDiv);
 
-                // 2. Titolo del Task
-                const titleDiv = document.createElement("div");
-                titleDiv.style.marginTop = "4px";
-                titleDiv.innerHTML = `
+          // 2. Titolo del Task
+          const titleDiv = document.createElement("div");
+          titleDiv.style.marginTop = "4px";
+          titleDiv.innerHTML = `
                     <div style="font-size: 16px; font-weight: 700; color: var(--md-sys-color-on-surface); margin-bottom: 4px; text-decoration: ${item.completed ? "line-through" : "none"};">${item.title}</div>
                 `;
-                card.appendChild(titleDiv);
+          card.appendChild(titleDiv);
 
-                // 3. Immagini collegate al Task (posizionate tra titolo e descrizione)
-                if (item.images && item.images.length > 0) {
-                  const imgGrid = document.createElement("div");
-                  imgGrid.className = "note-images-grid";
+          // 3. Immagini collegate al Task (posizionate tra titolo e descrizione)
+          if (item.images && item.images.length > 0) {
+            const imgGrid = document.createElement("div");
+            imgGrid.className = "note-images-grid";
 
-                  item.images.forEach((imgUrl, idx) => {
-                    const thumb = document.createElement("div");
-                    thumb.className = "note-image-thumb";
-                    thumb.title = "Clicca per ingrandire";
-                    thumb.onclick = () => openLightbox(item.images, idx);
+            item.images.forEach((imgUrl, idx) => {
+              const thumb = document.createElement("div");
+              thumb.className = "note-image-thumb";
+              thumb.title = "Clicca per ingrandire";
+              thumb.onclick = () => openLightbox(item.images, idx);
 
-                    const img = document.createElement("img");
-                    img.src = imgUrl;
-                    img.alt = `Foto ${idx + 1}`;
-                    img.loading = "lazy";
+              const img = document.createElement("img");
+              img.src = imgUrl;
+              img.alt = `Foto ${idx + 1}`;
+              img.loading = "lazy";
 
-                    const delBtn = document.createElement("button");
-                    delBtn.type = "button";
-                    delBtn.className = "note-image-delete-btn";
-                    delBtn.title = "Elimina immagine";
-                    delBtn.innerHTML = `<span class="material-symbols-outlined">close</span>`;
-                    delBtn.onclick = (e) => {
-                      deleteTaskImageDirect(item.id, idx, e);
-                    };
+              const delBtn = document.createElement("button");
+              delBtn.type = "button";
+              delBtn.className = "note-image-delete-btn";
+              delBtn.title = "Elimina immagine";
+              delBtn.innerHTML = `<span class="material-symbols-outlined">close</span>`;
+              delBtn.onclick = (e) => {
+                deleteTaskImageDirect(item.id, idx, e);
+              };
 
-                    thumb.appendChild(img);
-                    thumb.appendChild(delBtn);
-                    imgGrid.appendChild(thumb);
-                  });
+              thumb.appendChild(img);
+              thumb.appendChild(delBtn);
+              imgGrid.appendChild(thumb);
+            });
 
-                  card.appendChild(imgGrid);
-                }
+            card.appendChild(imgGrid);
+          }
 
-                // 4. Descrizione del Task
-                if (item.desc) {
-                  const descDiv = document.createElement("div");
-                  descDiv.style.cssText =
-                    "font-size: 15px; color: var(--md-sys-color-on-surface); display: flex; gap: 8px; align-items: flex-start; white-space: pre-wrap; margin-top: 6px;";
-                  descDiv.innerHTML = `
+          // 4. Descrizione del Task
+          if (item.desc) {
+            const descDiv = document.createElement("div");
+            descDiv.style.cssText =
+              "font-size: 15px; color: var(--md-sys-color-on-surface); display: flex; gap: 8px; align-items: flex-start; white-space: pre-wrap; margin-top: 6px;";
+            descDiv.innerHTML = `
                       <span class="material-symbols-outlined" style="color: var(--md-sys-color-outline); font-size: 20px;">notes</span>
                       <span>${item.desc}</span>
                   `;
-                  card.appendChild(descDiv);
-                }
+            card.appendChild(descDiv);
+          }
 
-                container.appendChild(card);
-              });
-            });
-        };
+          container.appendChild(card);
+        });
+      });
+  };
 
-        if (activeTasks.length > 0) {
-          renderTasks(activeTasks, activeContainer);
-        } else {
-          activeContainer.innerHTML =
-            '<p style="color: var(--md-sys-color-outline); padding: 16px 0;">Nessun task attivo.</p>';
-        }
+  if (activeTasks.length > 0) {
+    renderTasks(activeTasks, activeContainer);
+  } else {
+    activeContainer.innerHTML =
+      '<p style="color: var(--md-sys-color-outline); padding: 16px 0;">Nessun task attivo.</p>';
+  }
 
-        const completedTitle = document.getElementById("completed-tasks-title");
-        if (completedTasks.length > 0) {
-          if (completedTitle) completedTitle.style.display = "block";
-          renderTasks(completedTasks, completedContainer);
-        } else {
-          if (completedTitle) completedTitle.style.display = "none";
-          completedContainer.innerHTML = "";
-        }
+  const completedTitle = document.getElementById("completed-tasks-title");
+  if (completedTasks.length > 0) {
+    if (completedTitle) completedTitle.style.display = "block";
+    renderTasks(completedTasks, completedContainer);
+  } else {
+    if (completedTitle) completedTitle.style.display = "none";
+    completedContainer.innerHTML = "";
+  }
+}
+
+let currentTaskImages = [];
+
+async function handleTaskImageUpload(event) {
+  const files = Array.from(event.target.files || []);
+  if (files.length === 0) return;
+
+  let addedCount = 0;
+  for (const file of files) {
+    try {
+      const compressedUrl = await compressImageFile(file);
+      currentTaskImages.push(compressedUrl);
+      addedCount++;
+    } catch (err) {
+      console.error("Errore compressione immagine task:", err);
+      showNotification(
+        "Errore caricamento",
+        "Impossibile elaborare " + file.name,
+        "error",
+      );
+    }
+  }
+  event.target.value = "";
+  renderTaskModalImagesPreview();
+  if (addedCount > 0) {
+    showNotification(
+      addedCount === 1
+        ? "Immagine caricata"
+        : `${addedCount} immagini caricate`,
+    );
+  }
+}
+
+async function promptAddTaskImageUrl() {
+  const result = await M3Swal.fire({
+    title: "Aggiungi Immagine via Link",
+    input: "url",
+    inputLabel: "Inserisci l'indirizzo web dell'immagine o link Drive",
+    inputPlaceholder: "https://...",
+    showCancelButton: true,
+    confirmButtonText: "Aggiungi",
+    cancelButtonText: "Annulla",
+    inputValidator: (value) => {
+      if (!value || !value.trim()) {
+        return "Inserisci un URL valido";
       }
+    },
+  });
+  if (result.isConfirmed && result.value) {
+    const formatted = formatFileUrl(result.value.trim());
+    currentTaskImages.push(formatted.url || result.value.trim());
+    renderTaskModalImagesPreview();
+  }
+}
 
-      let currentTaskImages = [];
+function renderTaskModalImagesPreview() {
+  const preview = document.getElementById("task-modal-images-preview");
+  if (!preview) return;
+  preview.innerHTML = "";
 
-      async function handleTaskImageUpload(event) {
-        const files = Array.from(event.target.files || []);
-        if (files.length === 0) return;
+  if (!currentTaskImages || currentTaskImages.length === 0) {
+    preview.innerHTML = `<p class="note-images-empty-hint">Nessuna immagine allegata. Carica una foto o inserisci un link.</p>`;
+    return;
+  }
 
-        let addedCount = 0;
-        for (const file of files) {
-          try {
-            const compressedUrl = await compressImageFile(file);
-            currentTaskImages.push(compressedUrl);
-            addedCount++;
-          } catch (err) {
-            console.error("Errore compressione immagine task:", err);
-            showNotification(
-              "Errore caricamento",
-              "Impossibile elaborare " + file.name,
-              "error",
-            );
+  currentTaskImages.forEach((imgUrl, index) => {
+    const thumb = document.createElement("div");
+    thumb.className = "note-image-thumb";
+    thumb.title = "Clicca per ingrandire";
+    thumb.onclick = () => openLightbox(currentTaskImages, index);
+
+    const img = document.createElement("img");
+    img.src = imgUrl;
+    img.alt = `Allegato ${index + 1}`;
+    img.loading = "lazy";
+
+    const delBtn = document.createElement("button");
+    delBtn.type = "button";
+    delBtn.className = "note-image-delete-btn";
+    delBtn.title = "Rimuovi immagine";
+    delBtn.innerHTML = `<span class="material-symbols-outlined">close</span>`;
+    delBtn.onclick = (e) => {
+      e.stopPropagation();
+      removeTaskModalImage(index);
+    };
+
+    thumb.appendChild(img);
+    thumb.appendChild(delBtn);
+    preview.appendChild(thumb);
+  });
+}
+
+function removeTaskModalImage(index) {
+  currentTaskImages.splice(index, 1);
+  renderTaskModalImagesPreview();
+}
+
+async function deleteTaskImageDirect(taskId, imgIndex, event) {
+  if (event) event.stopPropagation();
+  const item = appData.tasks.find((t) => t.id === taskId);
+  if (!item || !item.images || !item.images[imgIndex]) return;
+
+  const result = await showConfirm(
+    "Eliminare questa immagine?",
+    "L'immagine verrà rimossa definitivamente da questo task.",
+    "Elimina",
+  );
+  if (result.isConfirmed) {
+    item.images.splice(imgIndex, 1);
+    saveDataLocally();
+    renderTaskSection();
+    showNotification("Immagine eliminata");
+  }
+}
+
+function openAddTaskModal() {
+  document.getElementById("task-modal-id").value = "";
+  document.getElementById("task-modal-header-title").innerText = "Nuovo Task";
+  document.getElementById("task-modal-category").value = "Generale";
+  document.getElementById("task-modal-title").value = "";
+  document.getElementById("task-modal-dueDate").value = "";
+  document.getElementById("task-modal-desc").value = "";
+  document.getElementById("task-btn-delete").style.display = "none";
+  currentTaskImages = [];
+  renderTaskModalImagesPreview();
+  document.getElementById("taskModal").classList.add("active");
+}
+
+function openEditTaskModal(id) {
+  const item = appData.tasks.find((t) => t.id === id);
+  if (!item) return;
+  document.getElementById("task-modal-id").value = id;
+  document.getElementById("task-modal-header-title").innerText =
+    "Modifica Task";
+  document.getElementById("task-modal-category").value =
+    item.category || "Generale";
+  document.getElementById("task-modal-title").value = item.title || "";
+  document.getElementById("task-modal-dueDate").value = item.dueDate || "";
+  document.getElementById("task-modal-desc").value = item.desc || "";
+  document.getElementById("task-btn-delete").style.display = "inline-flex";
+  currentTaskImages = Array.isArray(item.images) ? [...item.images] : [];
+  renderTaskModalImagesPreview();
+  document.getElementById("taskModal").classList.add("active");
+}
+
+function closeTaskModal() {
+  document.getElementById("taskModal").classList.remove("active");
+  currentTaskImages = [];
+  const preview = document.getElementById("task-modal-images-preview");
+  if (preview) preview.innerHTML = "";
+}
+
+function saveTaskModalChanges() {
+  const idVal = document.getElementById("task-modal-id").value;
+  const category =
+    document.getElementById("task-modal-category").value || "Generale";
+  const title = document.getElementById("task-modal-title").value.trim();
+  const dueDate = document.getElementById("task-modal-dueDate").value;
+  const desc = document.getElementById("task-modal-desc").value.trim();
+
+  if (!title)
+    return M3Swal.fire({
+      title: "Attenzione",
+      text: "Inserisci il titolo del task",
+      icon: "warning",
+    });
+
+  if (idVal) {
+    const item = appData.tasks.find((t) => t.id === parseInt(idVal));
+    if (item) {
+      item.category = category;
+      item.title = title;
+      item.dueDate = dueDate;
+      item.desc = desc;
+      item.images = [...currentTaskImages];
+    }
+  } else {
+    appData.tasks.unshift({
+      id: Date.now(),
+      category,
+      title,
+      dueDate,
+      desc,
+      images: [...currentTaskImages],
+      completed: false,
+    });
+  }
+  closeTaskModal();
+  saveDataLocally();
+  renderTaskSection();
+  showNotification("Task salvato!");
+}
+
+async function deleteTaskItem(id) {
+  const result = await showConfirm(
+    "Eliminare questo task?",
+    "Non sarà più possibile recuperarlo.",
+  );
+  if (result.isConfirmed) {
+    appData.tasks = appData.tasks.filter((t) => t.id !== id);
+    saveDataLocally();
+    renderTaskSection();
+    showNotification("Task eliminato");
+  }
+}
+
+async function deleteTaskFromModal() {
+  const idVal = document.getElementById("task-modal-id").value;
+  if (!idVal) return;
+  const result = await showConfirm(
+    "Eliminare questo task?",
+    "Non sarà più possibile recuperarlo.",
+  );
+  if (result.isConfirmed) {
+    appData.tasks = appData.tasks.filter((t) => t.id !== parseInt(idVal));
+    closeTaskModal();
+    saveDataLocally();
+    renderTaskSection();
+    showNotification("Task eliminato");
+  }
+}
+
+function toggleTaskStatus(id) {
+  const item = appData.tasks.find((t) => t.id === id);
+  if (item) {
+    item.completed = !item.completed;
+    saveDataLocally();
+    renderTaskSection();
+    showNotification(item.completed ? "Task completato!" : "Task ripristinato");
+  }
+}
+
+// --- APPUNTI ---
+let currentNoteImages = [];
+
+/**
+ * Comprime un'immagine lato client su canvas prima del salvataggio.
+ * Riduce la risoluzione max a 1280px e converte in JPEG con qualità 0.8 per limitare la dimensione a ~80-150KB.
+ */
+function compressImageFile(
+  file,
+  maxWidth = 1280,
+  maxHeight = 1280,
+  quality = 0.8,
+) {
+  return new Promise((resolve, reject) => {
+    if (!file || !file.type.startsWith("image/")) {
+      reject(new Error("Il file selezionato non è un'immagine valida."));
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth || height > maxHeight) {
+          if (width / height > maxWidth / maxHeight) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          } else {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
           }
         }
-        event.target.value = "";
-        renderTaskModalImagesPreview();
-        if (addedCount > 0) {
-          showNotification(
-            addedCount === 1
-              ? "Immagine caricata"
-              : `${addedCount} immagini caricate`,
-          );
-        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const dataUrl = canvas.toDataURL("image/jpeg", quality);
+        resolve(dataUrl);
+      };
+      img.onerror = (err) => reject(err);
+      img.src = e.target.result;
+    };
+    reader.onerror = (err) => reject(err);
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handleNoteImageUpload(event) {
+  const files = Array.from(event.target.files || []);
+  if (files.length === 0) return;
+
+  let addedCount = 0;
+  for (const file of files) {
+    try {
+      const compressedUrl = await compressImageFile(file);
+      currentNoteImages.push(compressedUrl);
+      addedCount++;
+    } catch (err) {
+      console.error("Errore compressione immagine appunto:", err);
+      showNotification(
+        "Errore caricamento",
+        "Impossibile elaborare " + file.name,
+        "error",
+      );
+    }
+  }
+  event.target.value = "";
+  renderNoteModalImagesPreview();
+  if (addedCount > 0) {
+    showNotification(
+      addedCount === 1
+        ? "Immagine caricata"
+        : `${addedCount} immagini caricate`,
+    );
+  }
+}
+
+async function promptAddNoteImageUrl() {
+  const result = await M3Swal.fire({
+    title: "Aggiungi Immagine via Link",
+    input: "url",
+    inputLabel: "Inserisci l'indirizzo web dell'immagine o link Drive",
+    inputPlaceholder: "https://...",
+    showCancelButton: true,
+    confirmButtonText: "Aggiungi",
+    cancelButtonText: "Annulla",
+    inputValidator: (value) => {
+      if (!value || !value.trim()) {
+        return "Inserisci un URL valido";
       }
+    },
+  });
+  if (result.isConfirmed && result.value) {
+    const formatted = formatFileUrl(result.value.trim());
+    currentNoteImages.push(formatted.url || result.value.trim());
+    renderNoteModalImagesPreview();
+  }
+}
 
-      async function promptAddTaskImageUrl() {
-        const result = await M3Swal.fire({
-          title: "Aggiungi Immagine via Link",
-          input: "url",
-          inputLabel: "Inserisci l'indirizzo web dell'immagine o link Drive",
-          inputPlaceholder: "https://...",
-          showCancelButton: true,
-          confirmButtonText: "Aggiungi",
-          cancelButtonText: "Annulla",
-          inputValidator: (value) => {
-            if (!value || !value.trim()) {
-              return "Inserisci un URL valido";
-            }
-          },
-        });
-        if (result.isConfirmed && result.value) {
-          const formatted = formatFileUrl(result.value.trim());
-          currentTaskImages.push(formatted.url || result.value.trim());
-          renderTaskModalImagesPreview();
-        }
-      }
+function renderNoteModalImagesPreview() {
+  const preview = document.getElementById("note-modal-images-preview");
+  if (!preview) return;
+  preview.innerHTML = "";
 
-      function renderTaskModalImagesPreview() {
-        const preview = document.getElementById("task-modal-images-preview");
-        if (!preview) return;
-        preview.innerHTML = "";
+  if (!currentNoteImages || currentNoteImages.length === 0) {
+    preview.innerHTML = `<p class="note-images-empty-hint">Nessuna immagine allegata. Carica una foto o inserisci un link.</p>`;
+    return;
+  }
 
-        if (!currentTaskImages || currentTaskImages.length === 0) {
-          preview.innerHTML = `<p class="note-images-empty-hint">Nessuna immagine allegata. Carica una foto o inserisci un link.</p>`;
-          return;
-        }
+  currentNoteImages.forEach((imgUrl, index) => {
+    const thumb = document.createElement("div");
+    thumb.className = "note-image-thumb";
+    thumb.title = "Clicca per ingrandire";
+    thumb.onclick = () => openLightbox(currentNoteImages, index);
 
-        currentTaskImages.forEach((imgUrl, index) => {
-          const thumb = document.createElement("div");
-          thumb.className = "note-image-thumb";
-          thumb.title = "Clicca per ingrandire";
-          thumb.onclick = () => openLightbox(currentTaskImages, index);
+    const img = document.createElement("img");
+    img.src = imgUrl;
+    img.alt = `Allegato ${index + 1}`;
+    img.loading = "lazy";
 
-          const img = document.createElement("img");
-          img.src = imgUrl;
-          img.alt = `Allegato ${index + 1}`;
-          img.loading = "lazy";
+    const delBtn = document.createElement("button");
+    delBtn.type = "button";
+    delBtn.className = "note-image-delete-btn";
+    delBtn.title = "Rimuovi immagine";
+    delBtn.innerHTML = `<span class="material-symbols-outlined">close</span>`;
+    delBtn.onclick = (e) => {
+      e.stopPropagation();
+      removeNoteModalImage(index);
+    };
 
-          const delBtn = document.createElement("button");
-          delBtn.type = "button";
-          delBtn.className = "note-image-delete-btn";
-          delBtn.title = "Rimuovi immagine";
-          delBtn.innerHTML = `<span class="material-symbols-outlined">close</span>`;
-          delBtn.onclick = (e) => {
-            e.stopPropagation();
-            removeTaskModalImage(index);
-          };
+    thumb.appendChild(img);
+    thumb.appendChild(delBtn);
+    preview.appendChild(thumb);
+  });
+}
 
-          thumb.appendChild(img);
-          thumb.appendChild(delBtn);
-          preview.appendChild(thumb);
-        });
-      }
+function removeNoteModalImage(index) {
+  currentNoteImages.splice(index, 1);
+  renderNoteModalImagesPreview();
+}
 
-      function removeTaskModalImage(index) {
-        currentTaskImages.splice(index, 1);
-        renderTaskModalImagesPreview();
-      }
+async function deleteNoteImageDirect(noteId, imgIndex, event) {
+  if (event) event.stopPropagation();
+  const note = appData.notes.find((n) => n.id === noteId);
+  if (!note || !note.images || !note.images[imgIndex]) return;
 
-      async function deleteTaskImageDirect(taskId, imgIndex, event) {
-        if (event) event.stopPropagation();
-        const item = appData.tasks.find((t) => t.id === taskId);
-        if (!item || !item.images || !item.images[imgIndex]) return;
+  const result = await showConfirm(
+    "Eliminare questa immagine?",
+    "L'immagine verrà rimossa definitivamente da questo appunto.",
+    "Elimina",
+  );
+  if (result.isConfirmed) {
+    note.images.splice(imgIndex, 1);
+    saveDataLocally();
+    renderNoteSection();
+    showNotification("Immagine eliminata");
+  }
+}
 
-        const result = await showConfirm(
-          "Eliminare questa immagine?",
-          "L'immagine verrà rimossa definitivamente da questo task.",
-          "Elimina",
-        );
-        if (result.isConfirmed) {
-          item.images.splice(imgIndex, 1);
-          saveDataLocally();
-          renderTaskSection();
-          showNotification("Immagine eliminata");
-        }
-      }
+function renderNoteSection() {
+  const container = document.getElementById("notes-container");
+  if (!container) return;
+  container.innerHTML = "";
 
-      function openAddTaskModal() {
-        document.getElementById("task-modal-id").value = "";
-        document.getElementById("task-modal-header-title").innerText =
-          "Nuovo Task";
-        document.getElementById("task-modal-category").value = "Generale";
-        document.getElementById("task-modal-title").value = "";
-        document.getElementById("task-modal-dueDate").value = "";
-        document.getElementById("task-modal-desc").value = "";
-        document.getElementById("task-btn-delete").style.display = "none";
-        currentTaskImages = [];
-        renderTaskModalImagesPreview();
-        document.getElementById("taskModal").classList.add("active");
-      }
-
-      function openEditTaskModal(id) {
-        const item = appData.tasks.find((t) => t.id === id);
-        if (!item) return;
-        document.getElementById("task-modal-id").value = id;
-        document.getElementById("task-modal-header-title").innerText =
-          "Modifica Task";
-        document.getElementById("task-modal-category").value =
-          item.category || "Generale";
-        document.getElementById("task-modal-title").value = item.title || "";
-        document.getElementById("task-modal-dueDate").value =
-          item.dueDate || "";
-        document.getElementById("task-modal-desc").value = item.desc || "";
-        document.getElementById("task-btn-delete").style.display =
-          "inline-flex";
-        currentTaskImages = Array.isArray(item.images) ? [...item.images] : [];
-        renderTaskModalImagesPreview();
-        document.getElementById("taskModal").classList.add("active");
-      }
-
-      function closeTaskModal() {
-        document.getElementById("taskModal").classList.remove("active");
-        currentTaskImages = [];
-        const preview = document.getElementById("task-modal-images-preview");
-        if (preview) preview.innerHTML = "";
-      }
-
-      function saveTaskModalChanges() {
-        const idVal = document.getElementById("task-modal-id").value;
-        const category =
-          document.getElementById("task-modal-category").value || "Generale";
-        const title = document.getElementById("task-modal-title").value.trim();
-        const dueDate = document.getElementById("task-modal-dueDate").value;
-        const desc = document.getElementById("task-modal-desc").value.trim();
-
-        if (!title)
-          return M3Swal.fire({
-            title: "Attenzione",
-            text: "Inserisci il titolo del task",
-            icon: "warning",
-          });
-
-        if (idVal) {
-          const item = appData.tasks.find((t) => t.id === parseInt(idVal));
-          if (item) {
-            item.category = category;
-            item.title = title;
-            item.dueDate = dueDate;
-            item.desc = desc;
-            item.images = [...currentTaskImages];
-          }
-        } else {
-          appData.tasks.unshift({
-            id: Date.now(),
-            category,
-            title,
-            dueDate,
-            desc,
-            images: [...currentTaskImages],
-            completed: false,
-          });
-        }
-        closeTaskModal();
-        saveDataLocally();
-        renderTaskSection();
-        showNotification("Task salvato!");
-      }
-
-      async function deleteTaskItem(id) {
-        const result = await showConfirm(
-          "Eliminare questo task?",
-          "Non sarà più possibile recuperarlo.",
-        );
-        if (result.isConfirmed) {
-          appData.tasks = appData.tasks.filter((t) => t.id !== id);
-          saveDataLocally();
-          renderTaskSection();
-          showNotification("Task eliminato");
-        }
-      }
-
-      async function deleteTaskFromModal() {
-        const idVal = document.getElementById("task-modal-id").value;
-        if (!idVal) return;
-        const result = await showConfirm(
-          "Eliminare questo task?",
-          "Non sarà più possibile recuperarlo.",
-        );
-        if (result.isConfirmed) {
-          appData.tasks = appData.tasks.filter((t) => t.id !== parseInt(idVal));
-          closeTaskModal();
-          saveDataLocally();
-          renderTaskSection();
-          showNotification("Task eliminato");
-        }
-      }
-
-      function toggleTaskStatus(id) {
-        const item = appData.tasks.find((t) => t.id === id);
-        if (item) {
-          item.completed = !item.completed;
-          saveDataLocally();
-          renderTaskSection();
-          showNotification(
-            item.completed ? "Task completato!" : "Task ripristinato",
-          );
-        }
-      }
-
-      // --- APPUNTI ---
-      let currentNoteImages = [];
-
-      /**
-       * Comprime un'immagine lato client su canvas prima del salvataggio.
-       * Riduce la risoluzione max a 1280px e converte in JPEG con qualità 0.8 per limitare la dimensione a ~80-150KB.
-       */
-      function compressImageFile(
-        file,
-        maxWidth = 1280,
-        maxHeight = 1280,
-        quality = 0.8,
-      ) {
-        return new Promise((resolve, reject) => {
-          if (!file || !file.type.startsWith("image/")) {
-            reject(new Error("Il file selezionato non è un'immagine valida."));
-            return;
-          }
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            const img = new Image();
-            img.onload = () => {
-              let width = img.width;
-              let height = img.height;
-
-              if (width > maxWidth || height > maxHeight) {
-                if (width / height > maxWidth / maxHeight) {
-                  height = Math.round((height * maxWidth) / width);
-                  width = maxWidth;
-                } else {
-                  width = Math.round((width * maxHeight) / height);
-                  height = maxHeight;
-                }
-              }
-
-              const canvas = document.createElement("canvas");
-              canvas.width = width;
-              canvas.height = height;
-              const ctx = canvas.getContext("2d");
-              ctx.drawImage(img, 0, 0, width, height);
-
-              const dataUrl = canvas.toDataURL("image/jpeg", quality);
-              resolve(dataUrl);
-            };
-            img.onerror = (err) => reject(err);
-            img.src = e.target.result;
-          };
-          reader.onerror = (err) => reject(err);
-          reader.readAsDataURL(file);
-        });
-      }
-
-      async function handleNoteImageUpload(event) {
-        const files = Array.from(event.target.files || []);
-        if (files.length === 0) return;
-
-        let addedCount = 0;
-        for (const file of files) {
-          try {
-            const compressedUrl = await compressImageFile(file);
-            currentNoteImages.push(compressedUrl);
-            addedCount++;
-          } catch (err) {
-            console.error("Errore compressione immagine appunto:", err);
-            showNotification(
-              "Errore caricamento",
-              "Impossibile elaborare " + file.name,
-              "error",
-            );
-          }
-        }
-        event.target.value = "";
-        renderNoteModalImagesPreview();
-        if (addedCount > 0) {
-          showNotification(
-            addedCount === 1
-              ? "Immagine caricata"
-              : `${addedCount} immagini caricate`,
-          );
-        }
-      }
-
-      async function promptAddNoteImageUrl() {
-        const result = await M3Swal.fire({
-          title: "Aggiungi Immagine via Link",
-          input: "url",
-          inputLabel: "Inserisci l'indirizzo web dell'immagine o link Drive",
-          inputPlaceholder: "https://...",
-          showCancelButton: true,
-          confirmButtonText: "Aggiungi",
-          cancelButtonText: "Annulla",
-          inputValidator: (value) => {
-            if (!value || !value.trim()) {
-              return "Inserisci un URL valido";
-            }
-          },
-        });
-        if (result.isConfirmed && result.value) {
-          const formatted = formatFileUrl(result.value.trim());
-          currentNoteImages.push(formatted.url || result.value.trim());
-          renderNoteModalImagesPreview();
-        }
-      }
-
-      function renderNoteModalImagesPreview() {
-        const preview = document.getElementById("note-modal-images-preview");
-        if (!preview) return;
-        preview.innerHTML = "";
-
-        if (!currentNoteImages || currentNoteImages.length === 0) {
-          preview.innerHTML = `<p class="note-images-empty-hint">Nessuna immagine allegata. Carica una foto o inserisci un link.</p>`;
-          return;
-        }
-
-        currentNoteImages.forEach((imgUrl, index) => {
-          const thumb = document.createElement("div");
-          thumb.className = "note-image-thumb";
-          thumb.title = "Clicca per ingrandire";
-          thumb.onclick = () => openLightbox(currentNoteImages, index);
-
-          const img = document.createElement("img");
-          img.src = imgUrl;
-          img.alt = `Allegato ${index + 1}`;
-          img.loading = "lazy";
-
-          const delBtn = document.createElement("button");
-          delBtn.type = "button";
-          delBtn.className = "note-image-delete-btn";
-          delBtn.title = "Rimuovi immagine";
-          delBtn.innerHTML = `<span class="material-symbols-outlined">close</span>`;
-          delBtn.onclick = (e) => {
-            e.stopPropagation();
-            removeNoteModalImage(index);
-          };
-
-          thumb.appendChild(img);
-          thumb.appendChild(delBtn);
-          preview.appendChild(thumb);
-        });
-      }
-
-      function removeNoteModalImage(index) {
-        currentNoteImages.splice(index, 1);
-        renderNoteModalImagesPreview();
-      }
-
-      async function deleteNoteImageDirect(noteId, imgIndex, event) {
-        if (event) event.stopPropagation();
-        const note = appData.notes.find((n) => n.id === noteId);
-        if (!note || !note.images || !note.images[imgIndex]) return;
-
-        const result = await showConfirm(
-          "Eliminare questa immagine?",
-          "L'immagine verrà rimossa definitivamente da questo appunto.",
-          "Elimina",
-        );
-        if (result.isConfirmed) {
-          note.images.splice(imgIndex, 1);
-          saveDataLocally();
-          renderNoteSection();
-          showNotification("Immagine eliminata");
-        }
-      }
-
-      function renderNoteSection() {
-        const container = document.getElementById("notes-container");
-        if (!container) return;
-        container.innerHTML = "";
-
-        if (!appData.notes || appData.notes.length === 0) {
-          container.innerHTML = `
+  if (!appData.notes || appData.notes.length === 0) {
+    container.innerHTML = `
             <div style="text-align: center; color: var(--md-sys-color-outline); padding: 40px 16px;">
                 <span class="material-symbols-outlined" style="font-size: 48px; opacity: 0.5;">edit_note</span>
                 <p style="margin: 12px 0 0 0;">Nessun appunto presente. Clicca su "Aggiungi Appunto" per iniziare.</p>
             </div>
           `;
-          return;
-        }
+    return;
+  }
 
-        const groupedNotes = {};
-        appData.notes.forEach((item) => {
-          const category = item.category || "Generale Casa";
-          if (!groupedNotes[category]) groupedNotes[category] = [];
-          groupedNotes[category].push(item);
-        });
+  const groupedNotes = {};
+  appData.notes.forEach((item) => {
+    const category = item.category || "Generale Casa";
+    if (!groupedNotes[category]) groupedNotes[category] = [];
+    groupedNotes[category].push(item);
+  });
 
-        Object.keys(groupedNotes)
-          .sort()
-          .forEach((category) => {
-            let catColor = "var(--md-sys-color-primary)";
-            // Cerca se esiste un colore associato
-            let foundCat = null;
-            if (appData.settings && appData.settings.categories) {
-              foundCat = Object.values(appData.settings.categories).find(
-                (c) => c.name === category,
-              );
-              if (foundCat) catColor = foundCat.color;
-            }
+  Object.keys(groupedNotes)
+    .sort()
+    .forEach((category) => {
+      let catColor = "var(--md-sys-color-primary)";
+      // Cerca se esiste un colore associato
+      let foundCat = null;
+      if (appData.settings && appData.settings.categories) {
+        foundCat = Object.values(appData.settings.categories).find(
+          (c) => c.name === category,
+        );
+        if (foundCat) catColor = foundCat.color;
+      }
 
-            const groupHeader = document.createElement("h3");
-            groupHeader.style.cssText =
-              "margin-top: 24px; margin-bottom: 12px; font-size: 18px; border-bottom: 1px solid var(--md-sys-color-outline-variant); padding-bottom: 8px; display: flex; align-items: center; gap: 8px;";
-            groupHeader.innerHTML = `<span style="display: inline-block; width: 14px; height: 14px; border-radius: 50%; background-color: ${catColor};"></span>${category}`;
-            container.appendChild(groupHeader);
+      const groupHeader = document.createElement("h3");
+      groupHeader.style.cssText =
+        "margin-top: 24px; margin-bottom: 12px; font-size: 18px; border-bottom: 1px solid var(--md-sys-color-outline-variant); padding-bottom: 8px; display: flex; align-items: center; gap: 8px;";
+      groupHeader.innerHTML = `<span style="display: inline-block; width: 14px; height: 14px; border-radius: 50%; background-color: ${catColor};"></span>${category}`;
+      container.appendChild(groupHeader);
 
-            groupedNotes[category].sort((a, b) => {
-              return new Date(b.date) - new Date(a.date);
-            });
+      groupedNotes[category].sort((a, b) => {
+        return new Date(b.date) - new Date(a.date);
+      });
 
-            groupedNotes[category].forEach((item) => {
-              const card = document.createElement("div");
-              card.style.cssText =
-                "background-color: var(--md-sys-color-surface-container-low); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);";
+      groupedNotes[category].forEach((item) => {
+        const card = document.createElement("div");
+        card.style.cssText =
+          "background-color: var(--md-sys-color-surface-container-low); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);";
 
-              const dateStr = new Date(item.date).toLocaleDateString("it-IT");
+        const dateStr = new Date(item.date).toLocaleDateString("it-IT");
 
-              // 1. Intestazione con Titolo, data e pulsanti modifica/elimina
-              const headerDiv = document.createElement("div");
-              headerDiv.style.cssText =
-                "display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap;";
-              headerDiv.innerHTML = `
+        // 1. Intestazione con Titolo, data e pulsanti modifica/elimina
+        const headerDiv = document.createElement("div");
+        headerDiv.style.cssText =
+          "display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap;";
+        headerDiv.innerHTML = `
                   <div style="font-size: 16px; font-weight: 700; color: var(--md-sys-color-on-surface); margin-bottom: 4px;">${item.title}</div>
                   <div style="display: flex; gap: 4px; align-items: center;">
                       <span style="font-size: 12px; color: var(--md-sys-color-outline); margin-right: 8px;">${dateStr}</span>
@@ -1912,497 +1887,475 @@
                       <button class="btn-icon" onclick="deleteNoteItem(${item.id})" title="Elimina" style="color: var(--md-sys-color-error);"><span class="material-symbols-outlined">delete</span></button>
                   </div>
               `;
-              card.appendChild(headerDiv);
+        card.appendChild(headerDiv);
 
-              // 2. Immagini collegate: posizionate esattamente tra il titolo e il testo
-              if (item.images && item.images.length > 0) {
-                const imgGrid = document.createElement("div");
-                imgGrid.className = "note-images-grid";
+        // 2. Immagini collegate: posizionate esattamente tra il titolo e il testo
+        if (item.images && item.images.length > 0) {
+          const imgGrid = document.createElement("div");
+          imgGrid.className = "note-images-grid";
 
-                item.images.forEach((imgUrl, idx) => {
-                  const thumb = document.createElement("div");
-                  thumb.className = "note-image-thumb";
-                  thumb.title = "Clicca per ingrandire";
-                  thumb.onclick = () => openLightbox(item.images, idx);
+          item.images.forEach((imgUrl, idx) => {
+            const thumb = document.createElement("div");
+            thumb.className = "note-image-thumb";
+            thumb.title = "Clicca per ingrandire";
+            thumb.onclick = () => openLightbox(item.images, idx);
 
-                  const img = document.createElement("img");
-                  img.src = imgUrl;
-                  img.alt = `Foto ${idx + 1}`;
-                  img.loading = "lazy";
+            const img = document.createElement("img");
+            img.src = imgUrl;
+            img.alt = `Foto ${idx + 1}`;
+            img.loading = "lazy";
 
-                  // Pulsante "X" in alto a destra per eliminare la singola immagine
-                  const delBtn = document.createElement("button");
-                  delBtn.type = "button";
-                  delBtn.className = "note-image-delete-btn";
-                  delBtn.title = "Elimina immagine";
-                  delBtn.innerHTML = `<span class="material-symbols-outlined">close</span>`;
-                  delBtn.onclick = (e) => {
-                    deleteNoteImageDirect(item.id, idx, e);
-                  };
+            // Pulsante "X" in alto a destra per eliminare la singola immagine
+            const delBtn = document.createElement("button");
+            delBtn.type = "button";
+            delBtn.className = "note-image-delete-btn";
+            delBtn.title = "Elimina immagine";
+            delBtn.innerHTML = `<span class="material-symbols-outlined">close</span>`;
+            delBtn.onclick = (e) => {
+              deleteNoteImageDirect(item.id, idx, e);
+            };
 
-                  thumb.appendChild(img);
-                  thumb.appendChild(delBtn);
-                  imgGrid.appendChild(thumb);
-                });
-
-                card.appendChild(imgGrid);
-              }
-
-              // 3. Testo dell'appunto
-              if (item.content) {
-                const contentDiv = document.createElement("div");
-                contentDiv.style.cssText =
-                  "font-size: 15px; color: var(--md-sys-color-on-surface); margin-top: 6px; white-space: pre-wrap; line-height: 1.5;";
-                contentDiv.innerText = item.content;
-                card.appendChild(contentDiv);
-              }
-
-              container.appendChild(card);
-            });
+            thumb.appendChild(img);
+            thumb.appendChild(delBtn);
+            imgGrid.appendChild(thumb);
           });
-      }
 
-      function openAddNoteModal() {
-        document.getElementById("note-modal-id").value = "";
-        document.getElementById("note-modal-header-title").innerText =
-          "Nuovo Appunto";
-
-        let sel = document.getElementById("note-modal-category");
-        sel.innerHTML = "";
-
-        let allCats = new Set([...(appData.settings.roomCategories || [])]);
-        if (appData.settings.categories) {
-          Object.keys(appData.settings.categories).forEach((c) =>
-            allCats.add(c),
-          );
-        }
-        let sortedCats = Array.from(allCats).sort((a, b) => a.localeCompare(b));
-
-        sortedCats.forEach((cat) => {
-          let opt = document.createElement("option");
-          opt.value = cat;
-          opt.innerText = cat;
-          sel.appendChild(opt);
-        });
-
-        if (sortedCats.includes("Generale Casa")) {
-          sel.value = "Generale Casa";
-        } else if (sortedCats.length > 0) {
-          sel.value = sortedCats[0];
+          card.appendChild(imgGrid);
         }
 
-        document.getElementById("note-modal-title").value = "";
-        document.getElementById("note-modal-content").value = "";
-        document.getElementById("note-btn-delete").style.display = "none";
-        currentNoteImages = [];
-        renderNoteModalImagesPreview();
-        document.getElementById("noteModal").classList.add("active");
-      }
-
-      function openEditNoteModal(id) {
-        const item = appData.notes.find((t) => t.id === id);
-        if (!item) return;
-        document.getElementById("note-modal-id").value = id;
-        document.getElementById("note-modal-header-title").innerText =
-          "Modifica Appunto";
-
-        let sel = document.getElementById("note-modal-category");
-        sel.innerHTML = "";
-
-        let allCats = new Set([...(appData.settings.roomCategories || [])]);
-        if (appData.settings.categories) {
-          Object.keys(appData.settings.categories).forEach((c) =>
-            allCats.add(c),
-          );
-        }
-        let sortedCats = Array.from(allCats).sort((a, b) => a.localeCompare(b));
-
-        sortedCats.forEach((cat) => {
-          let opt = document.createElement("option");
-          opt.value = cat;
-          opt.innerText = cat;
-          sel.appendChild(opt);
-        });
-
-        sel.value = item.category || "Generale Casa";
-        if (!sel.value && sortedCats.length > 0) sel.value = sortedCats[0];
-
-        document.getElementById("note-modal-title").value = item.title || "";
-        document.getElementById("note-modal-content").value =
-          item.content || "";
-        document.getElementById("note-btn-delete").style.display = "flex";
-        currentNoteImages = Array.isArray(item.images) ? [...item.images] : [];
-        renderNoteModalImagesPreview();
-        document.getElementById("noteModal").classList.add("active");
-      }
-
-      function closeNoteModal() {
-        document.getElementById("noteModal").classList.remove("active");
-        currentNoteImages = [];
-        const preview = document.getElementById("note-modal-images-preview");
-        if (preview) preview.innerHTML = "";
-      }
-
-      function saveNoteModalChanges() {
-        const idVal = document.getElementById("note-modal-id").value;
-        const cat = document.getElementById("note-modal-category").value;
-        const title = document.getElementById("note-modal-title").value.trim();
-        const content = document
-          .getElementById("note-modal-content")
-          .value.trim();
-
-        if (!title) {
-          showNotification("Inserisci un titolo per l'appunto", "", "error");
-          return;
+        // 3. Testo dell'appunto
+        if (item.content) {
+          const contentDiv = document.createElement("div");
+          contentDiv.style.cssText =
+            "font-size: 15px; color: var(--md-sys-color-on-surface); margin-top: 6px; white-space: pre-wrap; line-height: 1.5;";
+          contentDiv.innerText = item.content;
+          card.appendChild(contentDiv);
         }
 
-        if (idVal) {
-          const item = appData.notes.find((t) => t.id === parseInt(idVal));
-          if (item) {
-            item.category = cat;
-            item.title = title;
-            item.content = content;
-            item.images = [...currentNoteImages];
-          }
-        } else {
-          appData.notes.push({
-            id: Date.now(),
-            category: cat,
-            title: title,
-            content: content,
-            images: [...currentNoteImages],
-            date: new Date().toISOString(),
-          });
-        }
-        closeNoteModal();
-        saveDataLocally();
-        renderNoteSection();
-        showNotification("Appunto salvato");
-      }
+        container.appendChild(card);
+      });
+    });
+}
 
-      async function deleteNoteItem(id) {
-        const result = await showConfirm(
-          "Eliminare questo appunto?",
-          "Non sarà più possibile recuperarlo.",
+function openAddNoteModal() {
+  document.getElementById("note-modal-id").value = "";
+  document.getElementById("note-modal-header-title").innerText =
+    "Nuovo Appunto";
+
+  let sel = document.getElementById("note-modal-category");
+  sel.innerHTML = "";
+
+  let allCats = new Set([...(appData.settings.roomCategories || [])]);
+  if (appData.settings.categories) {
+    Object.keys(appData.settings.categories).forEach((c) => allCats.add(c));
+  }
+  let sortedCats = Array.from(allCats).sort((a, b) => a.localeCompare(b));
+
+  sortedCats.forEach((cat) => {
+    let opt = document.createElement("option");
+    opt.value = cat;
+    opt.innerText = cat;
+    sel.appendChild(opt);
+  });
+
+  if (sortedCats.includes("Generale Casa")) {
+    sel.value = "Generale Casa";
+  } else if (sortedCats.length > 0) {
+    sel.value = sortedCats[0];
+  }
+
+  document.getElementById("note-modal-title").value = "";
+  document.getElementById("note-modal-content").value = "";
+  document.getElementById("note-btn-delete").style.display = "none";
+  currentNoteImages = [];
+  renderNoteModalImagesPreview();
+  document.getElementById("noteModal").classList.add("active");
+}
+
+function openEditNoteModal(id) {
+  const item = appData.notes.find((t) => t.id === id);
+  if (!item) return;
+  document.getElementById("note-modal-id").value = id;
+  document.getElementById("note-modal-header-title").innerText =
+    "Modifica Appunto";
+
+  let sel = document.getElementById("note-modal-category");
+  sel.innerHTML = "";
+
+  let allCats = new Set([...(appData.settings.roomCategories || [])]);
+  if (appData.settings.categories) {
+    Object.keys(appData.settings.categories).forEach((c) => allCats.add(c));
+  }
+  let sortedCats = Array.from(allCats).sort((a, b) => a.localeCompare(b));
+
+  sortedCats.forEach((cat) => {
+    let opt = document.createElement("option");
+    opt.value = cat;
+    opt.innerText = cat;
+    sel.appendChild(opt);
+  });
+
+  sel.value = item.category || "Generale Casa";
+  if (!sel.value && sortedCats.length > 0) sel.value = sortedCats[0];
+
+  document.getElementById("note-modal-title").value = item.title || "";
+  document.getElementById("note-modal-content").value = item.content || "";
+  document.getElementById("note-btn-delete").style.display = "flex";
+  currentNoteImages = Array.isArray(item.images) ? [...item.images] : [];
+  renderNoteModalImagesPreview();
+  document.getElementById("noteModal").classList.add("active");
+}
+
+function closeNoteModal() {
+  document.getElementById("noteModal").classList.remove("active");
+  currentNoteImages = [];
+  const preview = document.getElementById("note-modal-images-preview");
+  if (preview) preview.innerHTML = "";
+}
+
+function saveNoteModalChanges() {
+  const idVal = document.getElementById("note-modal-id").value;
+  const cat = document.getElementById("note-modal-category").value;
+  const title = document.getElementById("note-modal-title").value.trim();
+  const content = document.getElementById("note-modal-content").value.trim();
+
+  if (!title) {
+    showNotification("Inserisci un titolo per l'appunto", "", "error");
+    return;
+  }
+
+  if (idVal) {
+    const item = appData.notes.find((t) => t.id === parseInt(idVal));
+    if (item) {
+      item.category = cat;
+      item.title = title;
+      item.content = content;
+      item.images = [...currentNoteImages];
+    }
+  } else {
+    appData.notes.push({
+      id: Date.now(),
+      category: cat,
+      title: title,
+      content: content,
+      images: [...currentNoteImages],
+      date: new Date().toISOString(),
+    });
+  }
+  closeNoteModal();
+  saveDataLocally();
+  renderNoteSection();
+  showNotification("Appunto salvato");
+}
+
+async function deleteNoteItem(id) {
+  const result = await showConfirm(
+    "Eliminare questo appunto?",
+    "Non sarà più possibile recuperarlo.",
+  );
+  if (result.isConfirmed) {
+    appData.notes = appData.notes.filter((t) => t.id !== id);
+    saveDataLocally();
+    renderNoteSection();
+    showNotification("Appunto eliminato");
+  }
+}
+
+async function deleteNoteFromModal() {
+  const idVal = document.getElementById("note-modal-id").value;
+  if (!idVal) return;
+  deleteNoteItem(parseInt(idVal));
+  closeNoteModal();
+}
+
+/**
+ * Apre la modale per configurare il link a Google Drive.
+ */
+function openDriveModal() {
+  let driveInput = document.getElementById("drive-url-input");
+  let settingsDriveInput = document.getElementById("settings-drive-url");
+  let val = appData.settings.driveLink || "";
+  if (driveInput) driveInput.value = val;
+  if (settingsDriveInput) settingsDriveInput.value = val;
+  let driveModal = document.getElementById("driveModal");
+  if (driveModal) driveModal.classList.add("active");
+}
+
+/**
+ * Salva il link di Google Drive all'interno delle impostazioni.
+ */
+function saveDriveLink() {
+  let driveInput = document.getElementById("drive-url-input");
+  let settingsDriveInput = document.getElementById("settings-drive-url");
+  let url =
+    driveInput && driveInput.value.trim() !== ""
+      ? driveInput.value.trim()
+      : settingsDriveInput && settingsDriveInput.value.trim() !== ""
+        ? settingsDriveInput.value.trim()
+        : "";
+
+  appData.settings.driveLink = url;
+  let driveModal = document.getElementById("driveModal");
+  if (driveModal) driveModal.classList.remove("active");
+
+  saveDataLocally();
+  showNotification("Link Drive salvato!");
+}
+
+/**
+ * Gestisce l'ordinamento dinamico delle tabelle per colonna.
+ * @param {'costi'|'budget'} table - Nome della tabella.
+ * @param {string} column - Chiave del campo da ordinare.
+ */
+function sortTable(table, column) {
+  if (currentSort.table === table && currentSort.column === column) {
+    currentSort.asc = !currentSort.asc;
+  } else {
+    currentSort.table = table;
+    currentSort.column = column;
+    currentSort.asc = true;
+  }
+  renderTables();
+}
+
+/**
+ * Aggiorna gli indicatori grafici (frecce) di ordinamento nelle intestazioni delle tabelle.
+ */
+function updateSortHeaders() {
+  document.querySelectorAll("th.sortable").forEach((th) => {
+    th.classList.remove("active");
+    let icon = th.querySelector(".sort-icon");
+    if (icon) icon.innerText = "sort";
+  });
+  if (currentSort.table && currentSort.column) {
+    const th = document.querySelector(
+      `th[onclick="sortTable('${currentSort.table}', '${currentSort.column}')"]`,
+    );
+    if (th) {
+      th.classList.add("active");
+      let icon = th.querySelector(".sort-icon");
+      if (icon)
+        icon.innerText = currentSort.asc ? "arrow_downward" : "arrow_upward";
+    }
+  }
+}
+
+/**
+ * Restituisce i dati ordinati per una specifica tabella.
+ * @param {'costi'|'budget'} type - Nome della collezione di dati.
+ * @returns {Array<Object>} Array di dati ordinati.
+ */
+function getSortedData(type) {
+  let data = type === "costi" ? [...appData.costi] : [...appData.budget];
+  if (currentSort.table === type && currentSort.column) {
+    data.sort((a, b) => {
+      let valA, valB;
+      if (currentSort.column === "cat") {
+        valA = a.cat || "";
+        valB = b.cat || "";
+      } else if (currentSort.column === "desc") {
+        valA = a.desc || "";
+        valB = b.desc || "";
+      } else if (currentSort.column === "prezzo") {
+        valA = a.prezzo || 0;
+        valB = b.prezzo || 0;
+      } else if (currentSort.column.startsWith("u")) {
+        valA = a[currentSort.column] || 0;
+        valB = b[currentSort.column] || 0;
+      } else if (currentSort.column === "restante") {
+        let sumA = appData.settings.users.reduce(
+          (acc, u) => acc + (a[u.id] || 0),
+          0,
         );
-        if (result.isConfirmed) {
-          appData.notes = appData.notes.filter((t) => t.id !== id);
-          saveDataLocally();
-          renderNoteSection();
-          showNotification("Appunto eliminato");
-        }
-      }
-
-      async function deleteNoteFromModal() {
-        const idVal = document.getElementById("note-modal-id").value;
-        if (!idVal) return;
-        deleteNoteItem(parseInt(idVal));
-        closeNoteModal();
-      }
-
-      /**
-       * Apre la modale per configurare il link a Google Drive.
-       */
-      function openDriveModal() {
-        let driveInput = document.getElementById("drive-url-input");
-        let settingsDriveInput = document.getElementById("settings-drive-url");
-        let val = appData.settings.driveLink || "";
-        if (driveInput) driveInput.value = val;
-        if (settingsDriveInput) settingsDriveInput.value = val;
-        let driveModal = document.getElementById("driveModal");
-        if (driveModal) driveModal.classList.add("active");
-      }
-
-      /**
-       * Salva il link di Google Drive all'interno delle impostazioni.
-       */
-      function saveDriveLink() {
-        let driveInput = document.getElementById("drive-url-input");
-        let settingsDriveInput = document.getElementById("settings-drive-url");
-        let url =
-          driveInput && driveInput.value.trim() !== ""
-            ? driveInput.value.trim()
-            : settingsDriveInput && settingsDriveInput.value.trim() !== ""
-              ? settingsDriveInput.value.trim()
-              : "";
-
-        appData.settings.driveLink = url;
-        let driveModal = document.getElementById("driveModal");
-        if (driveModal) driveModal.classList.remove("active");
-
-        saveDataLocally();
-        showNotification("Link Drive salvato!");
-      }
-
-      /**
-       * Gestisce l'ordinamento dinamico delle tabelle per colonna.
-       * @param {'costi'|'budget'} table - Nome della tabella.
-       * @param {string} column - Chiave del campo da ordinare.
-       */
-      function sortTable(table, column) {
-        if (currentSort.table === table && currentSort.column === column) {
-          currentSort.asc = !currentSort.asc;
-        } else {
-          currentSort.table = table;
-          currentSort.column = column;
-          currentSort.asc = true;
-        }
-        renderTables();
-      }
-
-      /**
-       * Aggiorna gli indicatori grafici (frecce) di ordinamento nelle intestazioni delle tabelle.
-       */
-      function updateSortHeaders() {
-        document.querySelectorAll("th.sortable").forEach((th) => {
-          th.classList.remove("active");
-          let icon = th.querySelector(".sort-icon");
-          if (icon) icon.innerText = "sort";
-        });
-        if (currentSort.table && currentSort.column) {
-          const th = document.querySelector(
-            `th[onclick="sortTable('${currentSort.table}', '${currentSort.column}')"]`,
-          );
-          if (th) {
-            th.classList.add("active");
-            let icon = th.querySelector(".sort-icon");
-            if (icon)
-              icon.innerText = currentSort.asc
-                ? "arrow_downward"
-                : "arrow_upward";
-          }
-        }
-      }
-
-      /**
-       * Restituisce i dati ordinati per una specifica tabella.
-       * @param {'costi'|'budget'} type - Nome della collezione di dati.
-       * @returns {Array<Object>} Array di dati ordinati.
-       */
-      function getSortedData(type) {
-        let data = type === "costi" ? [...appData.costi] : [...appData.budget];
-        if (currentSort.table === type && currentSort.column) {
-          data.sort((a, b) => {
-            let valA, valB;
-            if (currentSort.column === "cat") {
-              valA = a.cat || "";
-              valB = b.cat || "";
-            } else if (currentSort.column === "desc") {
-              valA = a.desc || "";
-              valB = b.desc || "";
-            } else if (currentSort.column === "prezzo") {
-              valA = a.prezzo || 0;
-              valB = b.prezzo || 0;
-            } else if (currentSort.column.startsWith("u")) {
-              valA = a[currentSort.column] || 0;
-              valB = b[currentSort.column] || 0;
-            } else if (currentSort.column === "restante") {
-              let sumA = appData.settings.users.reduce(
-                (acc, u) => acc + (a[u.id] || 0),
-                0,
-              );
-              let sumB = appData.settings.users.reduce(
-                (acc, u) => acc + (b[u.id] || 0),
-                0,
-              );
-              valA = (a.prezzo || 0) - sumA;
-              valB = (b.prezzo || 0) - sumB;
-            } else if (currentSort.column === "totale") {
-              valA = appData.settings.users.reduce(
-                (acc, u) => acc + (a[u.id] || 0),
-                0,
-              );
-              valB = appData.settings.users.reduce(
-                (acc, u) => acc + (b[u.id] || 0),
-                0,
-              );
-            }
-            if (typeof valA === "string")
-              return currentSort.asc
-                ? valA.localeCompare(valB)
-                : valB.localeCompare(valA);
-            else return currentSort.asc ? valA - valB : valB - valA;
-          });
-        }
-        return data;
-      }
-
-      /**
-       * Esegue il rendering dell'header dell'app, dell'immagine hero e della configurazione impostazioni.
-       */
-      function renderHeaderAndSettings() {
-        const btnDrive = document.getElementById("btn-drive-link");
-        const btnDriveMobile = document.getElementById("btn-drive-link-mobile");
-        if (btnDrive) {
-          if (appData.settings.driveLink) {
-            btnDrive.style.display = "inline-flex";
-            btnDrive.href = appData.settings.driveLink;
-            if (btnDriveMobile) {
-              btnDriveMobile.style.display = "flex";
-              btnDriveMobile.href = appData.settings.driveLink;
-            }
-          } else {
-            btnDrive.style.display = "none";
-            if (btnDriveMobile) btnDriveMobile.style.display = "none";
-          }
-        }
-
-        let driveUrlInput = document.getElementById("settings-drive-url");
-        if (driveUrlInput)
-          driveUrlInput.value = appData.settings.driveLink || "";
-
-        let ghEnabled = document.getElementById("settings-github-enabled");
-        let ghToken = document.getElementById("settings-github-token");
-        let ghGistId = document.getElementById("settings-github-gistId");
-        if (ghEnabled && casaGithubConfig) {
-          ghEnabled.checked = casaGithubConfig.enabled || false;
-          ghToken.value = casaGithubConfig.token || "";
-          ghGistId.value = casaGithubConfig.gistId || "";
-
-          let ghLink = document.getElementById("link-to-my-gist");
-          if (ghLink) {
-            if (casaGithubConfig.gistId) {
-              ghLink.href = `https://gist.github.com/${casaGithubConfig.gistId}`;
-              ghLink.style.display = "inline-flex";
-            } else {
-              ghLink.style.display = "none";
-            }
-          }
-
-          toggleGithubSettings();
-        }
-
-        const hero = document.getElementById("hero-header");
-        if (hero) {
-          if (
-            appData.settings.heroImage &&
-            document
-              .getElementById("view-riepilogo")
-              ?.classList.contains("active")
-          ) {
-            hero.style.backgroundImage = `url('${appData.settings.heroImage}')`;
-            hero.style.display = "block";
-          } else {
-            hero.style.display = "none";
-          }
-        }
-
-        let heroInput = document.getElementById("hero-image-url");
-        if (heroInput && !heroInput.value)
-          heroInput.value = appData.settings.heroImage || "";
-
-        const roomSelect = document.getElementById("new-render-room");
-        if (roomSelect) {
-          roomSelect.innerHTML = appData.settings.roomCategories
-            .map((r) => `<option value="${r}">${r}</option>`)
-            .join("");
-        }
-
-        const roomsContainer = document.getElementById("rooms-container");
-        if (roomsContainer) {
-          roomsContainer.innerHTML = "";
-          appData.settings.roomCategories.forEach((r, idx) => {
-            const badge = document.createElement("div");
-            badge.className = "cat-badge";
-            badge.style.backgroundColor =
-              "var(--md-sys-color-surface-container-high)";
-            badge.style.color = "var(--md-sys-color-on-surface)";
-            badge.style.display = "inline-flex";
-            badge.style.alignItems = "center";
-            badge.style.gap = "6px";
-            badge.innerHTML = `<span>${r}</span>`;
-            if (appData.settings.roomCategories.length > 1) {
-              badge.innerHTML += `<span class="material-symbols-outlined" style="font-size: 14px; cursor: pointer; opacity: 0.6;" onclick="removeRoomCategory(${idx})">close</span>`;
-            }
-            roomsContainer.appendChild(badge);
-          });
-        }
-
-        const settingsGallery = document.getElementById(
-          "settings-gallery-edit",
+        let sumB = appData.settings.users.reduce(
+          (acc, u) => acc + (b[u.id] || 0),
+          0,
         );
-        if (settingsGallery) {
-          settingsGallery.innerHTML = "";
-          if (appData.settings.renders && appData.settings.renders.length > 0) {
-            appData.settings.renders.forEach((item, i) => {
-              let fileInfo = formatFileUrl(item.url);
-              let isPdf = item.type === "pdf" || fileInfo.type === "pdf";
-              let isPlan = item.type === "plan";
+        valA = (a.prezzo || 0) - sumA;
+        valB = (b.prezzo || 0) - sumB;
+      } else if (currentSort.column === "totale") {
+        valA = appData.settings.users.reduce(
+          (acc, u) => acc + (a[u.id] || 0),
+          0,
+        );
+        valB = appData.settings.users.reduce(
+          (acc, u) => acc + (b[u.id] || 0),
+          0,
+        );
+      }
+      if (typeof valA === "string")
+        return currentSort.asc
+          ? valA.localeCompare(valB)
+          : valB.localeCompare(valA);
+      else return currentSort.asc ? valA - valB : valB - valA;
+    });
+  }
+  return data;
+}
 
-              let divEdit = document.createElement("div");
-              divEdit.className =
-                "gallery-item gallery-item-edit" +
-                (isPdf ? " gallery-item-pdf" : "");
-              if (isPdf) {
-                divEdit.innerHTML = `
+/**
+ * Esegue il rendering dell'header dell'app, dell'immagine hero e della configurazione impostazioni.
+ */
+function renderHeaderAndSettings() {
+  const btnDrive = document.getElementById("btn-drive-link");
+  const btnDriveMobile = document.getElementById("btn-drive-link-mobile");
+  if (btnDrive) {
+    if (appData.settings.driveLink) {
+      btnDrive.style.display = "inline-flex";
+      btnDrive.href = appData.settings.driveLink;
+      if (btnDriveMobile) {
+        btnDriveMobile.style.display = "flex";
+        btnDriveMobile.href = appData.settings.driveLink;
+      }
+    } else {
+      btnDrive.style.display = "none";
+      if (btnDriveMobile) btnDriveMobile.style.display = "none";
+    }
+  }
+
+  let driveUrlInput = document.getElementById("settings-drive-url");
+  if (driveUrlInput) driveUrlInput.value = appData.settings.driveLink || "";
+
+  let ghEnabled = document.getElementById("settings-github-enabled");
+  let ghToken = document.getElementById("settings-github-token");
+  let ghGistId = document.getElementById("settings-github-gistId");
+  if (ghEnabled && casaGithubConfig) {
+    ghEnabled.checked = casaGithubConfig.enabled || false;
+    ghToken.value = casaGithubConfig.token || "";
+    ghGistId.value = casaGithubConfig.gistId || "";
+
+    let ghLink = document.getElementById("link-to-my-gist");
+    if (ghLink) {
+      if (casaGithubConfig.gistId) {
+        ghLink.href = `https://gist.github.com/${casaGithubConfig.gistId}`;
+        ghLink.style.display = "inline-flex";
+      } else {
+        ghLink.style.display = "none";
+      }
+    }
+
+    toggleGithubSettings();
+  }
+
+  const hero = document.getElementById("hero-header");
+  if (hero) {
+    if (
+      appData.settings.heroImage &&
+      document.getElementById("view-riepilogo")?.classList.contains("active")
+    ) {
+      hero.style.backgroundImage = `url('${appData.settings.heroImage}')`;
+      hero.style.display = "block";
+    } else {
+      hero.style.display = "none";
+    }
+  }
+
+  let heroInput = document.getElementById("hero-image-url");
+  if (heroInput && !heroInput.value)
+    heroInput.value = appData.settings.heroImage || "";
+
+  const roomSelect = document.getElementById("new-render-room");
+  if (roomSelect) {
+    roomSelect.innerHTML = appData.settings.roomCategories
+      .map((r) => `<option value="${r}">${r}</option>`)
+      .join("");
+  }
+
+  const roomsContainer = document.getElementById("rooms-container");
+  if (roomsContainer) {
+    roomsContainer.innerHTML = "";
+    appData.settings.roomCategories.forEach((r, idx) => {
+      const badge = document.createElement("div");
+      badge.className = "cat-badge";
+      badge.style.backgroundColor =
+        "var(--md-sys-color-surface-container-high)";
+      badge.style.color = "var(--md-sys-color-on-surface)";
+      badge.style.display = "inline-flex";
+      badge.style.alignItems = "center";
+      badge.style.gap = "6px";
+      badge.innerHTML = `<span>${r}</span>`;
+      if (appData.settings.roomCategories.length > 1) {
+        badge.innerHTML += `<span class="material-symbols-outlined" style="font-size: 14px; cursor: pointer; opacity: 0.6;" onclick="removeRoomCategory(${idx})">close</span>`;
+      }
+      roomsContainer.appendChild(badge);
+    });
+  }
+
+  const settingsGallery = document.getElementById("settings-gallery-edit");
+  if (settingsGallery) {
+    settingsGallery.innerHTML = "";
+    if (appData.settings.renders && appData.settings.renders.length > 0) {
+      appData.settings.renders.forEach((item, i) => {
+        let fileInfo = formatFileUrl(item.url);
+        let isPdf = item.type === "pdf" || fileInfo.type === "pdf";
+        let isPlan = item.type === "plan";
+
+        let divEdit = document.createElement("div");
+        divEdit.className =
+          "gallery-item gallery-item-edit" + (isPdf ? " gallery-item-pdf" : "");
+        if (isPdf) {
+          divEdit.innerHTML = `
                                 <span class="material-symbols-outlined" style="font-size:28px;">picture_as_pdf</span> 
                                 <b style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:85%; text-align:center; font-size:12px;">${item.title}</b>
                                 <small style="opacity:0.8; font-size:11px;">Documento PDF</small>
                                 <button class="delete-btn" onclick="removeRender(${i})"><span class="material-symbols-outlined" style="font-size: 18px;">close</span></button>
                             `;
-              } else {
-                let badgeTag = isPlan ? "Piantina" : item.room;
-                divEdit.innerHTML = `
+        } else {
+          let badgeTag = isPlan ? "Piantina" : item.room;
+          divEdit.innerHTML = `
                                 <img src="${fileInfo.url}" alt="${item.title}">
                                 <span style="position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.65); color:#fff; font-size:11px; padding:4px 8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                                     ${item.title} (${badgeTag})
                                 </span>
                                 <button class="delete-btn" onclick="removeRender(${i})"><span class="material-symbols-outlined" style="font-size: 18px;">close</span></button>
                             `;
-              }
-              settingsGallery.appendChild(divEdit);
-            });
-          }
         }
+        settingsGallery.appendChild(divEdit);
+      });
+    }
+  }
 
-        renderGalleryView();
+  renderGalleryView();
 
-        const catContainer = document.getElementById("categories-container");
-        if (catContainer) {
-          catContainer.innerHTML = "";
-          Object.keys(appData.settings.categories)
-            .sort()
-            .forEach((cat) => {
-              const catObj = appData.settings.categories[cat];
-              const color = typeof catObj === "string" ? catObj : catObj.color;
-              const isImmobile =
-                typeof catObj === "object" && !!catObj.isImmobile;
-              const textColor = getContrastYIQ(color);
-              let el = document.createElement("div");
-              el.className = "cat-badge";
-              el.style.backgroundColor = color;
-              el.style.color = textColor;
-              el.style.cursor = "pointer";
-              el.style.fontSize = "14px";
-              el.style.padding = "8px 16px";
-              el.title = "Clicca per modificare";
-              el.innerHTML = `${cat}${isImmobile ? " 🏠" : ""} <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle; margin-left:4px; opacity: 0.7;">edit</span>`;
-              el.onclick = () => openEditCatModal(cat);
-              catContainer.appendChild(el);
-            });
-        }
+  const catContainer = document.getElementById("categories-container");
+  if (catContainer) {
+    catContainer.innerHTML = "";
+    Object.keys(appData.settings.categories)
+      .sort()
+      .forEach((cat) => {
+        const catObj = appData.settings.categories[cat];
+        const color = typeof catObj === "string" ? catObj : catObj.color;
+        const isImmobile = typeof catObj === "object" && !!catObj.isImmobile;
+        const textColor = getContrastYIQ(color);
+        let el = document.createElement("div");
+        el.className = "cat-badge";
+        el.style.backgroundColor = color;
+        el.style.color = textColor;
+        el.style.cursor = "pointer";
+        el.style.fontSize = "14px";
+        el.style.padding = "8px 16px";
+        el.title = "Clicca per modificare";
+        el.innerHTML = `${cat}${isImmobile ? " 🏠" : ""} <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle; margin-left:4px; opacity: 0.7;">edit</span>`;
+        el.onclick = () => openEditCatModal(cat);
+        catContainer.appendChild(el);
+      });
+  }
 
-        settingsUsers = JSON.parse(JSON.stringify(appData.settings.users));
-        renderSettingsUsers();
-      }
+  settingsUsers = JSON.parse(JSON.stringify(appData.settings.users));
+  renderSettingsUsers();
+}
 
-      /**
-       * Genera il blocco HTML per un gruppo di elementi della galleria (Piantine, Render, PDF).
-       * @param {HTMLElement} container - Elemento contenitore di destinazione.
-       * @param {string} titleText - Titolo della sezione o dell'ambiente.
-       * @param {string} iconName - Nome dell'icona Material Symbols.
-       * @param {string} itemsHtml - Stringa HTML delle card dei file.
-       * @param {boolean} isLast - Indica se è l'ultimo elemento per omettere il divider.
-       */
-      function renderSectionGroup(
-        container,
-        titleText,
-        iconName,
-        itemsHtml,
-        isLast,
-      ) {
-        let section = document.createElement("div");
-        section.innerHTML = `
+/**
+ * Genera il blocco HTML per un gruppo di elementi della galleria (Piantine, Render, PDF).
+ * @param {HTMLElement} container - Elemento contenitore di destinazione.
+ * @param {string} titleText - Titolo della sezione o dell'ambiente.
+ * @param {string} iconName - Nome dell'icona Material Symbols.
+ * @param {string} itemsHtml - Stringa HTML delle card dei file.
+ * @param {boolean} isLast - Indica se è l'ultimo elemento per omettere il divider.
+ */
+function renderSectionGroup(container, titleText, iconName, itemsHtml, isLast) {
+  let section = document.createElement("div");
+  section.innerHTML = `
                 <div class="gallery-section-title">
                     <span class="material-symbols-outlined" style="font-size: 20px; color: var(--md-sys-color-primary);">${iconName}</span>
                     <span>${titleText}</span>
@@ -2412,71 +2365,67 @@
                 </div>
                 ${!isLast ? '<hr class="gallery-divider">' : ""}
             `;
-        container.appendChild(section);
-      }
+  container.appendChild(section);
+}
 
-      /**
-       * Esegue il rendering completo della vista Galleria raggruppando i file per tipologia e ambiente.
-       */
-      function renderGalleryView() {
-        const plansCard = document.getElementById("gallery-plans-card");
-        const plansContainer = document.getElementById(
-          "gallery-plans-container",
-        );
-        const rendersCard = document.getElementById("gallery-renders-card");
-        const rendersContainer = document.getElementById(
-          "gallery-renders-container",
-        );
-        const docsCard = document.getElementById("gallery-docs-card");
-        const docsContainer = document.getElementById("gallery-docs-container");
-        const emptyState = document.getElementById("gallery-empty-state");
+/**
+ * Esegue il rendering completo della vista Galleria raggruppando i file per tipologia e ambiente.
+ */
+function renderGalleryView() {
+  const plansCard = document.getElementById("gallery-plans-card");
+  const plansContainer = document.getElementById("gallery-plans-container");
+  const rendersCard = document.getElementById("gallery-renders-card");
+  const rendersContainer = document.getElementById("gallery-renders-container");
+  const docsCard = document.getElementById("gallery-docs-card");
+  const docsContainer = document.getElementById("gallery-docs-container");
+  const emptyState = document.getElementById("gallery-empty-state");
 
-        if (!rendersContainer) return;
+  if (!rendersContainer) return;
 
-        plansContainer.innerHTML = "";
-        rendersContainer.innerHTML = "";
-        docsContainer.innerHTML = "";
+  plansContainer.innerHTML = "";
+  rendersContainer.innerHTML = "";
+  docsContainer.innerHTML = "";
 
-        const allItems = appData.settings.renders || [];
-        if (allItems.length === 0) {
-          plansCard.style.display = "none";
-          rendersCard.style.display = "none";
-          docsCard.style.display = "none";
-          emptyState.style.display = "block";
-          return;
-        }
-        emptyState.style.display = "none";
+  const allItems = appData.settings.renders || [];
+  if (allItems.length === 0) {
+    plansCard.style.display = "none";
+    rendersCard.style.display = "none";
+    docsCard.style.display = "none";
+    emptyState.style.display = "block";
+    return;
+  }
+  emptyState.style.display = "none";
 
-        const groupedPlans = {};
-        const groupedRenders = {};
-        const groupedDocs = {};
+  const groupedPlans = {};
+  const groupedRenders = {};
+  const groupedDocs = {};
 
-        allItems.forEach((item) => {
-          const fileInfo = formatFileUrl(item.url);
-          const isPdf = item.type === "pdf" || fileInfo.type === "pdf";
-          const isPlan = item.type === "plan";
-          const room = item.room || "Generale Casa";
+  allItems.forEach((item) => {
+    const fileInfo = formatFileUrl(item.url);
+    const isPdf = item.type === "pdf" || fileInfo.type === "pdf";
+    const isPlan = item.type === "plan";
+    const room = item.room || "Generale Casa";
 
-          if (isPlan) {
-            if (!groupedPlans[room]) groupedPlans[room] = [];
-            groupedPlans[room].push({ ...item, fileInfo });
-          } else if (isPdf) {
-            if (!groupedDocs[room]) groupedDocs[room] = [];
-            groupedDocs[room].push({ ...item, fileInfo });
-          } else {
-            if (!groupedRenders[room]) groupedRenders[room] = [];
-            groupedRenders[room].push({ ...item, fileInfo });
-          }
-        });
+    if (isPlan) {
+      if (!groupedPlans[room]) groupedPlans[room] = [];
+      groupedPlans[room].push({ ...item, fileInfo });
+    } else if (isPdf) {
+      if (!groupedDocs[room]) groupedDocs[room] = [];
+      groupedDocs[room].push({ ...item, fileInfo });
+    } else {
+      if (!groupedRenders[room]) groupedRenders[room] = [];
+      groupedRenders[room].push({ ...item, fileInfo });
+    }
+  });
 
-        const planKeys = Object.keys(groupedPlans);
-        if (planKeys.length > 0) {
-          plansCard.style.display = "block";
-          planKeys.forEach((roomName, idx) => {
-            const items = groupedPlans[roomName];
-            let itemsHtml = items
-              .map(
-                (item) => `
+  const planKeys = Object.keys(groupedPlans);
+  if (planKeys.length > 0) {
+    plansCard.style.display = "block";
+    planKeys.forEach((roomName, idx) => {
+      const items = groupedPlans[roomName];
+      let itemsHtml = items
+        .map(
+          (item) => `
                         <div class="gallery-item" onclick="openLightbox('${item.fileInfo.url}')">
                             <img src="${item.fileInfo.url}" alt="${item.title}">
                             <span style="position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.65); color:#fff; font-size:12px; padding:6px 12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
@@ -2484,34 +2433,34 @@
                             </span>
                         </div>
                     `,
-              )
-              .join("");
-            renderSectionGroup(
-              plansContainer,
-              roomName,
-              "straighten",
-              itemsHtml,
-              idx === planKeys.length - 1,
-            );
-          });
-        } else {
-          plansCard.style.display = "none";
-        }
+        )
+        .join("");
+      renderSectionGroup(
+        plansContainer,
+        roomName,
+        "straighten",
+        itemsHtml,
+        idx === planKeys.length - 1,
+      );
+    });
+  } else {
+    plansCard.style.display = "none";
+  }
 
-        let activeRooms = appData.settings.roomCategories.filter(
-          (r) => groupedRenders[r] && groupedRenders[r].length > 0,
-        );
-        Object.keys(groupedRenders).forEach((r) => {
-          if (!activeRooms.includes(r)) activeRooms.push(r);
-        });
+  let activeRooms = appData.settings.roomCategories.filter(
+    (r) => groupedRenders[r] && groupedRenders[r].length > 0,
+  );
+  Object.keys(groupedRenders).forEach((r) => {
+    if (!activeRooms.includes(r)) activeRooms.push(r);
+  });
 
-        if (activeRooms.length > 0) {
-          rendersCard.style.display = "block";
-          activeRooms.forEach((roomName, idx) => {
-            const items = groupedRenders[roomName];
-            let itemsHtml = items
-              .map(
-                (item) => `
+  if (activeRooms.length > 0) {
+    rendersCard.style.display = "block";
+    activeRooms.forEach((roomName, idx) => {
+      const items = groupedRenders[roomName];
+      let itemsHtml = items
+        .map(
+          (item) => `
                         <div class="gallery-item" onclick="openLightbox('${item.fileInfo.url}')">
                             <img src="${item.fileInfo.url}" alt="${item.title}">
                             <span style="position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.65); color:#fff; font-size:12px; padding:6px 12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
@@ -2519,28 +2468,28 @@
                             </span>
                         </div>
                     `,
-              )
-              .join("");
-            renderSectionGroup(
-              rendersContainer,
-              `Ambiente: ${roomName}`,
-              "meeting_room",
-              itemsHtml,
-              idx === activeRooms.length - 1,
-            );
-          });
-        } else {
-          rendersCard.style.display = "none";
-        }
+        )
+        .join("");
+      renderSectionGroup(
+        rendersContainer,
+        `Ambiente: ${roomName}`,
+        "meeting_room",
+        itemsHtml,
+        idx === activeRooms.length - 1,
+      );
+    });
+  } else {
+    rendersCard.style.display = "none";
+  }
 
-        const docKeys = Object.keys(groupedDocs);
-        if (docKeys.length > 0) {
-          docsCard.style.display = "block";
-          docKeys.forEach((roomName, idx) => {
-            const items = groupedDocs[roomName];
-            let itemsHtml = items
-              .map(
-                (item) => `
+  const docKeys = Object.keys(groupedDocs);
+  if (docKeys.length > 0) {
+    docsCard.style.display = "block";
+    docKeys.forEach((roomName, idx) => {
+      const items = groupedDocs[roomName];
+      let itemsHtml = items
+        .map(
+          (item) => `
                         <div class="gallery-item pdf-card">
                             <span class="material-symbols-outlined" style="font-size: 38px;">picture_as_pdf</span>
                             <span style="font-weight: 500; font-size: 14px; margin-top: 4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width: 90%;">${item.title}</span>
@@ -2549,417 +2498,395 @@
                             </a>
                         </div>
                     `,
-              )
-              .join("");
-            renderSectionGroup(
-              docsContainer,
-              `Sezione: ${roomName}`,
-              "folder",
-              itemsHtml,
-              idx === docKeys.length - 1,
-            );
-          });
-        } else {
-          docsCard.style.display = "none";
-        }
-      }
+        )
+        .join("");
+      renderSectionGroup(
+        docsContainer,
+        `Sezione: ${roomName}`,
+        "folder",
+        itemsHtml,
+        idx === docKeys.length - 1,
+      );
+    });
+  } else {
+    docsCard.style.display = "none";
+  }
+}
 
-      /**
-       * Funzione orchestratrice principale: pulisce i dati e aggiorna tutte le sezioni della dashboard.
-       */
-      function renderAll() {
+/**
+ * Funzione orchestratrice principale: pulisce i dati e aggiorna tutte le sezioni della dashboard.
+ */
+function renderAll() {
+  sanitizeData();
+
+  // Migrazione temporanea da appData a localStorage se casaDarkMode non esiste
+  if (
+    localStorage.getItem("casaDarkMode") === null &&
+    appData.settings &&
+    appData.settings.hasOwnProperty("darkMode")
+  ) {
+    localStorage.setItem(
+      "casaDarkMode",
+      appData.settings.darkMode ? "true" : "false",
+    );
+  }
+
+  const isDark = localStorage.getItem("casaDarkMode") === "true";
+  if (isDark) {
+    document.body.classList.add("dark-mode");
+  } else {
+    document.body.classList.remove("dark-mode");
+  }
+  updateThemeIcons(isDark);
+
+  const hero = document.getElementById("hero-header");
+  if (hero && appData.settings.heroImage) {
+    hero.style.backgroundImage = `url('${appData.settings.heroImage}')`;
+    hero.style.display = "block";
+  }
+
+  buildDynamicForms();
+  populateCategorySelects();
+  renderHeaderAndSettings();
+  renderTables();
+  renderCategoriesSection();
+  renderQASection();
+  renderTaskSection();
+  renderNoteSection();
+  updateChartsAndStats();
+  calculateMortgage();
+}
+
+/**
+ * Scarica i dati correnti in formato JSON
+ */
+function exportDataJSON() {
+  sanitizeData();
+  const dataStr = getSafeAppDataForExport();
+  const blob = new Blob([dataStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `CostiCasa_Backup_${new Date().toISOString().split("T")[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/**
+ * Importa i dati da un file JSON e ricarica l'app
+ */
+function importDataJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    try {
+      const importedData = JSON.parse(e.target.result);
+      if (importedData && typeof importedData === "object") {
+        appData = importedData;
         sanitizeData();
-
-        // Migrazione temporanea da appData a localStorage se casaDarkMode non esiste
-        if (
-          localStorage.getItem("casaDarkMode") === null &&
-          appData.settings &&
-          appData.settings.hasOwnProperty("darkMode")
-        ) {
-          localStorage.setItem(
-            "casaDarkMode",
-            appData.settings.darkMode ? "true" : "false",
-          );
+        localStorage.setItem("casaData", JSON.stringify(appData));
+        document.getElementById("wizardModal").classList.remove("active");
+        renderAll();
+        showNotification("Dati importati con successo!");
+        // Try to sync to gist if enabled
+        if (casaGithubConfig && casaGithubConfig.enabled) {
+          syncToGist();
         }
-
-        const isDark = localStorage.getItem("casaDarkMode") === "true";
-        if (isDark) {
-          document.body.classList.add("dark-mode");
-        } else {
-          document.body.classList.remove("dark-mode");
-        }
-        updateThemeIcons(isDark);
-
-        const hero = document.getElementById("hero-header");
-        if (hero && appData.settings.heroImage) {
-          hero.style.backgroundImage = `url('${appData.settings.heroImage}')`;
-          hero.style.display = "block";
-        }
-
-        buildDynamicForms();
-        populateCategorySelects();
-        renderHeaderAndSettings();
-        renderTables();
-        renderCategoriesSection();
-        renderQASection();
-        renderTaskSection();
-        renderNoteSection();
-        updateChartsAndStats();
-        calculateMortgage();
+      } else {
+        throw new Error("Formato non valido");
       }
+    } catch (error) {
+      M3Swal.fire("Errore", "File JSON non valido o corrotto.", "error");
+    }
+    event.target.value = ""; // Reset input
+  };
+  reader.readAsText(file);
+}
 
-      /**
-       * Scarica i dati correnti in formato JSON
-       */
-      function exportDataJSON() {
+async function wizardSyncFromGist() {
+  const token = document.getElementById("wizard-github-token").value.trim();
+  const gistId = document.getElementById("wizard-github-gistId").value.trim();
+
+  if (!token || !gistId) {
+    return M3Swal.fire(
+      "Attenzione",
+      "Devi inserire sia il Token che il Gist ID per recuperare il backup.",
+      "warning",
+    );
+  }
+
+  const btn = document.getElementById("btn-wizard-sync");
+  btn.innerHTML =
+    '<span class="material-symbols-outlined" style="animation: spin 1s linear infinite;">sync</span> Download in corso...';
+
+  try {
+    const response = await fetch(
+      `https://api.github.com/gists/${gistId}?t=${Date.now()}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        cache: "no-store",
+      },
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      const content = data.files["casaData.json"]?.content;
+      if (content) {
+        const parsed = JSON.parse(content);
+        appData = parsed;
         sanitizeData();
-        const dataStr = getSafeAppDataForExport();
-        const blob = new Blob([dataStr], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `CostiCasa_Backup_${new Date().toISOString().split("T")[0]}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-      }
-
-      /**
-       * Importa i dati da un file JSON e ricarica l'app
-       */
-      function importDataJSON(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          try {
-            const importedData = JSON.parse(e.target.result);
-            if (importedData && typeof importedData === "object") {
-              appData = importedData;
-              sanitizeData();
-              localStorage.setItem("casaData", JSON.stringify(appData));
-              document.getElementById("wizardModal").classList.remove("active");
-              renderAll();
-              showNotification("Dati importati con successo!");
-              // Try to sync to gist if enabled
-              if (casaGithubConfig && casaGithubConfig.enabled) {
-                syncToGist();
-              }
-            } else {
-              throw new Error("Formato non valido");
-            }
-          } catch (error) {
-            M3Swal.fire("Errore", "File JSON non valido o corrotto.", "error");
-          }
-          event.target.value = ""; // Reset input
-        };
-        reader.readAsText(file);
-      }
-
-      async function wizardSyncFromGist() {
-        const token = document
-          .getElementById("wizard-github-token")
-          .value.trim();
-        const gistId = document
-          .getElementById("wizard-github-gistId")
-          .value.trim();
-
-        if (!token || !gistId) {
-          return M3Swal.fire(
-            "Attenzione",
-            "Devi inserire sia il Token che il Gist ID per recuperare il backup.",
-            "warning",
-          );
-        }
-
-        const btn = document.getElementById("btn-wizard-sync");
-        btn.innerHTML =
-          '<span class="material-symbols-outlined" style="animation: spin 1s linear infinite;">sync</span> Download in corso...';
-
-        try {
-          const response = await fetch(
-            `https://api.github.com/gists/${gistId}?t=${Date.now()}`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-              cache: "no-store",
-            },
-          );
-
-          if (response.ok) {
-            const data = await response.json();
-            const content = data.files["casaData.json"]?.content;
-            if (content) {
-              const parsed = JSON.parse(content);
-              appData = parsed;
-              sanitizeData();
-              // Force save settings
-              casaGithubConfig.enabled = true;
-              casaGithubConfig.token = token;
-              casaGithubConfig.gistId = gistId;
-              saveGithubConfig();
-              localStorage.setItem("casaData", JSON.stringify(appData));
-
-              document.getElementById("wizardModal").classList.remove("active");
-              renderAll();
-              showNotification("Dati ripristinati da GitHub!");
-            } else {
-              throw new Error("File casaData.json non trovato nel Gist");
-            }
-          } else {
-            throw new Error("Errore durante la connessione a GitHub");
-          }
-        } catch (err) {
-          console.error(err);
-          M3Swal.fire(
-            "Errore",
-            "Impossibile scaricare i dati. Verifica il Token e il Gist ID.",
-            "error",
-          );
-        } finally {
-          btn.innerHTML =
-            '<span class="material-symbols-outlined">cloud_download</span> Scarica e Accedi';
-        }
-      }
-
-      function toggleGithubSettings() {
-        const enabled = document.getElementById(
-          "settings-github-enabled",
-        ).checked;
-        document.getElementById("github-settings-container").style.display =
-          enabled ? "flex" : "none";
-      }
-
-      async function saveGithubSettings() {
-        const enabled = document.getElementById(
-          "settings-github-enabled",
-        ).checked;
-        const token = document
-          .getElementById("settings-github-token")
-          .value.trim();
-        const gistId = document
-          .getElementById("settings-github-gistId")
-          .value.trim();
-
-        if (enabled && !token) {
-          return M3Swal.fire(
-            "Attenzione",
-            "Devi inserire un Token GitHub se abiliti la sincronizzazione.",
-            "warning",
-          );
-        }
-
-        casaGithubConfig.enabled = enabled;
+        // Force save settings
+        casaGithubConfig.enabled = true;
         casaGithubConfig.token = token;
         casaGithubConfig.gistId = gistId;
-
         saveGithubConfig();
+        localStorage.setItem("casaData", JSON.stringify(appData));
 
-        // Preveniamo che il salvataggio inneschi un push automatico a Gist,
-        // così l'utente non sovrascrive involontariamente i dati cloud con quelli locali.
-        const wasSyncing = isSyncingToGist;
-        isSyncingToGist = true;
-        saveDataLocally();
-        isSyncingToGist = wasSyncing;
-
-        showNotification("Configurazione salvata con successo", "", "info");
-        if (!enabled) {
-          showNotification("Sincronizzazione GitHub disabilitata", "", "info");
-        }
+        document.getElementById("wizardModal").classList.remove("active");
+        renderAll();
+        showNotification("Dati ripristinati da GitHub!");
+      } else {
+        throw new Error("File casaData.json non trovato nel Gist");
       }
+    } else {
+      throw new Error("Errore durante la connessione a GitHub");
+    }
+  } catch (err) {
+    console.error(err);
+    M3Swal.fire(
+      "Errore",
+      "Impossibile scaricare i dati. Verifica il Token e il Gist ID.",
+      "error",
+    );
+  } finally {
+    btn.innerHTML =
+      '<span class="material-symbols-outlined">cloud_download</span> Scarica e Accedi';
+  }
+}
 
-      async function forcePullFromGist() {
-        showNotification("Ripristino in corso...", "", "info");
-        await syncToGist(true, true);
-      }
+function toggleGithubSettings() {
+  const enabled = document.getElementById("settings-github-enabled").checked;
+  document.getElementById("github-settings-container").style.display = enabled
+    ? "flex"
+    : "none";
+}
 
-      async function forcePushToGist() {
-        showNotification("Salvataggio su Gist in corso...", "", "info");
-        await syncToGist(false, true);
-      }
+async function saveGithubSettings() {
+  const enabled = document.getElementById("settings-github-enabled").checked;
+  const token = document.getElementById("settings-github-token").value.trim();
+  const gistId = document.getElementById("settings-github-gistId").value.trim();
 
-      function getSafeAppDataForExport() {
-        let safeData = JSON.parse(JSON.stringify(appData));
-        if (safeData.settings && safeData.settings.githubSync) {
-          delete safeData.settings.githubSync;
-        }
-        return JSON.stringify(safeData, null, 2);
-      }
+  if (enabled && !token) {
+    return M3Swal.fire(
+      "Attenzione",
+      "Devi inserire un Token GitHub se abiliti la sincronizzazione.",
+      "warning",
+    );
+  }
 
-      /**
-       * Esegue la sincronizzazione bidirezionale con GitHub Gist.
-       * Se non esiste il Gist, lo crea.
-       * Se forcePull è true, tenta sempre di scaricare la versione remota prima.
-       */
-      async function syncToGist(forcePull = false, manualAction = false) {
-        if (isSyncingToGist) return;
-        if (
-          !casaGithubConfig ||
-          !casaGithubConfig.enabled ||
-          !casaGithubConfig.token
-        )
-          return;
+  casaGithubConfig.enabled = enabled;
+  casaGithubConfig.token = token;
+  casaGithubConfig.gistId = gistId;
 
-        isSyncingToGist = true;
-        const token = casaGithubConfig.token;
-        let gistId = casaGithubConfig.gistId;
+  saveGithubConfig();
 
-        const btnSync = document.getElementById("btn-force-sync");
-        if (btnSync)
-          btnSync.innerHTML =
-            '<span class="material-symbols-outlined" style="animation: spin 1s linear infinite;">sync</span> Sincronizzazione...';
+  // Preveniamo che il salvataggio inneschi un push automatico a Gist,
+  // così l'utente non sovrascrive involontariamente i dati cloud con quelli locali.
+  const wasSyncing = isSyncingToGist;
+  isSyncingToGist = true;
+  saveDataLocally();
+  isSyncingToGist = wasSyncing;
 
-        try {
-          // Se non c'è il Gist ID, creiamolo
-          if (!gistId) {
-            const response = await fetch("https://api.github.com/gists", {
-              method: "POST",
-              headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/vnd.github.v3+json",
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                description: "CostiCasa Backup Data",
-                public: false,
-                files: {
-                  "casaData.json": {
-                    content: getSafeAppDataForExport(),
-                  },
-                },
-              }),
-            });
+  showNotification("Configurazione salvata con successo", "", "info");
+  if (!enabled) {
+    showNotification("Sincronizzazione GitHub disabilitata", "", "info");
+  }
+}
 
-            if (!response.ok) throw new Error("Errore creazione Gist");
-            const data = await response.json();
-            casaGithubConfig.gistId = data.id;
-            saveGithubConfig();
-            document.getElementById("settings-github-gistId").value = data.id;
-            renderHeaderAndSettings();
-            showNotification("Nuovo Gist creato e dati caricati con successo!");
-          } else {
-            // C'è un Gist ID. Proviamo a scaricare i dati più recenti prima di sovrascrivere.
-            // Per semplificare: se forcePull è vero o se l'app è stata appena caricata, scarichiamo.
-            // Altrimenti sovrascriviamo con la versione locale.
-            if (forcePull) {
-              const response = await fetch(
-                `https://api.github.com/gists/${gistId}?t=${Date.now()}`,
-                {
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                  },
-                  cache: "no-store",
-                },
-              );
-              if (response.ok) {
-                const data = await response.json();
-                const content = data.files["casaData.json"]?.content;
-                if (content) {
-                  const parsed = JSON.parse(content);
-                  const remoteTime = parsed.lastUpdated || 0;
-                  const localTime = appData.lastUpdated || 0;
+async function forcePullFromGist() {
+  showNotification("Ripristino in corso...", "", "info");
+  await syncToGist(true, true);
+}
 
-                  if (remoteTime > localTime) {
-                    appData = parsed;
-                    sanitizeData();
-                    localStorage.setItem("casaData", JSON.stringify(appData));
-                    renderAll();
-                    showNotification(
-                      "Dati scaricati e sincronizzati da GitHub!",
-                    );
-                  } else if (localTime > remoteTime) {
-                    // Locale è più recente (probabilmente un push saltato precedentemente). Facciamo push!
-                    isSyncingToGist = false; // Sblocchiamo per permettere il push ricorsivo
-                    syncToGist(false, manualAction);
-                    return;
-                  } else {
-                    if (manualAction)
-                      showNotification("I dati sono già sincronizzati!");
-                  }
-                }
-              }
+async function forcePushToGist() {
+  showNotification("Salvataggio su Gist in corso...", "", "info");
+  await syncToGist(false, true);
+}
+
+function getSafeAppDataForExport() {
+  let safeData = JSON.parse(JSON.stringify(appData));
+  if (safeData.settings && safeData.settings.githubSync) {
+    delete safeData.settings.githubSync;
+  }
+  return JSON.stringify(safeData, null, 2);
+}
+
+/**
+ * Esegue la sincronizzazione bidirezionale con GitHub Gist.
+ * Se non esiste il Gist, lo crea.
+ * Se forcePull è true, tenta sempre di scaricare la versione remota prima.
+ */
+async function syncToGist(forcePull = false, manualAction = false) {
+  if (isSyncingToGist) return;
+  if (!casaGithubConfig || !casaGithubConfig.enabled || !casaGithubConfig.token)
+    return;
+
+  isSyncingToGist = true;
+  const token = casaGithubConfig.token;
+  let gistId = casaGithubConfig.gistId;
+
+  const btnSync = document.getElementById("btn-force-sync");
+  if (btnSync)
+    btnSync.innerHTML =
+      '<span class="material-symbols-outlined" style="animation: spin 1s linear infinite;">sync</span> Sincronizzazione...';
+
+  try {
+    // Se non c'è il Gist ID, creiamolo
+    if (!gistId) {
+      const response = await fetch("https://api.github.com/gists", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/vnd.github.v3+json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          description: "CostiCasa Backup Data",
+          public: false,
+          files: {
+            "casaData.json": {
+              content: getSafeAppDataForExport(),
+            },
+          },
+        }),
+      });
+
+      if (!response.ok) throw new Error("Errore creazione Gist");
+      const data = await response.json();
+      casaGithubConfig.gistId = data.id;
+      saveGithubConfig();
+      document.getElementById("settings-github-gistId").value = data.id;
+      renderHeaderAndSettings();
+      showNotification("Nuovo Gist creato e dati caricati con successo!");
+    } else {
+      // C'è un Gist ID. Proviamo a scaricare i dati più recenti prima di sovrascrivere.
+      // Per semplificare: se forcePull è vero o se l'app è stata appena caricata, scarichiamo.
+      // Altrimenti sovrascriviamo con la versione locale.
+      if (forcePull) {
+        const response = await fetch(
+          `https://api.github.com/gists/${gistId}?t=${Date.now()}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            cache: "no-store",
+          },
+        );
+        if (response.ok) {
+          const data = await response.json();
+          const content = data.files["casaData.json"]?.content;
+          if (content) {
+            const parsed = JSON.parse(content);
+            const remoteTime = parsed.lastUpdated || 0;
+            const localTime = appData.lastUpdated || 0;
+
+            if (remoteTime > localTime) {
+              appData = parsed;
+              sanitizeData();
+              localStorage.setItem("casaData", JSON.stringify(appData));
+              renderAll();
+              showNotification("Dati scaricati e sincronizzati da GitHub!");
+            } else if (localTime > remoteTime) {
+              // Locale è più recente (probabilmente un push saltato precedentemente). Facciamo push!
+              isSyncingToGist = false; // Sblocchiamo per permettere il push ricorsivo
+              syncToGist(false, manualAction);
+              return;
             } else {
-              // Sovrascrivi remoto (Push)
-              const response = await fetch(
-                `https://api.github.com/gists/${gistId}`,
-                {
-                  method: "PATCH",
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/vnd.github.v3+json",
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    files: {
-                      "casaData.json": {
-                        content: getSafeAppDataForExport(),
-                      },
-                    },
-                  }),
-                },
-              );
-              if (!response.ok) throw new Error("Errore aggiornamento Gist");
-              if (manualAction) {
-                showNotification("Dati salvati su GitHub con successo!");
-              }
+              if (manualAction)
+                showNotification("I dati sono già sincronizzati!");
             }
           }
-        } catch (err) {
-          console.error(err);
-          if (forcePull)
-            M3Swal.fire(
-              "Errore Sync",
-              "Impossibile contattare GitHub. Verifica il token e la connessione.",
-              "error",
-            );
-        } finally {
-          isSyncingToGist = false;
-          if (btnSync)
-            btnSync.innerHTML =
-              '<span class="material-symbols-outlined">sync</span> Sincronizza Ora';
+        }
+      } else {
+        // Sovrascrivi remoto (Push)
+        const response = await fetch(`https://api.github.com/gists/${gistId}`, {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/vnd.github.v3+json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            files: {
+              "casaData.json": {
+                content: getSafeAppDataForExport(),
+              },
+            },
+          }),
+        });
+        if (!response.ok) throw new Error("Errore aggiornamento Gist");
+        if (manualAction) {
+          showNotification("Dati salvati su GitHub con successo!");
         }
       }
+    }
+  } catch (err) {
+    console.error(err);
+    if (forcePull)
+      M3Swal.fire(
+        "Errore Sync",
+        "Impossibile contattare GitHub. Verifica il token e la connessione.",
+        "error",
+      );
+  } finally {
+    isSyncingToGist = false;
+    if (btnSync)
+      btnSync.innerHTML =
+        '<span class="material-symbols-outlined">sync</span> Sincronizza Ora';
+  }
+}
 
-      // Aggiungo animazione spin nel CSS se non c'è
-      if (!document.getElementById("spin-style")) {
-        const style = document.createElement("style");
-        style.id = "spin-style";
-        style.innerHTML = `@keyframes spin { 100% { transform: rotate(360deg); } }`;
-        document.head.appendChild(style);
-      }
+// Aggiungo animazione spin nel CSS se non c'è
+if (!document.getElementById("spin-style")) {
+  const style = document.createElement("style");
+  style.id = "spin-style";
+  style.innerHTML = `@keyframes spin { 100% { transform: rotate(360deg); } }`;
+  document.head.appendChild(style);
+}
 
-      /**
-       */
-      function saveDataLocally(skipTimestamp = false) {
-        sanitizeData();
-        if (!skipTimestamp) {
-          appData.lastUpdated = Date.now();
-        }
-        localStorage.setItem("casaData", JSON.stringify(appData));
-        renderAll();
+/**
+ */
+function saveDataLocally(skipTimestamp = false) {
+  sanitizeData();
+  if (!skipTimestamp) {
+    appData.lastUpdated = Date.now();
+  }
+  localStorage.setItem("casaData", JSON.stringify(appData));
+  renderAll();
 
-        // Background sync
-        if (casaGithubConfig && casaGithubConfig.enabled) {
-          syncToGist(false);
-        }
-      }
+  // Background sync
+  if (casaGithubConfig && casaGithubConfig.enabled) {
+    syncToGist(false);
+  }
+}
 
-      // Variabili e funzioni per la gestione del Wizard iniziale di configurazione partecipanti
-      let wizardUsers = [
-        { id: "u1", name: "Utente", share: 100, safetyFund: 5000 },
-      ];
+// Variabili e funzioni per la gestione del Wizard iniziale di configurazione partecipanti
+let wizardUsers = [{ id: "u1", name: "Utente", share: 100, safetyFund: 5000 }];
 
-      /**
-       * Esegue il rendering dei partecipanti configurabili all'interno del wizard iniziale.
-       */
-      function renderWizardUsers() {
-        const container = document.getElementById("wizard-users-container");
-        container.innerHTML = "";
-        wizardUsers.forEach((u, idx) => {
-          let div = document.createElement("div");
-          div.style.cssText =
-            "background: var(--md-sys-color-surface-container-low); padding: 16px; border-radius: var(--md-sys-shape-corner-medium); border: 1px solid var(--md-sys-color-surface-container-high); position: relative;";
-          div.innerHTML = `
+/**
+ * Esegue il rendering dei partecipanti configurabili all'interno del wizard iniziale.
+ */
+function renderWizardUsers() {
+  const container = document.getElementById("wizard-users-container");
+  container.innerHTML = "";
+  wizardUsers.forEach((u, idx) => {
+    let div = document.createElement("div");
+    div.style.cssText =
+      "background: var(--md-sys-color-surface-container-low); padding: 16px; border-radius: var(--md-sys-shape-corner-medium); border: 1px solid var(--md-sys-color-surface-container-high); position: relative;";
+    div.innerHTML = `
                     <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end;">
                         <div class="input-field" style="flex: 2; min-width: 140px;">
                             <label style="font-weight: 600;">Nome</label>
@@ -2976,76 +2903,76 @@
                         ${wizardUsers.length > 1 ? `<button type="button" class="btn btn-error" style="height: 48px; padding: 0 12px; margin-bottom: 2px;" onclick="removeWizardUser(${idx})" title="Rimuovi partecipante"><span class="material-symbols-outlined">delete</span></button>` : ""}
                     </div>
                 `;
-          container.appendChild(div);
-        });
-      }
+    container.appendChild(div);
+  });
+}
 
-      /**
-       * Aggiunge una nuova riga utente nel wizard.
-       */
-      function addWizardUser() {
-        let newId = "u" + Date.now();
-        if (wizardUsers.length === 1) wizardUsers[0].share = 50;
-        wizardUsers.push({
-          id: newId,
-          name: "Partecipante " + (wizardUsers.length + 1),
-          share: 50,
-          safetyFund: 5000,
-        });
-        renderWizardUsers();
-      }
+/**
+ * Aggiunge una nuova riga utente nel wizard.
+ */
+function addWizardUser() {
+  let newId = "u" + Date.now();
+  if (wizardUsers.length === 1) wizardUsers[0].share = 50;
+  wizardUsers.push({
+    id: newId,
+    name: "Partecipante " + (wizardUsers.length + 1),
+    share: 50,
+    safetyFund: 5000,
+  });
+  renderWizardUsers();
+}
 
-      /**
-       * Rimuove un utente dal wizard.
-       * @param {number} idx - Indice utente.
-       */
-      function removeWizardUser(idx) {
-        wizardUsers.splice(idx, 1);
-        renderWizardUsers();
-      }
+/**
+ * Rimuove un utente dal wizard.
+ * @param {number} idx - Indice utente.
+ */
+function removeWizardUser(idx) {
+  wizardUsers.splice(idx, 1);
+  renderWizardUsers();
+}
 
-      /**
-       * Controlla se la dashboard è già configurata, altrimenti apre il wizard.
-       */
-      function checkWizard() {
-        if (!appData.settings || !appData.settings.configured) {
-          wizardUsers =
-            appData.settings &&
-            appData.settings.users &&
-            appData.settings.users.length > 0
-              ? [...appData.settings.users]
-              : [{ id: "u1", name: "Utente", share: 100, safetyFund: 5000 }];
-          renderWizardUsers();
-          document.getElementById("wizardModal").classList.add("active");
-        }
-      }
+/**
+ * Controlla se la dashboard è già configurata, altrimenti apre il wizard.
+ */
+function checkWizard() {
+  if (!appData.settings || !appData.settings.configured) {
+    wizardUsers =
+      appData.settings &&
+      appData.settings.users &&
+      appData.settings.users.length > 0
+        ? [...appData.settings.users]
+        : [{ id: "u1", name: "Utente", share: 100, safetyFund: 5000 }];
+    renderWizardUsers();
+    document.getElementById("wizardModal").classList.add("active");
+  }
+}
 
-      /**
-       * Conclude la procedura guidata e salva i dati iniziali.
-       */
-      function finishWizard() {
-        if (!appData.settings)
-          appData.settings = JSON.parse(JSON.stringify(defaultData.settings));
-        appData.settings.users = [...wizardUsers];
-        appData.settings.configured = true;
-        document.getElementById("wizardModal").classList.remove("active");
-        saveDataLocally();
-        showNotification("Dashboard creata con successo!");
-      }
+/**
+ * Conclude la procedura guidata e salva i dati iniziali.
+ */
+function finishWizard() {
+  if (!appData.settings)
+    appData.settings = JSON.parse(JSON.stringify(defaultData.settings));
+  appData.settings.users = [...wizardUsers];
+  appData.settings.configured = true;
+  document.getElementById("wizardModal").classList.remove("active");
+  saveDataLocally();
+  showNotification("Dashboard creata con successo!");
+}
 
-      let settingsUsers = [];
+let settingsUsers = [];
 
-      /**
-       * Esegue il rendering della lista dei partecipanti all'interno del pannello Impostazioni.
-       */
-      function renderSettingsUsers() {
-        const container = document.getElementById("settings-users-container");
-        if (!container) return;
-        container.innerHTML = "";
-        settingsUsers.forEach((u, idx) => {
-          let div = document.createElement("div");
-          div.className = "user-config-card";
-          div.innerHTML = `
+/**
+ * Esegue il rendering della lista dei partecipanti all'interno del pannello Impostazioni.
+ */
+function renderSettingsUsers() {
+  const container = document.getElementById("settings-users-container");
+  if (!container) return;
+  container.innerHTML = "";
+  settingsUsers.forEach((u, idx) => {
+    let div = document.createElement("div");
+    div.className = "user-config-card";
+    div.innerHTML = `
                     <div class="user-config-row">
                         <div class="input-field">
                             <label>Nome Partecipante</label>
@@ -3070,674 +2997,644 @@
                         }
                     </div>
                 `;
-          container.appendChild(div);
-        });
-      }
+    container.appendChild(div);
+  });
+}
 
-      /**
-       * Aggiunge un partecipante nel form delle impostazioni.
-       */
-      function addSettingsUser() {
-        let newId = "u" + Date.now();
-        settingsUsers.push({
-          id: newId,
-          name: "Nuovo",
-          share: 0,
-          safetyFund: 5000,
-        });
-        renderSettingsUsers();
-      }
+/**
+ * Aggiunge un partecipante nel form delle impostazioni.
+ */
+function addSettingsUser() {
+  let newId = "u" + Date.now();
+  settingsUsers.push({
+    id: newId,
+    name: "Nuovo",
+    share: 0,
+    safetyFund: 5000,
+  });
+  renderSettingsUsers();
+}
 
-      /**
-       * Rimuove un partecipante dalle impostazioni previa conferma.
-       * @param {number} idx - Indice del partecipante.
-       */
-      async function removeSettingsUser(idx) {
-        const user = settingsUsers[idx];
-        const result = await showConfirm(
-          `Rimuovere ${user.name}?`,
-          "I dati relativi a questo partecipante verranno modificati.",
-        );
-        if (result.isConfirmed) {
-          settingsUsers.splice(idx, 1);
-          renderSettingsUsers();
-        }
-      }
+/**
+ * Rimuove un partecipante dalle impostazioni previa conferma.
+ * @param {number} idx - Indice del partecipante.
+ */
+async function removeSettingsUser(idx) {
+  const user = settingsUsers[idx];
+  const result = await showConfirm(
+    `Rimuovere ${user.name}?`,
+    "I dati relativi a questo partecipante verranno modificati.",
+  );
+  if (result.isConfirmed) {
+    settingsUsers.splice(idx, 1);
+    renderSettingsUsers();
+  }
+}
 
-      /**
-       * Salva le modifiche apportate ai partecipanti nelle impostazioni.
-       */
-      function saveSettingsUsers() {
-        appData.settings.users = [...settingsUsers];
-        saveDataLocally();
-        showNotification("Partecipanti aggiornati!");
-      }
+/**
+ * Salva le modifiche apportate ai partecipanti nelle impostazioni.
+ */
+function saveSettingsUsers() {
+  appData.settings.users = [...settingsUsers];
+  saveDataLocally();
+  showNotification("Partecipanti aggiornati!");
+}
 
-      /**
-       * Ricostruisce dinamicamente i campi di input nei form e nelle tabelle in base al numero di utenti attivi.
-       */
-      function buildDynamicForms() {
-        const addCostContainer = document.getElementById(
-          "add-costo-users-inputs",
-        );
-        if (addCostContainer) {
-          addCostContainer.innerHTML = "";
-          appData.settings.users.forEach((u) => {
-            let div = document.createElement("div");
-            div.className = "input-field";
-            div.innerHTML = `<label>Pagato: ${u.name} (€)</label><input type="number" step="0.01" id="add-costo-${u.id}" placeholder="0.00" onblur="roundInput(this)">`;
-            addCostContainer.appendChild(div);
-          });
-        }
+/**
+ * Ricostruisce dinamicamente i campi di input nei form e nelle tabelle in base al numero di utenti attivi.
+ */
+function buildDynamicForms() {
+  const addCostContainer = document.getElementById("add-costo-users-inputs");
+  if (addCostContainer) {
+    addCostContainer.innerHTML = "";
+    appData.settings.users.forEach((u) => {
+      let div = document.createElement("div");
+      div.className = "input-field";
+      div.innerHTML = `<label>Pagato: ${u.name} (€)</label><input type="number" step="0.01" id="add-costo-${u.id}" placeholder="0.00" onblur="roundInput(this)">`;
+      addCostContainer.appendChild(div);
+    });
+  }
 
-        const addBudgetContainer = document.getElementById(
-          "add-budget-users-inputs",
-        );
-        if (addBudgetContainer) {
-          addBudgetContainer.innerHTML = "";
-          appData.settings.users.forEach((u) => {
-            let div = document.createElement("div");
-            div.className = "input-field";
-            div.innerHTML = `<label>Quota ${u.name} (€)</label><input type="number" step="0.01" id="add-budget-${u.id}" placeholder="0.00" onblur="roundInput(this)">`;
-            addBudgetContainer.appendChild(div);
-          });
-        }
+  const addBudgetContainer = document.getElementById("add-budget-users-inputs");
+  if (addBudgetContainer) {
+    addBudgetContainer.innerHTML = "";
+    appData.settings.users.forEach((u) => {
+      let div = document.createElement("div");
+      div.className = "input-field";
+      div.innerHTML = `<label>Quota ${u.name} (€)</label><input type="number" step="0.01" id="add-budget-${u.id}" placeholder="0.00" onblur="roundInput(this)">`;
+      addBudgetContainer.appendChild(div);
+    });
+  }
 
-        const modalContainer = document.getElementById("modal-users-inputs");
-        if (modalContainer) {
-          modalContainer.innerHTML = "";
-          appData.settings.users.forEach((u) => {
-            let div = document.createElement("div");
-            div.className = "input-field";
-            div.innerHTML = `<label>Quota ${u.name} (€)</label><input type="number" step="0.01" id="modal-${u.id}" onblur="roundInput(this)">`;
-            modalContainer.appendChild(div);
-          });
-        }
+  const modalContainer = document.getElementById("modal-users-inputs");
+  if (modalContainer) {
+    modalContainer.innerHTML = "";
+    appData.settings.users.forEach((u) => {
+      let div = document.createElement("div");
+      div.className = "input-field";
+      div.innerHTML = `<label>Quota ${u.name} (€)</label><input type="number" step="0.01" id="modal-${u.id}" onblur="roundInput(this)">`;
+      modalContainer.appendChild(div);
+    });
+  }
 
-        const costiCards = document.getElementById("costi-top-cards");
-        if (costiCards) {
-          let cardsHTML = `
+  const costiCards = document.getElementById("costi-top-cards");
+  if (costiCards) {
+    let cardsHTML = `
                     <div class="stat-card" style="background-color: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface);">
                         <span style="font-size: 14px; opacity: 0.9;">Costo Totale Stimato</span>
                         <div class="stat-value" id="stat-costi-page-tot">€ 0.00</div>
                     </div>
                 `;
-          appData.settings.users.forEach((u, i) => {
-            let colorClass = i % 2 === 0 ? "secondary" : "tertiary";
-            cardsHTML += `
+    appData.settings.users.forEach((u, i) => {
+      let colorClass = i % 2 === 0 ? "secondary" : "tertiary";
+      cardsHTML += `
                         <div class="stat-card ${colorClass}">
                             <span style="font-size: 14px; opacity: 0.9;">Pagato ${u.name}</span>
                             <div class="stat-value" id="stat-costi-page-${u.id}">€ 0.00</div>
                         </div>
                     `;
-          });
-          cardsHTML += `
+    });
+    cardsHTML += `
                     <div class="stat-card" style="background-color: var(--md-sys-color-primary-container);">
                         <span style="font-size: 14px; opacity: 0.9;">Da Pagare</span>
                         <div class="stat-value" id="stat-costi-page-restante">€ 0.00</div>
                     </div>
                 `;
-          costiCards.innerHTML = cardsHTML;
-        }
+    costiCards.innerHTML = cardsHTML;
+  }
 
-        const budgetCards = document.getElementById("budget-top-cards");
-        if (budgetCards) {
-          let bCardsHTML = `
+  const budgetCards = document.getElementById("budget-top-cards");
+  if (budgetCards) {
+    let bCardsHTML = `
                     <div class="stat-card" style="background-color: var(--md-sys-color-primary-container);">
                         <span style="font-size: 14px; opacity: 0.9;">Budget Totale</span>
                         <div class="stat-value" id="stat-budget-page-tot">€ 0.00</div>
                     </div>
                 `;
-          appData.settings.users.forEach((u, i) => {
-            let colorClass = i % 2 === 0 ? "secondary" : "tertiary";
-            bCardsHTML += `
+    appData.settings.users.forEach((u, i) => {
+      let colorClass = i % 2 === 0 ? "secondary" : "tertiary";
+      bCardsHTML += `
                         <div class="stat-card ${colorClass}">
                             <span style="font-size: 14px; opacity: 0.9;">Quota ${u.name}</span>
                             <div class="stat-value" id="stat-budget-page-${u.id}">€ 0.00</div>
                         </div>
                     `;
-          });
-          budgetCards.innerHTML = bCardsHTML;
-        }
+    });
+    budgetCards.innerHTML = bCardsHTML;
+  }
 
-        let costiHead = `
+  let costiHead = `
                 <th style="width: 40px;"></th>
                 <th class="sortable" onclick="sortTable('costi', 'cat')">Categoria <span class="material-symbols-outlined sort-icon">sort</span></th>
                 <th class="sortable" onclick="sortTable('costi', 'desc')">Descrizione <span class="material-symbols-outlined sort-icon">sort</span></th>
                 <th class="sortable" onclick="sortTable('costi', 'prezzo')">Prezzo <span class="material-symbols-outlined sort-icon">sort</span></th>
             `;
-        appData.settings.users.forEach((u) => {
-          costiHead += `<th class="sortable" onclick="sortTable('costi', '${u.id}')">Pagato (${u.name}) <span class="material-symbols-outlined sort-icon">sort</span></th>`;
-        });
-        costiHead += `
+  appData.settings.users.forEach((u) => {
+    costiHead += `<th class="sortable" onclick="sortTable('costi', '${u.id}')">Pagato (${u.name}) <span class="material-symbols-outlined sort-icon">sort</span></th>`;
+  });
+  costiHead += `
                 <th class="sortable" onclick="sortTable('costi', 'restante')">Restante <span class="material-symbols-outlined sort-icon">sort</span></th>
                 <th>Note</th>
                 <th style="width: 50px;">Azioni</th>
             `;
-        let thCosti = document.getElementById("table-costi-header");
-        if (thCosti) thCosti.innerHTML = costiHead;
+  let thCosti = document.getElementById("table-costi-header");
+  if (thCosti) thCosti.innerHTML = costiHead;
 
-        let budgetHead = `
+  let budgetHead = `
                 <th style="width: 40px;"></th>
                 <th class="sortable" onclick="sortTable('budget', 'desc')">Descrizione <span class="material-symbols-outlined sort-icon">sort</span></th>
             `;
-        appData.settings.users.forEach((u) => {
-          budgetHead += `<th class="sortable" onclick="sortTable('budget', '${u.id}')">${u.name} (€) <span class="material-symbols-outlined sort-icon">sort</span></th>`;
-        });
-        budgetHead += `
+  appData.settings.users.forEach((u) => {
+    budgetHead += `<th class="sortable" onclick="sortTable('budget', '${u.id}')">${u.name} (€) <span class="material-symbols-outlined sort-icon">sort</span></th>`;
+  });
+  budgetHead += `
                 <th class="sortable" onclick="sortTable('budget', 'totale')">Totale (€) <span class="material-symbols-outlined sort-icon">sort</span></th>
                 <th>Note</th>
                 <th style="width: 50px;">Azioni</th>
             `;
-        let thBudget = document.getElementById("table-budget-header");
-        if (thBudget) thBudget.innerHTML = budgetHead;
+  let thBudget = document.getElementById("table-budget-header");
+  if (thBudget) thBudget.innerHTML = budgetHead;
 
-        const selUser = document.getElementById("mutuo-singolo-user");
-        if (selUser) {
-          selUser.innerHTML = "";
-          appData.settings.users.forEach((u) => {
-            let opt = document.createElement("option");
-            opt.value = u.id;
-            opt.innerText = u.name;
-            selUser.appendChild(opt);
-          });
-        }
-      }
+  const selUser = document.getElementById("mutuo-singolo-user");
+  if (selUser) {
+    selUser.innerHTML = "";
+    appData.settings.users.forEach((u) => {
+      let opt = document.createElement("option");
+      opt.value = u.id;
+      opt.innerText = u.name;
+      selUser.appendChild(opt);
+    });
+  }
+}
 
-      /**
-       * Ripartisce automaticamente l'importo totale di una nuova spesa secondo le quote percentuali degli utenti.
-       */
-      function autoSplitAdd() {
-        let total =
-          parseFloat(document.getElementById("add-costo-prezzo").value) || 0;
-        if (total > 0) {
-          appData.settings.users.forEach((u) => {
-            let val = (total * (u.share / 100)).toFixed(2);
-            let input = document.getElementById(`add-costo-${u.id}`);
-            if (input) input.value = val;
-          });
-        }
-      }
+/**
+ * Ripartisce automaticamente l'importo totale di una nuova spesa secondo le quote percentuali degli utenti.
+ */
+function autoSplitAdd() {
+  let total =
+    parseFloat(document.getElementById("add-costo-prezzo").value) || 0;
+  if (total > 0) {
+    appData.settings.users.forEach((u) => {
+      let val = (total * (u.share / 100)).toFixed(2);
+      let input = document.getElementById(`add-costo-${u.id}`);
+      if (input) input.value = val;
+    });
+  }
+}
 
-      /**
-       * Ripartisce automaticamente l'importo totale all'interno della modale di modifica secondo le quote percentuali.
-       * @param {string} target - Nome identificativo del contesto modale.
-       */
-      function autoSplit(target) {
-        let total =
-          parseFloat(document.getElementById("modal-prezzo").value) || 0;
-        if (total > 0) {
-          appData.settings.users.forEach((u) => {
-            let val = (total * (u.share / 100)).toFixed(2);
-            let input = document.getElementById(`modal-${u.id}`);
-            if (input) input.value = val;
-          });
-        }
-      }
+/**
+ * Ripartisce automaticamente l'importo totale all'interno della modale di modifica secondo le quote percentuali.
+ * @param {string} target - Nome identificativo del contesto modale.
+ */
+function autoSplit(target) {
+  let total = parseFloat(document.getElementById("modal-prezzo").value) || 0;
+  if (total > 0) {
+    appData.settings.users.forEach((u) => {
+      let val = (total * (u.share / 100)).toFixed(2);
+      let input = document.getElementById(`modal-${u.id}`);
+      if (input) input.value = val;
+    });
+  }
+}
 
-      /**
-       * Converte una stringa formattata come valuta in un valore numerico float.
-       * @param {string|number} value - Stringa o numero da analizzare.
-       * @returns {number} Valore numerico pulito.
-       */
-      function parseCurrencyInput(value) {
-        if (!value) return 0;
-        if (typeof value === "number") return value;
-        let cleaned = value.replace(/[^0-9,-]/g, "").replace(",", ".");
-        return parseFloat(cleaned) || 0;
-      }
+/**
+ * Converte una stringa formattata come valuta in un valore numerico float.
+ * @param {string|number} value - Stringa o numero da analizzare.
+ * @returns {number} Valore numerico pulito.
+ */
+function parseCurrencyInput(value) {
+  if (!value) return 0;
+  if (typeof value === "number") return value;
+  let cleaned = value.replace(/[^0-9,-]/g, "").replace(",", ".");
+  return parseFloat(cleaned) || 0;
+}
 
-      /**
-       * Abilita o disabilita la modalità di override manuale per il Totale Progetto e il Valore Immobile del Mutuo.
-       */
-      function toggleEditMutuoInputs() {
-        isMutuoManualEdit = !isMutuoManualEdit;
-        const btn = document.getElementById("btn-toggle-edit-mutuo");
-        const icon = document.getElementById("icon-edit-mutuo");
-        const text = document.getElementById("text-edit-mutuo");
-        const totProjEl = document.getElementById("mutuo-totale-progetto");
-        const costoCasaEl = document.getElementById("mutuo-casa-costo");
+/**
+ * Abilita o disabilita la modalità di override manuale per il Totale Progetto e il Valore Immobile del Mutuo.
+ */
+function toggleEditMutuoInputs() {
+  isMutuoManualEdit = !isMutuoManualEdit;
+  const btn = document.getElementById("btn-toggle-edit-mutuo");
+  const icon = document.getElementById("icon-edit-mutuo");
+  const text = document.getElementById("text-edit-mutuo");
+  const totProjEl = document.getElementById("mutuo-totale-progetto");
+  const costoCasaEl = document.getElementById("mutuo-casa-costo");
 
-        if (isMutuoManualEdit) {
-          totProjEl.removeAttribute("readonly");
-          costoCasaEl.removeAttribute("readonly");
-          totProjEl.style.background = "var(--md-sys-color-surface)";
-          costoCasaEl.style.background = "var(--md-sys-color-surface)";
-          totProjEl.value = parseCurrencyInput(totProjEl.value).toFixed(2);
-          costoCasaEl.value = parseCurrencyInput(costoCasaEl.value).toFixed(2);
+  if (isMutuoManualEdit) {
+    totProjEl.removeAttribute("readonly");
+    costoCasaEl.removeAttribute("readonly");
+    totProjEl.style.background = "var(--md-sys-color-surface)";
+    costoCasaEl.style.background = "var(--md-sys-color-surface)";
+    totProjEl.value = parseCurrencyInput(totProjEl.value).toFixed(2);
+    costoCasaEl.value = parseCurrencyInput(costoCasaEl.value).toFixed(2);
 
-          btn.classList.remove("btn-tonal");
-          btn.classList.add("btn-filled");
-          icon.innerText = "lock_reset";
-          text.innerText = "Ripristina Calcolo Automatico";
-        } else {
-          manualCustomMortgage = null;
-          isMortgageEditing = false;
-          totProjEl.setAttribute("readonly", "true");
-          costoCasaEl.setAttribute("readonly", "true");
-          totProjEl.style.background =
-            "var(--md-sys-color-surface-container-high)";
-          costoCasaEl.style.background =
-            "var(--md-sys-color-surface-container-high)";
+    btn.classList.remove("btn-tonal");
+    btn.classList.add("btn-filled");
+    icon.innerText = "lock_reset";
+    text.innerText = "Ripristina Calcolo Automatico";
+  } else {
+    manualCustomMortgage = null;
+    isMortgageEditing = false;
+    totProjEl.setAttribute("readonly", "true");
+    costoCasaEl.setAttribute("readonly", "true");
+    totProjEl.style.background = "var(--md-sys-color-surface-container-high)";
+    costoCasaEl.style.background = "var(--md-sys-color-surface-container-high)";
 
-          btn.classList.remove("btn-filled");
-          btn.classList.add("btn-tonal");
-          icon.innerText = "edit";
-          text.innerText = "Modifica Prezzi";
-          calculateMortgage();
-        }
-      }
+    btn.classList.remove("btn-filled");
+    btn.classList.add("btn-tonal");
+    icon.innerText = "edit";
+    text.innerText = "Modifica Prezzi";
+    calculateMortgage();
+  }
+}
 
-      /**
-       * Avvia la modalità di modifica inline dell'importo del mutuo nella card.
-       */
-      function startMortgageEdit() {
-        isMortgageEditing = true;
-        calculateMortgage();
-        setTimeout(() => {
-          const inp = document.getElementById("manual-mortgage-input");
-          if (inp) {
-            inp.focus();
-            inp.select();
-          }
-        }, 50);
-      }
+/**
+ * Avvia la modalità di modifica inline dell'importo del mutuo nella card.
+ */
+function startMortgageEdit() {
+  isMortgageEditing = true;
+  calculateMortgage();
+  setTimeout(() => {
+    const inp = document.getElementById("manual-mortgage-input");
+    if (inp) {
+      inp.focus();
+      inp.select();
+    }
+  }, 50);
+}
 
-      /**
-       * Salva il valore personalizzato inserito manualmente nell'input del mutuo.
-       */
-      function saveManualMortgage() {
-        const inp = document.getElementById("manual-mortgage-input");
-        if (inp) {
-          let val = parseFloat(inp.value);
-          if (isNaN(val) || val < 0) val = 0;
-          manualCustomMortgage = val;
-        }
-        isMortgageEditing = false;
-        calculateMortgage();
-      }
+/**
+ * Salva il valore personalizzato inserito manualmente nell'input del mutuo.
+ */
+function saveManualMortgage() {
+  const inp = document.getElementById("manual-mortgage-input");
+  if (inp) {
+    let val = parseFloat(inp.value);
+    if (isNaN(val) || val < 0) val = 0;
+    manualCustomMortgage = val;
+  }
+  isMortgageEditing = false;
+  calculateMortgage();
+}
 
-      /**
-       * Ripristina il calcolo automatico del mutuo basato sulla liquidità disponibile.
-       */
-      function resetManualMortgage() {
-        manualCustomMortgage = null;
-        isMortgageEditing = false;
-        calculateMortgage();
-      }
+/**
+ * Ripristina il calcolo automatico del mutuo basato sulla liquidità disponibile.
+ */
+function resetManualMortgage() {
+  manualCustomMortgage = null;
+  isMortgageEditing = false;
+  calculateMortgage();
+}
 
-      /**
-       * Salva i parametri globali del mutuo (anni, tasso, modalità) in localStorage.
-       * @param {boolean} [triggerCalculate=true] - Se true, ricalcola le rate immediatamente.
-       */
-      function saveMortgageSettings(triggerCalculate = true) {
-        if (!appData.settings.mortgage) appData.settings.mortgage = {};
-        const anni =
-          parseInt(document.getElementById("mutuo-anni")?.value) || 30;
-        const tasso =
-          parseFloat(document.getElementById("mutuo-tasso")?.value) || 0;
-        const modalita =
-          document.getElementById("mutuo-modalita")?.value || "auto";
-        const singleUser =
-          document.getElementById("mutuo-singolo-user")?.value || "";
-        const singleUserFull =
-          document.getElementById("mutuo-singolo-intero")?.checked || false;
+/**
+ * Salva i parametri globali del mutuo (anni, tasso, modalità) in localStorage.
+ * @param {boolean} [triggerCalculate=true] - Se true, ricalcola le rate immediatamente.
+ */
+function saveMortgageSettings(triggerCalculate = true) {
+  if (!appData.settings.mortgage) appData.settings.mortgage = {};
+  const anni = parseInt(document.getElementById("mutuo-anni")?.value) || 30;
+  const tasso = parseFloat(document.getElementById("mutuo-tasso")?.value) || 0;
+  const modalita = document.getElementById("mutuo-modalita")?.value || "auto";
+  const singleUser = document.getElementById("mutuo-singolo-user")?.value || "";
+  const singleUserFull =
+    document.getElementById("mutuo-singolo-intero")?.checked || false;
 
-        appData.settings.mortgage.years = anni;
-        appData.settings.mortgage.rate = tasso;
-        appData.settings.mortgage.mode = modalita;
-        appData.settings.mortgage.singleUser = singleUser;
-        appData.settings.mortgage.singleUserFull = singleUserFull;
+  appData.settings.mortgage.years = anni;
+  appData.settings.mortgage.rate = tasso;
+  appData.settings.mortgage.mode = modalita;
+  appData.settings.mortgage.singleUser = singleUser;
+  appData.settings.mortgage.singleUserFull = singleUserFull;
 
-        localStorage.setItem("casaData", JSON.stringify(appData));
-        if (triggerCalculate) calculateMortgage();
-      }
+  localStorage.setItem("casaData", JSON.stringify(appData));
+  if (triggerCalculate) calculateMortgage();
+}
 
-      /**
-       * Calcola le quote del mutuo, l'anticipo necessario, la rata mensile (ammortamento alla francese)
-       * e gli interessi complessivi per ciascun utente e per l'intero progetto.
-       */
-      function calculateMortgage() {
-        let totProjEl = document.getElementById("mutuo-totale-progetto");
-        let costoCasaEl = document.getElementById("mutuo-casa-costo");
-        let totaleProgetto = 0;
-        let costoCasaImmobile = 0;
+/**
+ * Calcola le quote del mutuo, l'anticipo necessario, la rata mensile (ammortamento alla francese)
+ * e gli interessi complessivi per ciascun utente e per l'intero progetto.
+ */
+function calculateMortgage() {
+  let totProjEl = document.getElementById("mutuo-totale-progetto");
+  let costoCasaEl = document.getElementById("mutuo-casa-costo");
+  let totaleProgetto = 0;
+  let costoCasaImmobile = 0;
 
-        if (isMutuoManualEdit) {
-          totaleProgetto = parseFloat(totProjEl.value) || 0;
-          costoCasaImmobile = parseFloat(costoCasaEl.value) || 0;
-        } else {
-          costoCasaImmobile = appData.costi
-            .filter((c) => {
-              const catObj = appData.settings.categories[c.cat];
-              return typeof catObj === "object"
-                ? !!catObj.isImmobile
-                : c.cat === "Immobili";
-            })
-            .reduce((acc, curr) => acc + (curr.prezzo || 0), 0);
+  if (isMutuoManualEdit) {
+    totaleProgetto = parseFloat(totProjEl.value) || 0;
+    costoCasaImmobile = parseFloat(costoCasaEl.value) || 0;
+  } else {
+    costoCasaImmobile = appData.costi
+      .filter((c) => {
+        const catObj = appData.settings.categories[c.cat];
+        return typeof catObj === "object"
+          ? !!catObj.isImmobile
+          : c.cat === "Immobili";
+      })
+      .reduce((acc, curr) => acc + (curr.prezzo || 0), 0);
 
-          if (costoCasaEl)
-            costoCasaEl.value = formatter.format(costoCasaImmobile || 0);
+    if (costoCasaEl)
+      costoCasaEl.value = formatter.format(costoCasaImmobile || 0);
 
-          totaleProgetto = appData.costi.reduce(
-            (acc, curr) => acc + (curr.prezzo || 0),
-            0,
-          );
-          if (totProjEl)
-            totProjEl.value = formatter.format(totaleProgetto || 0);
-        }
+    totaleProgetto = appData.costi.reduce(
+      (acc, curr) => acc + (curr.prezzo || 0),
+      0,
+    );
+    if (totProjEl) totProjEl.value = formatter.format(totaleProgetto || 0);
+  }
 
-        if (appData.settings.mortgage) {
-          const elAnni = document.getElementById("mutuo-anni");
-          const elTasso = document.getElementById("mutuo-tasso");
-          const elModalita = document.getElementById("mutuo-modalita");
-          const elSingleUser = document.getElementById("mutuo-singolo-user");
+  if (appData.settings.mortgage) {
+    const elAnni = document.getElementById("mutuo-anni");
+    const elTasso = document.getElementById("mutuo-tasso");
+    const elModalita = document.getElementById("mutuo-modalita");
+    const elSingleUser = document.getElementById("mutuo-singolo-user");
 
-          if (
-            elAnni &&
-            appData.settings.mortgage.years !== undefined &&
-            document.activeElement !== elAnni
-          ) {
-            elAnni.value = appData.settings.mortgage.years;
-          }
-          if (
-            elTasso &&
-            appData.settings.mortgage.rate !== undefined &&
-            document.activeElement !== elTasso
-          ) {
-            elTasso.value = appData.settings.mortgage.rate;
-          }
-          if (
-            elModalita &&
-            appData.settings.mortgage.mode !== undefined &&
-            document.activeElement !== elModalita
-          ) {
-            elModalita.value = appData.settings.mortgage.mode;
-          }
-          if (
-            elSingleUser &&
-            appData.settings.mortgage.singleUser &&
-            document.activeElement !== elSingleUser
-          ) {
-            elSingleUser.value = appData.settings.mortgage.singleUser;
-          }
+    if (
+      elAnni &&
+      appData.settings.mortgage.years !== undefined &&
+      document.activeElement !== elAnni
+    ) {
+      elAnni.value = appData.settings.mortgage.years;
+    }
+    if (
+      elTasso &&
+      appData.settings.mortgage.rate !== undefined &&
+      document.activeElement !== elTasso
+    ) {
+      elTasso.value = appData.settings.mortgage.rate;
+    }
+    if (
+      elModalita &&
+      appData.settings.mortgage.mode !== undefined &&
+      document.activeElement !== elModalita
+    ) {
+      elModalita.value = appData.settings.mortgage.mode;
+    }
+    if (
+      elSingleUser &&
+      appData.settings.mortgage.singleUser &&
+      document.activeElement !== elSingleUser
+    ) {
+      elSingleUser.value = appData.settings.mortgage.singleUser;
+    }
 
-          const elSingleUserFull = document.getElementById(
-            "mutuo-singolo-intero",
-          );
-          if (
-            elSingleUserFull &&
-            appData.settings.mortgage.singleUserFull !== undefined
-          ) {
-            elSingleUserFull.checked = appData.settings.mortgage.singleUserFull;
-          }
-        }
+    const elSingleUserFull = document.getElementById("mutuo-singolo-intero");
+    if (
+      elSingleUserFull &&
+      appData.settings.mortgage.singleUserFull !== undefined
+    ) {
+      elSingleUserFull.checked = appData.settings.mortgage.singleUserFull;
+    }
+  }
 
-        const anni =
-          parseInt(document.getElementById("mutuo-anni")?.value) || 30;
-        const tassoAnnuo =
-          parseFloat(document.getElementById("mutuo-tasso")?.value) || 0;
-        const modalita =
-          document.getElementById("mutuo-modalita")?.value || "auto";
+  const anni = parseInt(document.getElementById("mutuo-anni")?.value) || 30;
+  const tassoAnnuo =
+    parseFloat(document.getElementById("mutuo-tasso")?.value) || 0;
+  const modalita = document.getElementById("mutuo-modalita")?.value || "auto";
 
-        const singoloField = document.getElementById(
-          "mutuo-singolo-user-field",
-        );
-        if (singoloField)
-          singoloField.style.display =
-            modalita === "singolo" ? "block" : "none";
+  const singoloField = document.getElementById("mutuo-singolo-user-field");
+  if (singoloField)
+    singoloField.style.display = modalita === "singolo" ? "block" : "none";
 
-        const interoContainer = document.getElementById(
-          "mutuo-singolo-intero-container",
-        );
-        if (interoContainer)
-          interoContainer.style.display =
-            modalita === "singolo" ? "block" : "none";
+  const interoContainer = document.getElementById(
+    "mutuo-singolo-intero-container",
+  );
+  if (interoContainer)
+    interoContainer.style.display = modalita === "singolo" ? "block" : "none";
 
-        let userFunds = {};
-        appData.settings.users.forEach((u) => {
-          userFunds[u.id] = appData.budget.reduce((acc, curr) => {
-            if (curr.isMutuo) return acc;
-            return acc + (curr[u.id] || 0);
-          }, 0);
-        });
+  let userFunds = {};
+  appData.settings.users.forEach((u) => {
+    userFunds[u.id] = appData.budget.reduce((acc, curr) => {
+      if (curr.isMutuo) return acc;
+      return acc + (curr[u.id] || 0);
+    }, 0);
+  });
 
-        let userFondoSicurezza = {};
-        appData.settings.users.forEach((u) => {
-          userFondoSicurezza[u.id] =
-            u.safetyFund !== undefined ? u.safetyFund : 5000;
-        });
+  let userFondoSicurezza = {};
+  appData.settings.users.forEach((u) => {
+    userFondoSicurezza[u.id] = u.safetyFund !== undefined ? u.safetyFund : 5000;
+  });
 
-        let userAnticipo = {};
-        let userMutuo = {};
+  let userAnticipo = {};
+  let userMutuo = {};
 
-        let totaleQuote =
-          appData.settings.users.reduce((acc, u) => acc + u.share, 0) || 100;
+  let totaleQuote =
+    appData.settings.users.reduce((acc, u) => acc + u.share, 0) || 100;
 
-        if (manualCustomMortgage !== null) {
-          let mTot = manualCustomMortgage;
-          let antTot = Math.max(0, totaleProgetto - mTot);
+  if (manualCustomMortgage !== null) {
+    let mTot = manualCustomMortgage;
+    let antTot = Math.max(0, totaleProgetto - mTot);
 
-          if (modalita === "singolo") {
-            let targetId =
-              document.getElementById("mutuo-singolo-user")?.value ||
-              appData.settings.users[0]?.id;
-            let intero =
-              document.getElementById("mutuo-singolo-intero")?.checked || false;
+    if (modalita === "singolo") {
+      let targetId =
+        document.getElementById("mutuo-singolo-user")?.value ||
+        appData.settings.users[0]?.id;
+      let intero =
+        document.getElementById("mutuo-singolo-intero")?.checked || false;
 
-            appData.settings.users.forEach((u) => {
-              if (intero) {
-                if (u.id === targetId) {
-                  userMutuo[u.id] = mTot;
-                  userAnticipo[u.id] = antTot;
-                } else {
-                  userMutuo[u.id] = 0;
-                  userAnticipo[u.id] = 0;
-                }
-              } else {
-                let quotaProgettoU = totaleProgetto * (u.share / totaleQuote);
-                if (u.id === targetId) {
-                  userMutuo[u.id] = mTot;
-                  userAnticipo[u.id] = Math.max(0, quotaProgettoU - mTot);
-                } else {
-                  userMutuo[u.id] = 0;
-                  // l'altro utente copre la sua quota con i propri fondi
-                  userAnticipo[u.id] = Math.min(
-                    quotaProgettoU,
-                    Math.max(
-                      0,
-                      (userFunds[u.id] || 0) - (userFondoSicurezza[u.id] || 0),
-                    ),
-                  );
-                }
-              }
-            });
-          } else if (modalita === "entrambi") {
-            appData.settings.users.forEach((u) => {
-              let quotaRel = u.share / totaleQuote;
-              userMutuo[u.id] = mTot * quotaRel;
-              userAnticipo[u.id] = antTot * quotaRel;
-            });
+      appData.settings.users.forEach((u) => {
+        if (intero) {
+          if (u.id === targetId) {
+            userMutuo[u.id] = mTot;
+            userAnticipo[u.id] = antTot;
           } else {
-            let totalMissing = 0;
-            let missingFunds = {};
-            appData.settings.users.forEach((u) => {
-              let quotaProgettoU = totaleProgetto * (u.share / totaleQuote);
-              let fondiLiberiU = Math.max(
-                0,
-                (userFunds[u.id] || 0) - (userFondoSicurezza[u.id] || 0),
-              );
-              let missing = Math.max(0, quotaProgettoU - fondiLiberiU);
-              missingFunds[u.id] = missing;
-              totalMissing += missing;
-            });
-
-            if (totalMissing > 0) {
-              appData.settings.users.forEach((u) => {
-                let shareOfMissing = missingFunds[u.id] / totalMissing;
-                userMutuo[u.id] = mTot * shareOfMissing;
-                userAnticipo[u.id] = Math.max(
-                  0,
-                  totaleProgetto * (u.share / totaleQuote) - userMutuo[u.id],
-                );
-              });
-            } else {
-              appData.settings.users.forEach((u) => {
-                let quotaRel = u.share / totaleQuote;
-                userMutuo[u.id] = mTot * quotaRel;
-                userAnticipo[u.id] = antTot * quotaRel;
-              });
-            }
+            userMutuo[u.id] = 0;
+            userAnticipo[u.id] = 0;
           }
         } else {
-          if (modalita === "entrambi") {
-            let liquiditaTotaleDisponibile = appData.settings.users.reduce(
-              (acc, u) => {
-                let fondiLiberi = Math.max(
-                  0,
-                  (userFunds[u.id] || 0) - (userFondoSicurezza[u.id] || 0),
-                );
-                return acc + fondiLiberi;
-              },
-              0,
-            );
-
-            let anticipoTotaleGlobale = Math.min(
-              totaleProgetto,
-              liquiditaTotaleDisponibile,
-            );
-            let mutuoTotaleGlobale = Math.max(
-              0,
-              totaleProgetto - anticipoTotaleGlobale,
-            );
-
-            appData.settings.users.forEach((u) => {
-              let quotaRelativa = u.share / totaleQuote;
-              userAnticipo[u.id] = anticipoTotaleGlobale * quotaRelativa;
-              userMutuo[u.id] = mutuoTotaleGlobale * quotaRelativa;
-            });
-          } else if (modalita === "singolo") {
-            let targetId =
-              document.getElementById("mutuo-singolo-user")?.value ||
-              appData.settings.users[0]?.id;
-            let intero =
-              document.getElementById("mutuo-singolo-intero")?.checked || false;
-
-            appData.settings.users.forEach((u) => {
-              let fondiLiberi = Math.max(
-                0,
-                (userFunds[u.id] || 0) - (userFondoSicurezza[u.id] || 0),
-              );
-
-              if (intero) {
-                if (u.id === targetId) {
-                  let anticipo = Math.min(totaleProgetto, fondiLiberi);
-                  userAnticipo[u.id] = anticipo;
-                  userMutuo[u.id] = Math.max(0, totaleProgetto - anticipo);
-                } else {
-                  userAnticipo[u.id] = 0;
-                  userMutuo[u.id] = 0;
-                }
-              } else {
-                let quotaProgettoU = totaleProgetto * (u.share / totaleQuote);
-                let anticipo = Math.min(quotaProgettoU, fondiLiberi);
-
-                if (u.id === targetId) {
-                  userAnticipo[u.id] = anticipo;
-                  userMutuo[u.id] = Math.max(0, quotaProgettoU - anticipo);
-                } else {
-                  userAnticipo[u.id] = anticipo;
-                  userMutuo[u.id] = 0;
-                }
-              }
-            });
+          let quotaProgettoU = totaleProgetto * (u.share / totaleQuote);
+          if (u.id === targetId) {
+            userMutuo[u.id] = mTot;
+            userAnticipo[u.id] = Math.max(0, quotaProgettoU - mTot);
           } else {
-            appData.settings.users.forEach((u) => {
-              let quotaProgettoU = totaleProgetto * (u.share / totaleQuote);
-              let fondiLiberiU = Math.max(
+            userMutuo[u.id] = 0;
+            // l'altro utente copre la sua quota con i propri fondi
+            userAnticipo[u.id] = Math.min(
+              quotaProgettoU,
+              Math.max(
                 0,
                 (userFunds[u.id] || 0) - (userFondoSicurezza[u.id] || 0),
-              );
-              let anticipoU = Math.min(quotaProgettoU, fondiLiberiU);
-              let mutuoU = Math.max(0, quotaProgettoU - anticipoU);
-
-              userAnticipo[u.id] = anticipoU;
-              userMutuo[u.id] = mutuoU;
-            });
+              ),
+            );
           }
-
-          // Verifica che il mutuo non superi il tetto massimo del valore dell'immobile
-          let totalMutuoCheck = Object.values(userMutuo).reduce(
-            (a, b) => a + b,
-            0,
-          );
-          if (totalMutuoCheck > costoCasaImmobile && costoCasaImmobile > 0) {
-            let eccesso = totalMutuoCheck - costoCasaImmobile;
-            appData.settings.users.forEach((u) => {
-              if (userMutuo[u.id] > 0 && totalMutuoCheck > 0) {
-                let mutuoShare = userMutuo[u.id] / totalMutuoCheck;
-                let taglio = Math.min(userMutuo[u.id], eccesso * mutuoShare);
-                userMutuo[u.id] -= taglio;
-                userAnticipo[u.id] += taglio;
-              }
-            });
-          }
-
-          // Arrotondamento per eccesso ai 1000€ per simulare l'erogazione bancaria standard
-          appData.settings.users.forEach((u) => {
-            if (userMutuo[u.id] > 0) {
-              userMutuo[u.id] = Math.ceil(userMutuo[u.id] / 1000) * 1000;
-              let quotaProgettoU = totaleProgetto * (u.share / totaleQuote);
-              userAnticipo[u.id] = Math.max(
-                0,
-                quotaProgettoU - userMutuo[u.id],
-              );
-            }
-          });
         }
-
-        let nRate = anni * 12;
-        let rMensile = tassoAnnuo / 100 / 12;
-        let rataTotale = 0;
-        let totaleInteressiComplessivo = 0;
-        let totaleRestituitoComplessivo = 0;
-
-        let utentiRisultatiHTML = "";
-        let resultCardsHTML = "";
-        let totalMutuo = Object.values(userMutuo).reduce((a, b) => a + b, 0);
-        let totalAnticipo = Object.values(userAnticipo).reduce(
-          (a, b) => a + b,
+      });
+    } else if (modalita === "entrambi") {
+      appData.settings.users.forEach((u) => {
+        let quotaRel = u.share / totaleQuote;
+        userMutuo[u.id] = mTot * quotaRel;
+        userAnticipo[u.id] = antTot * quotaRel;
+      });
+    } else {
+      let totalMissing = 0;
+      let missingFunds = {};
+      appData.settings.users.forEach((u) => {
+        let quotaProgettoU = totaleProgetto * (u.share / totaleQuote);
+        let fondiLiberiU = Math.max(
           0,
+          (userFunds[u.id] || 0) - (userFondoSicurezza[u.id] || 0),
         );
-        let percentualeMutuo =
-          totaleProgetto > 0 ? (totalMutuo / totaleProgetto) * 100 : 0;
+        let missing = Math.max(0, quotaProgettoU - fondiLiberiU);
+        missingFunds[u.id] = missing;
+        totalMissing += missing;
+      });
 
+      if (totalMissing > 0) {
         appData.settings.users.forEach((u) => {
-          let m = userMutuo[u.id] || 0;
-          let rataU = 0;
-          let totaleRestituitoU = 0;
-          let interessiU = 0;
+          let shareOfMissing = missingFunds[u.id] / totalMissing;
+          userMutuo[u.id] = mTot * shareOfMissing;
+          userAnticipo[u.id] = Math.max(
+            0,
+            totaleProgetto * (u.share / totaleQuote) - userMutuo[u.id],
+          );
+        });
+      } else {
+        appData.settings.users.forEach((u) => {
+          let quotaRel = u.share / totaleQuote;
+          userMutuo[u.id] = mTot * quotaRel;
+          userAnticipo[u.id] = antTot * quotaRel;
+        });
+      }
+    }
+  } else {
+    if (modalita === "entrambi") {
+      let liquiditaTotaleDisponibile = appData.settings.users.reduce(
+        (acc, u) => {
+          let fondiLiberi = Math.max(
+            0,
+            (userFunds[u.id] || 0) - (userFondoSicurezza[u.id] || 0),
+          );
+          return acc + fondiLiberi;
+        },
+        0,
+      );
 
-          if (m > 0 && nRate > 0) {
-            if (rMensile === 0) {
-              rataU = m / nRate;
-            } else {
-              // Formula ammortamento alla francese a rata costante
-              rataU =
-                (m * (rMensile * Math.pow(1 + rMensile, nRate))) /
-                (Math.pow(1 + rMensile, nRate) - 1);
-            }
-            totaleRestituitoU = rataU * nRate;
-            interessiU = Math.max(0, totaleRestituitoU - m);
+      let anticipoTotaleGlobale = Math.min(
+        totaleProgetto,
+        liquiditaTotaleDisponibile,
+      );
+      let mutuoTotaleGlobale = Math.max(
+        0,
+        totaleProgetto - anticipoTotaleGlobale,
+      );
+
+      appData.settings.users.forEach((u) => {
+        let quotaRelativa = u.share / totaleQuote;
+        userAnticipo[u.id] = anticipoTotaleGlobale * quotaRelativa;
+        userMutuo[u.id] = mutuoTotaleGlobale * quotaRelativa;
+      });
+    } else if (modalita === "singolo") {
+      let targetId =
+        document.getElementById("mutuo-singolo-user")?.value ||
+        appData.settings.users[0]?.id;
+      let intero =
+        document.getElementById("mutuo-singolo-intero")?.checked || false;
+
+      appData.settings.users.forEach((u) => {
+        let fondiLiberi = Math.max(
+          0,
+          (userFunds[u.id] || 0) - (userFondoSicurezza[u.id] || 0),
+        );
+
+        if (intero) {
+          if (u.id === targetId) {
+            let anticipo = Math.min(totaleProgetto, fondiLiberi);
+            userAnticipo[u.id] = anticipo;
+            userMutuo[u.id] = Math.max(0, totaleProgetto - anticipo);
+          } else {
+            userAnticipo[u.id] = 0;
+            userMutuo[u.id] = 0;
           }
+        } else {
+          let quotaProgettoU = totaleProgetto * (u.share / totaleQuote);
+          let anticipo = Math.min(quotaProgettoU, fondiLiberi);
 
-          rataTotale += rataU;
-          totaleInteressiComplessivo += interessiU;
-          totaleRestituitoComplessivo += totaleRestituitoU;
+          if (u.id === targetId) {
+            userAnticipo[u.id] = anticipo;
+            userMutuo[u.id] = Math.max(0, quotaProgettoU - anticipo);
+          } else {
+            userAnticipo[u.id] = anticipo;
+            userMutuo[u.id] = 0;
+          }
+        }
+      });
+    } else {
+      appData.settings.users.forEach((u) => {
+        let quotaProgettoU = totaleProgetto * (u.share / totaleQuote);
+        let fondiLiberiU = Math.max(
+          0,
+          (userFunds[u.id] || 0) - (userFondoSicurezza[u.id] || 0),
+        );
+        let anticipoU = Math.min(quotaProgettoU, fondiLiberiU);
+        let mutuoU = Math.max(0, quotaProgettoU - anticipoU);
 
-          let rataAnnualeU = rataU * 12;
+        userAnticipo[u.id] = anticipoU;
+        userMutuo[u.id] = mutuoU;
+      });
+    }
 
-          utentiRisultatiHTML += `
+    // Verifica che il mutuo non superi il tetto massimo del valore dell'immobile
+    let totalMutuoCheck = Object.values(userMutuo).reduce((a, b) => a + b, 0);
+    if (totalMutuoCheck > costoCasaImmobile && costoCasaImmobile > 0) {
+      let eccesso = totalMutuoCheck - costoCasaImmobile;
+      appData.settings.users.forEach((u) => {
+        if (userMutuo[u.id] > 0 && totalMutuoCheck > 0) {
+          let mutuoShare = userMutuo[u.id] / totalMutuoCheck;
+          let taglio = Math.min(userMutuo[u.id], eccesso * mutuoShare);
+          userMutuo[u.id] -= taglio;
+          userAnticipo[u.id] += taglio;
+        }
+      });
+    }
+
+    // Arrotondamento per eccesso ai 1000€ per simulare l'erogazione bancaria standard
+    appData.settings.users.forEach((u) => {
+      if (userMutuo[u.id] > 0) {
+        userMutuo[u.id] = Math.ceil(userMutuo[u.id] / 1000) * 1000;
+        let quotaProgettoU = totaleProgetto * (u.share / totaleQuote);
+        userAnticipo[u.id] = Math.max(0, quotaProgettoU - userMutuo[u.id]);
+      }
+    });
+  }
+
+  let nRate = anni * 12;
+  let rMensile = tassoAnnuo / 100 / 12;
+  let rataTotale = 0;
+  let totaleInteressiComplessivo = 0;
+  let totaleRestituitoComplessivo = 0;
+
+  let utentiRisultatiHTML = "";
+  let resultCardsHTML = "";
+  let totalMutuo = Object.values(userMutuo).reduce((a, b) => a + b, 0);
+  let totalAnticipo = Object.values(userAnticipo).reduce((a, b) => a + b, 0);
+  let percentualeMutuo =
+    totaleProgetto > 0 ? (totalMutuo / totaleProgetto) * 100 : 0;
+
+  appData.settings.users.forEach((u) => {
+    let m = userMutuo[u.id] || 0;
+    let rataU = 0;
+    let totaleRestituitoU = 0;
+    let interessiU = 0;
+
+    if (m > 0 && nRate > 0) {
+      if (rMensile === 0) {
+        rataU = m / nRate;
+      } else {
+        // Formula ammortamento alla francese a rata costante
+        rataU =
+          (m * (rMensile * Math.pow(1 + rMensile, nRate))) /
+          (Math.pow(1 + rMensile, nRate) - 1);
+      }
+      totaleRestituitoU = rataU * nRate;
+      interessiU = Math.max(0, totaleRestituitoU - m);
+    }
+
+    rataTotale += rataU;
+    totaleInteressiComplessivo += interessiU;
+    totaleRestituitoComplessivo += totaleRestituitoU;
+
+    let rataAnnualeU = rataU * 12;
+
+    utentiRisultatiHTML += `
                     <tr>
                         <td><b>${u.name}</b></td>
                         <td>${formatCurrency(userFunds[u.id])}</td>
@@ -3751,13 +3648,13 @@
                         <td style="font-weight: 600;">${formatCurrency(totaleRestituitoU)}</td>
                     </tr>
                 `;
-        });
+  });
 
-        let percentualeInteressi =
-          totalMutuo > 0 ? (totaleInteressiComplessivo / totalMutuo) * 100 : 0;
-        let rataAnnualeTotale = rataTotale * 12;
+  let percentualeInteressi =
+    totalMutuo > 0 ? (totaleInteressiComplessivo / totalMutuo) * 100 : 0;
+  let rataAnnualeTotale = rataTotale * 12;
 
-        resultCardsHTML += `
+  resultCardsHTML += `
                 <div class="stat-card" style="background-color: var(--md-sys-color-primary-container);">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <span style="font-size: 14px; opacity: 0.9;">Mutuo Richiesto (<span class="sensitive-value">${percentualeMutuo.toFixed(1)}%</span>)</span>
@@ -3817,672 +3714,658 @@
                 </div>
             `;
 
-        let resCardsEl = document.getElementById("mutuo-result-cards");
-        if (resCardsEl) resCardsEl.innerHTML = resultCardsHTML;
-        let tableMutuoTbody = document.querySelector(
-          "#table-mutuo-utenti tbody",
-        );
-        if (tableMutuoTbody) tableMutuoTbody.innerHTML = utentiRisultatiHTML;
-        let mutuoDetailsCard = document.getElementById("mutuo-details-card");
-        if (mutuoDetailsCard) mutuoDetailsCard.style.display = "block";
-      }
+  let resCardsEl = document.getElementById("mutuo-result-cards");
+  if (resCardsEl) resCardsEl.innerHTML = resultCardsHTML;
+  let tableMutuoTbody = document.querySelector("#table-mutuo-utenti tbody");
+  if (tableMutuoTbody) tableMutuoTbody.innerHTML = utentiRisultatiHTML;
+  let mutuoDetailsCard = document.getElementById("mutuo-details-card");
+  if (mutuoDetailsCard) mutuoDetailsCard.style.display = "block";
+}
 
-      /**
-       * Sincronizza i valori del mutuo calcolati all'interno della voce dedicata nella tabella Budget.
-       * @param {Object} mutuoValues - Mappa degli importi del mutuo indicizzati per utente.
-       */
-      function applyMortgageToBudget(mutuoValues) {
-        let mutuoRow = appData.budget.find((b) => b.isMutuo);
-        if (!mutuoRow) {
-          mutuoRow = {
-            id: Date.now(),
-            desc: "Mutuo Casa",
-            isMutuo: true,
-            note: "Da Chiedere",
-          };
-          appData.budget.push(mutuoRow);
+/**
+ * Sincronizza i valori del mutuo calcolati all'interno della voce dedicata nella tabella Budget.
+ * @param {Object} mutuoValues - Mappa degli importi del mutuo indicizzati per utente.
+ */
+function applyMortgageToBudget(mutuoValues) {
+  let mutuoRow = appData.budget.find((b) => b.isMutuo);
+  if (!mutuoRow) {
+    mutuoRow = {
+      id: Date.now(),
+      desc: "Mutuo Casa",
+      isMutuo: true,
+      note: "Da Chiedere",
+    };
+    appData.budget.push(mutuoRow);
+  }
+  appData.settings.users.forEach((u) => {
+    mutuoRow[u.id] = mutuoValues[u.id] || 0;
+  });
+  saveDataLocally();
+  showNotification("Valori mutuo aggiornati nel budget!");
+}
+
+// Variabili globali per memorizzare l'indice e il tipo di lista durante il Drag & Drop
+let draggedIndex = null;
+let draggedType = null;
+
+/**
+ * Gestisce l'avvio del trascinamento di una riga in tabella.
+ * @param {DragEvent} e - Evento di dragstart.
+ * @param {number} index - Indice dell'elemento trascinato.
+ * @param {'costi'|'budget'} type - Tipo di collezione.
+ */
+function handleDragStart(e, index, type) {
+  draggedIndex = index;
+  draggedType = type;
+  e.target.classList.add("dragging");
+  e.dataTransfer.effectAllowed = "move";
+}
+
+/**
+ * Previene il comportamento di default durante il trascinamento per consentire il drop.
+ * @param {DragEvent} e - Evento di dragover.
+ */
+function handleDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = "move";
+}
+
+/**
+ * Gestisce il rilascio (drop) della riga riordinando l'array sottostante.
+ * @param {DragEvent} e - Evento di drop.
+ * @param {number} targetIndex - Nuovo indice di destinazione.
+ * @param {'costi'|'budget'} type - Tipo di collezione.
+ */
+function handleDrop(e, targetIndex, type) {
+  e.preventDefault();
+  if (
+    draggedType !== type ||
+    draggedIndex === null ||
+    draggedIndex === targetIndex
+  )
+    return;
+
+  let list = type === "costi" ? appData.costi : appData.budget;
+  let item = list.splice(draggedIndex, 1)[0];
+  list.splice(targetIndex, 0, item);
+
+  draggedIndex = null;
+  draggedType = null;
+  saveDataLocally();
+}
+
+/**
+ * Pulisce lo stato visivo al termine del trascinamento.
+ * @param {DragEvent} e - Evento di dragend.
+ */
+function handleDragEnd(e) {
+  e.target.classList.remove("dragging");
+  e.target.setAttribute("draggable", "false");
+  draggedIndex = null;
+  draggedType = null;
+}
+
+/**
+ * Esporta lo stato dell'applicazione generando un file JSON scaricabile con timestamp.
+ */
+function exportData() {
+  saveMortgageSettings(false);
+  const dataStr =
+    "data:text/json;charset=utf-8," +
+    encodeURIComponent(JSON.stringify(appData, null, 2));
+  const anchor = document.createElement("a");
+  anchor.setAttribute("href", dataStr);
+
+  const ora = new Date();
+  const year = ora.getFullYear();
+  const month = String(ora.getMonth() + 1).padStart(2, "0");
+  const day = String(ora.getDate()).padStart(2, "0");
+  const hours = String(ora.getHours()).padStart(2, "0");
+  const minutes = String(ora.getMinutes()).padStart(2, "0");
+
+  anchor.setAttribute(
+    "download",
+    `Costi_Casa_${year}-${month}-${day}_${hours}${minutes}.json`,
+  );
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+}
+
+// Formattatore standard per valuta Euro in formato italiano (es. € 1.250,00)
+const formatter = new Intl.NumberFormat("it-IT", {
+  style: "currency",
+  currency: "EUR",
+});
+
+/**
+ * Formatta un numero come stringa di valuta Euro.
+ * @param {number} num - Valore numerico.
+ * @returns {string} Stringa formattata.
+ */
+function formatCurrency(num) {
+  return `<span class="sensitive-value">${formatter.format(num || 0)}</span>`;
+}
+
+/**
+ * Formatta una valuta applicando il colore verde per valori positivi e rosso per negativi.
+ * @param {number} num - Valore da formattare.
+ * @returns {string} Stringa HTML formattata.
+ */
+function formatColoredCurrency(num) {
+  let val = num || 0;
+  let formatted = formatter.format(val);
+  if (val > 0)
+    return `<span class="sensitive-value" style="color: var(--md-sys-color-success); font-weight: 500;">${formatted}</span>`;
+  if (val < 0)
+    return `<span class="sensitive-value" style="color: var(--md-sys-color-error); font-weight: 500;">${formatted}</span>`;
+  return `<span class="sensitive-value">${formatted}</span>`;
+}
+
+/**
+ * Formatta l'importo restante evidenziando in verde se saldato (<=0) o in rosso se da pagare.
+ * @param {number} num - Importo residuo.
+ * @returns {string} Stringa HTML formattata.
+ */
+function formatRestanteCurrency(num) {
+  let val = num || 0;
+  let formatted = formatter.format(val);
+  if (val <= 0)
+    return `<span class="sensitive-value" style="color: var(--md-sys-color-success); font-weight: 500;">${formatted}</span>`;
+  return `<span class="sensitive-value" style="color: var(--md-sys-color-error); font-weight: 500;">${formatted}</span>`;
+}
+
+/**
+ * Arrotonda l'input numerico a 2 cifre decimali all'evento di blur.
+ * @param {HTMLInputElement} element - Elemento input.
+ */
+function roundInput(element) {
+  if (element.value !== "")
+    element.value = parseFloat(element.value).toFixed(2);
+}
+
+/**
+ * Calcola la luminosità di un colore HEX per determinare se usare testo bianco o nero (contrasto YIQ).
+ * @param {string} hexcolor - Colore in formato esadecimale (es. #6750A4).
+ * @returns {string} Colore HEX per il testo (#141218 o #FFFFFF).
+ */
+function getContrastYIQ(hexcolor) {
+  hexcolor = hexcolor.replace("#", "");
+  var r = parseInt(hexcolor.substr(0, 2), 16);
+  var g = parseInt(hexcolor.substr(2, 2), 16);
+  var b = parseInt(hexcolor.substr(4, 2), 16);
+  var yiq = (r * 299 + g * 587 + b * 114) / 1000;
+  return yiq >= 128 ? "#141218" : "#FFFFFF";
+}
+
+/**
+ * Gestisce la navigazione a schede aggiornando lo stato attivo di menu, indicatori e viste.
+ * @param {string} tabId - Identificatore della scheda (es. 'riepilogo', 'costi', 'mutuo').
+ * @param {string} pageTitle - Titolo testuale visualizzato nell'header.
+ */
+function switchTab(tabId, pageTitle) {
+  document
+    .querySelectorAll(".nav-item")
+    .forEach((el) => el.classList.remove("active"));
+  document
+    .querySelectorAll(".mobile-nav-item")
+    .forEach((el) => el.classList.remove("active"));
+
+  let activeTabDesktop = document.getElementById("tab-" + tabId + "-desktop");
+  let activeTabMobile = document.getElementById("tab-" + tabId + "-mobile");
+  if (activeTabDesktop) activeTabDesktop.classList.add("active");
+  if (activeTabMobile) activeTabMobile.classList.add("active");
+
+  document
+    .querySelectorAll(".view-section")
+    .forEach((el) => el.classList.remove("active"));
+  let activeView = document.getElementById("view-" + tabId);
+  if (activeView) activeView.classList.add("active");
+
+  const mainContainer = document.getElementById("main-scroll-container");
+  if (mainContainer) mainContainer.scrollTop = 0;
+
+  if (pageTitle) {
+    document.title = pageTitle + " | Costi Casa";
+    const titleEl = document.getElementById("page-main-title");
+    if (titleEl) {
+      titleEl.innerText = pageTitle;
+    }
+  }
+
+  const hero = document.getElementById("hero-header");
+  if (hero) {
+    if (
+      tabId === "riepilogo" &&
+      appData.settings &&
+      appData.settings.heroImage
+    ) {
+      hero.style.backgroundImage = `url('${appData.settings.heroImage}')`;
+      hero.style.display = "block";
+    } else {
+      hero.style.display = "none";
+    }
+  }
+
+  // Timeout per ridimensionare correttamente i grafici Chart.js al cambio tab
+  setTimeout(() => {
+    if (tabId === "riepilogo") {
+      if (barChartInstance) barChartInstance.resize();
+      if (pieChartInstance) pieChartInstance.resize();
+    } else if (tabId === "categorie") {
+      if (catBarChartInstance) catBarChartInstance.resize();
+    } else if (tabId === "mutuo") {
+      calculateMortgage();
+    } else if (tabId === "qa") {
+      renderQASection();
+    }
+  }, 50);
+}
+
+let currentLightboxImages = [];
+let currentLightboxIndex = 0;
+
+/**
+ * Apre il Lightbox a schermo intero per visualizzare una o più immagini ad alta risoluzione.
+ * @param {string|string[]} imagesOrUrl - Singolo URL o array di URL.
+ * @param {number} [startIndex=0] - Indice dell'immagine iniziale.
+ */
+function openLightbox(imagesOrUrl, startIndex = 0) {
+  if (Array.isArray(imagesOrUrl)) {
+    currentLightboxImages = imagesOrUrl
+      .map((item) =>
+        typeof item === "string" ? item : item && item.url ? item.url : "",
+      )
+      .filter(Boolean);
+    currentLightboxIndex = Math.max(
+      0,
+      Math.min(startIndex, currentLightboxImages.length - 1),
+    );
+  } else if (typeof imagesOrUrl === "string" && imagesOrUrl) {
+    currentLightboxImages = [imagesOrUrl];
+    currentLightboxIndex = 0;
+  } else {
+    currentLightboxImages = [];
+    currentLightboxIndex = 0;
+  }
+
+  updateLightboxDisplay();
+  const lightbox = document.getElementById("lightbox");
+  if (lightbox) lightbox.classList.add("active");
+}
+
+/**
+ * Aggiorna immagine visibile, contatore e visibilità freccette nel Lightbox.
+ * La freccia sinistra scompare se siamo sulla prima immagine, la destra se siamo sull'ultima.
+ */
+function updateLightboxDisplay() {
+  const imgElem = document.getElementById("lightbox-image");
+  const prevBtn = document.getElementById("lightbox-prev");
+  const nextBtn = document.getElementById("lightbox-next");
+  const counterElem = document.getElementById("lightbox-counter");
+
+  if (!currentLightboxImages || currentLightboxImages.length === 0) {
+    if (imgElem) imgElem.src = "";
+    if (prevBtn) prevBtn.style.display = "none";
+    if (nextBtn) nextBtn.style.display = "none";
+    if (counterElem) counterElem.style.display = "none";
+    return;
+  }
+
+  const currentUrl = currentLightboxImages[currentLightboxIndex] || "";
+  if (imgElem) {
+    imgElem.src = currentUrl;
+  }
+
+  const total = currentLightboxImages.length;
+  if (total > 1) {
+    if (counterElem) {
+      counterElem.innerText = `${currentLightboxIndex + 1} / ${total}`;
+      counterElem.style.display = "block";
+    }
+    if (prevBtn) {
+      prevBtn.style.display = currentLightboxIndex > 0 ? "flex" : "none";
+    }
+    if (nextBtn) {
+      nextBtn.style.display =
+        currentLightboxIndex < total - 1 ? "flex" : "none";
+    }
+  } else {
+    if (prevBtn) prevBtn.style.display = "none";
+    if (nextBtn) nextBtn.style.display = "none";
+    if (counterElem) counterElem.style.display = "none";
+  }
+}
+
+function lightboxPrev(event) {
+  if (event) event.stopPropagation();
+  if (currentLightboxIndex > 0) {
+    currentLightboxIndex--;
+    updateLightboxDisplay();
+  }
+}
+
+function lightboxNext(event) {
+  if (event) event.stopPropagation();
+  if (currentLightboxIndex < currentLightboxImages.length - 1) {
+    currentLightboxIndex++;
+    updateLightboxDisplay();
+  }
+}
+
+/**
+ * Chiude il lightbox a schermo intero.
+ * @param {Event} [event] - Evento click.
+ * @param {boolean} [force=false] - Se true, forza la chiusura.
+ */
+function closeLightbox(event, force = false) {
+  if (
+    force ||
+    (event &&
+      (event.target.id === "lightbox" ||
+        event.target.closest(".lightbox-close")))
+  ) {
+    const lightbox = document.getElementById("lightbox");
+    if (lightbox) lightbox.classList.remove("active");
+    setTimeout(() => {
+      const imgElem = document.getElementById("lightbox-image");
+      if (imgElem) imgElem.src = "";
+      currentLightboxImages = [];
+      currentLightboxIndex = 0;
+      const prevBtn = document.getElementById("lightbox-prev");
+      const nextBtn = document.getElementById("lightbox-next");
+      const counterElem = document.getElementById("lightbox-counter");
+      if (prevBtn) prevBtn.style.display = "none";
+      if (nextBtn) nextBtn.style.display = "none";
+      if (counterElem) counterElem.style.display = "none";
+    }, 200);
+  }
+}
+
+// Supporto swipe per scorrere le immagini del Lightbox da mobile
+(function initLightboxTouchSwipe() {
+  let touchStartX = 0;
+  let touchEndX = 0;
+  let touchStartY = 0;
+  let touchEndY = 0;
+
+  function attachSwipeListener() {
+    const lightbox = document.getElementById("lightbox");
+    if (!lightbox) return;
+
+    lightbox.addEventListener(
+      "touchstart",
+      (e) => {
+        if (e.touches && e.touches.length === 1) {
+          touchStartX = e.touches[0].clientX;
+          touchStartY = e.touches[0].clientY;
+          touchEndX = touchStartX;
+          touchEndY = touchStartY;
         }
-        appData.settings.users.forEach((u) => {
-          mutuoRow[u.id] = mutuoValues[u.id] || 0;
-        });
-        saveDataLocally();
-        showNotification("Valori mutuo aggiornati nel budget!");
-      }
+      },
+      { passive: true },
+    );
 
-      // Variabili globali per memorizzare l'indice e il tipo di lista durante il Drag & Drop
-      let draggedIndex = null;
-      let draggedType = null;
-
-      /**
-       * Gestisce l'avvio del trascinamento di una riga in tabella.
-       * @param {DragEvent} e - Evento di dragstart.
-       * @param {number} index - Indice dell'elemento trascinato.
-       * @param {'costi'|'budget'} type - Tipo di collezione.
-       */
-      function handleDragStart(e, index, type) {
-        draggedIndex = index;
-        draggedType = type;
-        e.target.classList.add("dragging");
-        e.dataTransfer.effectAllowed = "move";
-      }
-
-      /**
-       * Previene il comportamento di default durante il trascinamento per consentire il drop.
-       * @param {DragEvent} e - Evento di dragover.
-       */
-      function handleDragOver(e) {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = "move";
-      }
-
-      /**
-       * Gestisce il rilascio (drop) della riga riordinando l'array sottostante.
-       * @param {DragEvent} e - Evento di drop.
-       * @param {number} targetIndex - Nuovo indice di destinazione.
-       * @param {'costi'|'budget'} type - Tipo di collezione.
-       */
-      function handleDrop(e, targetIndex, type) {
-        e.preventDefault();
-        if (
-          draggedType !== type ||
-          draggedIndex === null ||
-          draggedIndex === targetIndex
-        )
-          return;
-
-        let list = type === "costi" ? appData.costi : appData.budget;
-        let item = list.splice(draggedIndex, 1)[0];
-        list.splice(targetIndex, 0, item);
-
-        draggedIndex = null;
-        draggedType = null;
-        saveDataLocally();
-      }
-
-      /**
-       * Pulisce lo stato visivo al termine del trascinamento.
-       * @param {DragEvent} e - Evento di dragend.
-       */
-      function handleDragEnd(e) {
-        e.target.classList.remove("dragging");
-        e.target.setAttribute("draggable", "false");
-        draggedIndex = null;
-        draggedType = null;
-      }
-
-      /**
-       * Esporta lo stato dell'applicazione generando un file JSON scaricabile con timestamp.
-       */
-      function exportData() {
-        saveMortgageSettings(false);
-        const dataStr =
-          "data:text/json;charset=utf-8," +
-          encodeURIComponent(JSON.stringify(appData, null, 2));
-        const anchor = document.createElement("a");
-        anchor.setAttribute("href", dataStr);
-
-        const ora = new Date();
-        const year = ora.getFullYear();
-        const month = String(ora.getMonth() + 1).padStart(2, "0");
-        const day = String(ora.getDate()).padStart(2, "0");
-        const hours = String(ora.getHours()).padStart(2, "0");
-        const minutes = String(ora.getMinutes()).padStart(2, "0");
-
-        anchor.setAttribute(
-          "download",
-          `Costi_Casa_${year}-${month}-${day}_${hours}${minutes}.json`,
-        );
-        document.body.appendChild(anchor);
-        anchor.click();
-        anchor.remove();
-      }
-
-      // Formattatore standard per valuta Euro in formato italiano (es. € 1.250,00)
-      const formatter = new Intl.NumberFormat("it-IT", {
-        style: "currency",
-        currency: "EUR",
-      });
-
-      /**
-       * Formatta un numero come stringa di valuta Euro.
-       * @param {number} num - Valore numerico.
-       * @returns {string} Stringa formattata.
-       */
-      function formatCurrency(num) {
-        return `<span class="sensitive-value">${formatter.format(num || 0)}</span>`;
-      }
-
-      /**
-       * Formatta una valuta applicando il colore verde per valori positivi e rosso per negativi.
-       * @param {number} num - Valore da formattare.
-       * @returns {string} Stringa HTML formattata.
-       */
-      function formatColoredCurrency(num) {
-        let val = num || 0;
-        let formatted = formatter.format(val);
-        if (val > 0)
-          return `<span class="sensitive-value" style="color: var(--md-sys-color-success); font-weight: 500;">${formatted}</span>`;
-        if (val < 0)
-          return `<span class="sensitive-value" style="color: var(--md-sys-color-error); font-weight: 500;">${formatted}</span>`;
-        return `<span class="sensitive-value">${formatted}</span>`;
-      }
-
-      /**
-       * Formatta l'importo restante evidenziando in verde se saldato (<=0) o in rosso se da pagare.
-       * @param {number} num - Importo residuo.
-       * @returns {string} Stringa HTML formattata.
-       */
-      function formatRestanteCurrency(num) {
-        let val = num || 0;
-        let formatted = formatter.format(val);
-        if (val <= 0)
-          return `<span class="sensitive-value" style="color: var(--md-sys-color-success); font-weight: 500;">${formatted}</span>`;
-        return `<span class="sensitive-value" style="color: var(--md-sys-color-error); font-weight: 500;">${formatted}</span>`;
-      }
-
-      /**
-       * Arrotonda l'input numerico a 2 cifre decimali all'evento di blur.
-       * @param {HTMLInputElement} element - Elemento input.
-       */
-      function roundInput(element) {
-        if (element.value !== "")
-          element.value = parseFloat(element.value).toFixed(2);
-      }
-
-      /**
-       * Calcola la luminosità di un colore HEX per determinare se usare testo bianco o nero (contrasto YIQ).
-       * @param {string} hexcolor - Colore in formato esadecimale (es. #6750A4).
-       * @returns {string} Colore HEX per il testo (#141218 o #FFFFFF).
-       */
-      function getContrastYIQ(hexcolor) {
-        hexcolor = hexcolor.replace("#", "");
-        var r = parseInt(hexcolor.substr(0, 2), 16);
-        var g = parseInt(hexcolor.substr(2, 2), 16);
-        var b = parseInt(hexcolor.substr(4, 2), 16);
-        var yiq = (r * 299 + g * 587 + b * 114) / 1000;
-        return yiq >= 128 ? "#141218" : "#FFFFFF";
-      }
-
-      /**
-       * Gestisce la navigazione a schede aggiornando lo stato attivo di menu, indicatori e viste.
-       * @param {string} tabId - Identificatore della scheda (es. 'riepilogo', 'costi', 'mutuo').
-       * @param {string} pageTitle - Titolo testuale visualizzato nell'header.
-       */
-      function switchTab(tabId, pageTitle) {
-        document
-          .querySelectorAll(".nav-item")
-          .forEach((el) => el.classList.remove("active"));
-        document
-          .querySelectorAll(".mobile-nav-item")
-          .forEach((el) => el.classList.remove("active"));
-
-        let activeTabDesktop = document.getElementById(
-          "tab-" + tabId + "-desktop",
-        );
-        let activeTabMobile = document.getElementById(
-          "tab-" + tabId + "-mobile",
-        );
-        if (activeTabDesktop) activeTabDesktop.classList.add("active");
-        if (activeTabMobile) activeTabMobile.classList.add("active");
-
-        document
-          .querySelectorAll(".view-section")
-          .forEach((el) => el.classList.remove("active"));
-        let activeView = document.getElementById("view-" + tabId);
-        if (activeView) activeView.classList.add("active");
-
-        const mainContainer = document.getElementById("main-scroll-container");
-        if (mainContainer) mainContainer.scrollTop = 0;
-
-        if (pageTitle) {
-          document.title = pageTitle + " | Costi Casa";
-          const titleEl = document.getElementById("page-main-title");
-          if (titleEl) {
-            titleEl.innerText = pageTitle;
-          }
+    lightbox.addEventListener(
+      "touchmove",
+      (e) => {
+        if (e.touches && e.touches.length === 1) {
+          touchEndX = e.touches[0].clientX;
+          touchEndY = e.touches[0].clientY;
         }
+      },
+      { passive: true },
+    );
 
-        const hero = document.getElementById("hero-header");
-        if (hero) {
-          if (
-            tabId === "riepilogo" &&
-            appData.settings &&
-            appData.settings.heroImage
-          ) {
-            hero.style.backgroundImage = `url('${appData.settings.heroImage}')`;
-            hero.style.display = "block";
+    lightbox.addEventListener(
+      "touchend",
+      () => {
+        const dx = touchEndX - touchStartX;
+        const dy = touchEndY - touchStartY;
+        if (Math.abs(dx) > 40 && Math.abs(dy) < 75) {
+          if (dx < 0) {
+            lightboxNext();
           } else {
-            hero.style.display = "none";
+            lightboxPrev();
           }
         }
+      },
+      { passive: true },
+    );
+  }
 
-        // Timeout per ridimensionare correttamente i grafici Chart.js al cambio tab
-        setTimeout(() => {
-          if (tabId === "riepilogo") {
-            if (barChartInstance) barChartInstance.resize();
-            if (pieChartInstance) pieChartInstance.resize();
-          } else if (tabId === "categorie") {
-            if (catBarChartInstance) catBarChartInstance.resize();
-          } else if (tabId === "mutuo") {
-            calculateMortgage();
-          } else if (tabId === "qa") {
-            renderQASection();
-          }
-        }, 50);
-      }
+  if (document.readyState === "loading") {
+    window.addEventListener("DOMContentLoaded", attachSwipeListener);
+  } else {
+    attachSwipeListener();
+  }
+})();
 
-      let currentLightboxImages = [];
-      let currentLightboxIndex = 0;
+/**
+ * Aggiunge una nuova categoria di spesa con colore associato e flag immobile.
+ */
+function addCategory() {
+  const nameInput = document.getElementById("new-cat-name");
+  const colorInput = document.getElementById("new-cat-color");
+  const isImmobileInput = document.getElementById("new-cat-is-immobile");
 
-      /**
-       * Apre il Lightbox a schermo intero per visualizzare una o più immagini ad alta risoluzione.
-       * @param {string|string[]} imagesOrUrl - Singolo URL o array di URL.
-       * @param {number} [startIndex=0] - Indice dell'immagine iniziale.
-       */
-      function openLightbox(imagesOrUrl, startIndex = 0) {
-        if (Array.isArray(imagesOrUrl)) {
-          currentLightboxImages = imagesOrUrl
-            .map((item) =>
-              typeof item === "string" ? item : item && item.url ? item.url : "",
-            )
-            .filter(Boolean);
-          currentLightboxIndex = Math.max(
-            0,
-            Math.min(startIndex, currentLightboxImages.length - 1),
-          );
-        } else if (typeof imagesOrUrl === "string" && imagesOrUrl) {
-          currentLightboxImages = [imagesOrUrl];
-          currentLightboxIndex = 0;
-        } else {
-          currentLightboxImages = [];
-          currentLightboxIndex = 0;
-        }
+  const name = nameInput.value.trim();
+  const color = colorInput.value;
+  const isImmobile = isImmobileInput ? isImmobileInput.checked : false;
 
-        updateLightboxDisplay();
-        const lightbox = document.getElementById("lightbox");
-        if (lightbox) lightbox.classList.add("active");
-      }
+  if (!name)
+    return M3Swal.fire({
+      title: "Attenzione",
+      text: "Inserisci un nome per la categoria",
+      icon: "warning",
+    });
+  if (!appData.settings.categories) appData.settings.categories = {};
+  if (appData.settings.categories[name])
+    return M3Swal.fire({
+      title: "Attenzione",
+      text: "Categoria già presente",
+      icon: "warning",
+    });
 
-      /**
-       * Aggiorna immagine visibile, contatore e visibilità freccette nel Lightbox.
-       * La freccia sinistra scompare se siamo sulla prima immagine, la destra se siamo sull'ultima.
-       */
-      function updateLightboxDisplay() {
-        const imgElem = document.getElementById("lightbox-image");
-        const prevBtn = document.getElementById("lightbox-prev");
-        const nextBtn = document.getElementById("lightbox-next");
-        const counterElem = document.getElementById("lightbox-counter");
+  appData.settings.categories[name] = {
+    color: color,
+    isImmobile: isImmobile,
+  };
+  nameInput.value = "";
+  if (isImmobileInput) isImmobileInput.checked = false;
+  saveDataLocally();
+  showNotification("Categoria aggiunta!");
+}
 
-        if (!currentLightboxImages || currentLightboxImages.length === 0) {
-          if (imgElem) imgElem.src = "";
-          if (prevBtn) prevBtn.style.display = "none";
-          if (nextBtn) nextBtn.style.display = "none";
-          if (counterElem) counterElem.style.display = "none";
-          return;
-        }
+/**
+ * Apre la modale per modificare nome, colore o stato immobile di una categoria.
+ * @param {string} name - Nome attuale della categoria.
+ */
+function openEditCatModal(name) {
+  const catObj = appData.settings.categories[name];
+  const color = typeof catObj === "string" ? catObj : catObj.color;
+  const isImmobile =
+    typeof catObj === "object" ? !!catObj.isImmobile : name === "Immobili";
 
-        const currentUrl = currentLightboxImages[currentLightboxIndex] || "";
-        if (imgElem) {
-          imgElem.src = currentUrl;
-        }
+  document.getElementById("cat-modal-old-name").value = name;
+  document.getElementById("cat-modal-name").value = name;
+  document.getElementById("cat-modal-color").value = color || "#6750A4";
+  document.getElementById("cat-modal-is-immobile").checked = isImmobile;
+  document.getElementById("catModal").classList.add("active");
+}
 
-        const total = currentLightboxImages.length;
-        if (total > 1) {
-          if (counterElem) {
-            counterElem.innerText = `${currentLightboxIndex + 1} / ${total}`;
-            counterElem.style.display = "block";
-          }
-          if (prevBtn) {
-            prevBtn.style.display = currentLightboxIndex > 0 ? "flex" : "none";
-          }
-          if (nextBtn) {
-            nextBtn.style.display =
-              currentLightboxIndex < total - 1 ? "flex" : "none";
-          }
-        } else {
-          if (prevBtn) prevBtn.style.display = "none";
-          if (nextBtn) nextBtn.style.display = "none";
-          if (counterElem) counterElem.style.display = "none";
-        }
-      }
+/**
+ * Salva le modifiche apportate alla categoria aggiornando a cascata tutte le spese associate.
+ */
+function saveCategoryEdit() {
+  const oldName = document.getElementById("cat-modal-old-name").value;
+  const newName = document.getElementById("cat-modal-name").value.trim();
+  const newColor = document.getElementById("cat-modal-color").value;
+  const newIsImmobile = document.getElementById(
+    "cat-modal-is-immobile",
+  ).checked;
 
-      function lightboxPrev(event) {
-        if (event) event.stopPropagation();
-        if (currentLightboxIndex > 0) {
-          currentLightboxIndex--;
-          updateLightboxDisplay();
-        }
-      }
+  if (!newName)
+    return M3Swal.fire({
+      title: "Attenzione",
+      text: "Il nome non può essere vuoto",
+      icon: "warning",
+    });
+  if (oldName !== newName) {
+    if (appData.settings.categories[newName])
+      return M3Swal.fire({
+        title: "Attenzione",
+        text: "Nome categoria già utilizzato",
+        icon: "warning",
+      });
+    appData.costi.forEach((c) => {
+      if (c.cat === oldName) c.cat = newName;
+    });
+    delete appData.settings.categories[oldName];
+  }
+  appData.settings.categories[newName] = {
+    color: newColor,
+    isImmobile: newIsImmobile,
+  };
+  document.getElementById("catModal").classList.remove("active");
+  saveDataLocally();
+  showNotification("Categoria aggiornata!");
+}
 
-      function lightboxNext(event) {
-        if (event) event.stopPropagation();
-        if (currentLightboxIndex < currentLightboxImages.length - 1) {
-          currentLightboxIndex++;
-          updateLightboxDisplay();
-        }
-      }
+/**
+ * Elimina una categoria di spesa riassegnando a 'Senza Categoria' le voci orfane.
+ */
+async function deleteCategory() {
+  const name = document.getElementById("cat-modal-old-name").value;
+  const inUse = appData.costi.some((c) => c.cat === name);
 
-      /**
-       * Chiude il lightbox a schermo intero.
-       * @param {Event} [event] - Evento click.
-       * @param {boolean} [force=false] - Se true, forza la chiusura.
-       */
-      function closeLightbox(event, force = false) {
-        if (
-          force ||
-          (event &&
-            (event.target.id === "lightbox" ||
-              event.target.closest(".lightbox-close")))
-        ) {
-          const lightbox = document.getElementById("lightbox");
-          if (lightbox) lightbox.classList.remove("active");
-          setTimeout(() => {
-            const imgElem = document.getElementById("lightbox-image");
-            if (imgElem) imgElem.src = "";
-            currentLightboxImages = [];
-            currentLightboxIndex = 0;
-            const prevBtn = document.getElementById("lightbox-prev");
-            const nextBtn = document.getElementById("lightbox-next");
-            const counterElem = document.getElementById("lightbox-counter");
-            if (prevBtn) prevBtn.style.display = "none";
-            if (nextBtn) nextBtn.style.display = "none";
-            if (counterElem) counterElem.style.display = "none";
-          }, 200);
-        }
-      }
+  const result = await showConfirm(
+    `Eliminare la categoria "${name}"?`,
+    inUse
+      ? "La categoria è associata ad alcune voci. Verranno convertite in 'Senza Categoria'."
+      : "L'operazione non può essere annullata.",
+  );
 
-      // Supporto swipe per scorrere le immagini del Lightbox da mobile
-      (function initLightboxTouchSwipe() {
-        let touchStartX = 0;
-        let touchEndX = 0;
-        let touchStartY = 0;
-        let touchEndY = 0;
-
-        function attachSwipeListener() {
-          const lightbox = document.getElementById("lightbox");
-          if (!lightbox) return;
-
-          lightbox.addEventListener(
-            "touchstart",
-            (e) => {
-              if (e.touches && e.touches.length === 1) {
-                touchStartX = e.touches[0].clientX;
-                touchStartY = e.touches[0].clientY;
-                touchEndX = touchStartX;
-                touchEndY = touchStartY;
-              }
-            },
-            { passive: true },
-          );
-
-          lightbox.addEventListener(
-            "touchmove",
-            (e) => {
-              if (e.touches && e.touches.length === 1) {
-                touchEndX = e.touches[0].clientX;
-                touchEndY = e.touches[0].clientY;
-              }
-            },
-            { passive: true },
-          );
-
-          lightbox.addEventListener(
-            "touchend",
-            () => {
-              const dx = touchEndX - touchStartX;
-              const dy = touchEndY - touchStartY;
-              if (Math.abs(dx) > 40 && Math.abs(dy) < 75) {
-                if (dx < 0) {
-                  lightboxNext();
-                } else {
-                  lightboxPrev();
-                }
-              }
-            },
-            { passive: true },
-          );
-        }
-
-        if (document.readyState === "loading") {
-          window.addEventListener("DOMContentLoaded", attachSwipeListener);
-        } else {
-          attachSwipeListener();
-        }
-      })();
-
-      /**
-       * Aggiunge una nuova categoria di spesa con colore associato e flag immobile.
-       */
-      function addCategory() {
-        const nameInput = document.getElementById("new-cat-name");
-        const colorInput = document.getElementById("new-cat-color");
-        const isImmobileInput = document.getElementById("new-cat-is-immobile");
-
-        const name = nameInput.value.trim();
-        const color = colorInput.value;
-        const isImmobile = isImmobileInput ? isImmobileInput.checked : false;
-
-        if (!name)
-          return M3Swal.fire({
-            title: "Attenzione",
-            text: "Inserisci un nome per la categoria",
-            icon: "warning",
-          });
-        if (!appData.settings.categories) appData.settings.categories = {};
-        if (appData.settings.categories[name])
-          return M3Swal.fire({
-            title: "Attenzione",
-            text: "Categoria già presente",
-            icon: "warning",
-          });
-
-        appData.settings.categories[name] = {
-          color: color,
-          isImmobile: isImmobile,
+  if (result.isConfirmed) {
+    if (inUse) {
+      appData.costi.forEach((c) => {
+        if (c.cat === name) c.cat = "Senza Categoria";
+      });
+      if (!appData.settings.categories["Senza Categoria"]) {
+        appData.settings.categories["Senza Categoria"] = {
+          color: "#9E9E9E",
+          isImmobile: false,
         };
-        nameInput.value = "";
-        if (isImmobileInput) isImmobileInput.checked = false;
-        saveDataLocally();
-        showNotification("Categoria aggiunta!");
       }
+    }
+    delete appData.settings.categories[name];
+    document.getElementById("catModal").classList.remove("active");
+    saveDataLocally();
+    showNotification("Categoria eliminata");
+  }
+}
 
-      /**
-       * Apre la modale per modificare nome, colore o stato immobile di una categoria.
-       * @param {string} name - Nome attuale della categoria.
-       */
-      function openEditCatModal(name) {
-        const catObj = appData.settings.categories[name];
-        const color = typeof catObj === "string" ? catObj : catObj.color;
-        const isImmobile =
-          typeof catObj === "object"
-            ? !!catObj.isImmobile
-            : name === "Immobili";
-
-        document.getElementById("cat-modal-old-name").value = name;
-        document.getElementById("cat-modal-name").value = name;
-        document.getElementById("cat-modal-color").value = color || "#6750A4";
-        document.getElementById("cat-modal-is-immobile").checked = isImmobile;
-        document.getElementById("catModal").classList.add("active");
+/**
+ * Popola dinamicamente le tendine select delle categorie nei form di aggiunta e modifica.
+ */
+function populateCategorySelects() {
+  const selects = [
+    document.getElementById("add-costo-cat"),
+    document.getElementById("modal-cat"),
+    document.getElementById("qa-modal-category"),
+    document.getElementById("task-modal-category"),
+  ];
+  let baseOptions = "";
+  if (appData.settings && appData.settings.categories) {
+    Object.keys(appData.settings.categories)
+      .sort()
+      .forEach((cat) => {
+        baseOptions += `<option value="${cat}">${cat}</option>`;
+      });
+  }
+  selects.forEach((select) => {
+    if (select) {
+      const currentVal = select.value;
+      let optionsHTML = baseOptions;
+      if (
+        select.id === "qa-modal-category" ||
+        select.id === "task-modal-category"
+      ) {
+        optionsHTML =
+          '<option value="Generale">Generale</option>' + baseOptions;
       }
+      select.innerHTML = optionsHTML;
+      if (currentVal) select.value = currentVal;
+    }
+  });
+}
 
-      /**
-       * Salva le modifiche apportate alla categoria aggiornando a cascata tutte le spese associate.
-       */
-      function saveCategoryEdit() {
-        const oldName = document.getElementById("cat-modal-old-name").value;
-        const newName = document.getElementById("cat-modal-name").value.trim();
-        const newColor = document.getElementById("cat-modal-color").value;
-        const newIsImmobile = document.getElementById(
-          "cat-modal-is-immobile",
-        ).checked;
+/**
+ * Esegue il rendering della sezione Riepilogo Categorie: calcola il totale, il pagato,
+ * il restante e la percentuale di completamento per ciascuna categoria. Rimuove l'intera card se il totale è 0.
+ */
+function renderCategoriesSection() {
+  const cardsContainer = document.getElementById("categories-summary-cards");
+  const tbody = document.querySelector("#table-categories-summary tbody");
+  if (!cardsContainer || !tbody) return;
 
-        if (!newName)
-          return M3Swal.fire({
-            title: "Attenzione",
-            text: "Il nome non può essere vuoto",
-            icon: "warning",
-          });
-        if (oldName !== newName) {
-          if (appData.settings.categories[newName])
-            return M3Swal.fire({
-              title: "Attenzione",
-              text: "Nome categoria già utilizzato",
-              icon: "warning",
-            });
-          appData.costi.forEach((c) => {
-            if (c.cat === oldName) c.cat = newName;
-          });
-          delete appData.settings.categories[oldName];
-        }
-        appData.settings.categories[newName] = {
-          color: newColor,
-          isImmobile: newIsImmobile,
-        };
-        document.getElementById("catModal").classList.remove("active");
-        saveDataLocally();
-        showNotification("Categoria aggiornata!");
-      }
+  cardsContainer.innerHTML = "";
+  tbody.innerHTML = "";
 
-      /**
-       * Elimina una categoria di spesa riassegnando a 'Senza Categoria' le voci orfane.
-       */
-      async function deleteCategory() {
-        const name = document.getElementById("cat-modal-old-name").value;
-        const inUse = appData.costi.some((c) => c.cat === name);
+  let categories =
+    appData.settings && appData.settings.categories
+      ? Object.keys(appData.settings.categories).sort()
+      : [];
+  let catData = {};
 
-        const result = await showConfirm(
-          `Eliminare la categoria "${name}"?`,
-          inUse
-            ? "La categoria è associata ad alcune voci. Verranno convertite in 'Senza Categoria'."
-            : "L'operazione non può essere annullata.",
-        );
+  categories.forEach((cat) => {
+    catData[cat] = { total: 0, paid: 0, remaining: 0 };
+  });
 
-        if (result.isConfirmed) {
-          if (inUse) {
-            appData.costi.forEach((c) => {
-              if (c.cat === name) c.cat = "Senza Categoria";
-            });
-            if (!appData.settings.categories["Senza Categoria"]) {
-              appData.settings.categories["Senza Categoria"] = {
-                color: "#9E9E9E",
-                isImmobile: false,
-              };
-            }
-          }
-          delete appData.settings.categories[name];
-          document.getElementById("catModal").classList.remove("active");
-          saveDataLocally();
-          showNotification("Categoria eliminata");
-        }
-      }
+  appData.costi.forEach((c) => {
+    let cat = c.cat || "Senza Categoria";
+    if (!catData[cat]) catData[cat] = { total: 0, paid: 0, remaining: 0 };
 
-      /**
-       * Popola dinamicamente le tendine select delle categorie nei form di aggiunta e modifica.
-       */
-      function populateCategorySelects() {
-        const selects = [
-          document.getElementById("add-costo-cat"),
-          document.getElementById("modal-cat"),
-          document.getElementById("qa-modal-category"),
-          document.getElementById("task-modal-category"),
-        ];
-        let baseOptions = "";
-        if (appData.settings && appData.settings.categories) {
-          Object.keys(appData.settings.categories)
-            .sort()
-            .forEach((cat) => {
-              baseOptions += `<option value="${cat}">${cat}</option>`;
-            });
-        }
-        selects.forEach((select) => {
-          if (select) {
-            const currentVal = select.value;
-            let optionsHTML = baseOptions;
-            if (
-              select.id === "qa-modal-category" ||
-              select.id === "task-modal-category"
-            ) {
-              optionsHTML =
-                '<option value="Generale">Generale</option>' + baseOptions;
-            }
-            select.innerHTML = optionsHTML;
-            if (currentVal) select.value = currentVal;
-          }
-        });
-      }
+    let paidItem = appData.settings.users.reduce(
+      (acc, u) => acc + (c[u.id] || 0),
+      0,
+    );
+    catData[cat].total += c.prezzo || 0;
+    catData[cat].paid += paidItem;
+  });
 
-      /**
-       * Esegue il rendering della sezione Riepilogo Categorie: calcola il totale, il pagato,
-       * il restante e la percentuale di completamento per ciascuna categoria. Rimuove l'intera card se il totale è 0.
-       */
-      function renderCategoriesSection() {
-        const cardsContainer = document.getElementById(
-          "categories-summary-cards",
-        );
-        const tbody = document.querySelector("#table-categories-summary tbody");
-        if (!cardsContainer || !tbody) return;
+  let grandTotal = 0,
+    grandPaid = 0,
+    grandRemaining = 0;
+  let chartLabels = [],
+    chartDataPaid = [],
+    chartDataTotal = [],
+    chartColors = [];
 
-        cardsContainer.innerHTML = "";
-        tbody.innerHTML = "";
+  Object.keys(catData).forEach((cat) => {
+    let d = catData[cat];
+    d.remaining = d.total - d.paid;
+    grandTotal += d.total;
+    grandPaid += d.paid;
+    grandRemaining += d.remaining;
 
-        let categories =
-          appData.settings && appData.settings.categories
-            ? Object.keys(appData.settings.categories).sort()
-            : [];
-        let catData = {};
+    const catObj = appData.settings.categories[cat];
+    let color =
+      typeof catObj === "string" ? catObj : catObj ? catObj.color : "#9E9E9E";
+    let textColor = getContrastYIQ(color);
+    let perc = d.total > 0 ? (d.paid / d.total) * 100 : 0;
 
-        categories.forEach((cat) => {
-          catData[cat] = { total: 0, paid: 0, remaining: 0 };
-        });
+    // Popolamento dataset grafico (solo per categorie con spesa o se total > 0)
+    if (d.total > 0) {
+      chartLabels.push(cat);
+      chartDataPaid.push(d.paid);
+      chartDataTotal.push(d.total);
+      chartColors.push(color);
 
-        appData.costi.forEach((c) => {
-          let cat = c.cat || "Senza Categoria";
-          if (!catData[cat]) catData[cat] = { total: 0, paid: 0, remaining: 0 };
-
-          let paidItem = appData.settings.users.reduce(
-            (acc, u) => acc + (c[u.id] || 0),
-            0,
-          );
-          catData[cat].total += c.prezzo || 0;
-          catData[cat].paid += paidItem;
-        });
-
-        let grandTotal = 0,
-          grandPaid = 0,
-          grandRemaining = 0;
-        let chartLabels = [],
-          chartDataPaid = [],
-          chartDataTotal = [],
-          chartColors = [];
-
-        Object.keys(catData).forEach((cat) => {
-          let d = catData[cat];
-          d.remaining = d.total - d.paid;
-          grandTotal += d.total;
-          grandPaid += d.paid;
-          grandRemaining += d.remaining;
-
-          const catObj = appData.settings.categories[cat];
-          let color =
-            typeof catObj === "string"
-              ? catObj
-              : catObj
-                ? catObj.color
-                : "#9E9E9E";
-          let textColor = getContrastYIQ(color);
-          let perc = d.total > 0 ? (d.paid / d.total) * 100 : 0;
-
-          // Popolamento dataset grafico (solo per categorie con spesa o se total > 0)
-          if (d.total > 0) {
-            chartLabels.push(cat);
-            chartDataPaid.push(d.paid);
-            chartDataTotal.push(d.total);
-            chartColors.push(color);
-
-            // 1. RIMUOVI INTERA CARD SE TOTALE È 0
-            let card = document.createElement("div");
-            card.className = "cat-stat-card";
-            card.innerHTML = `
+      // 1. RIMUOVI INTERA CARD SE TOTALE È 0
+      let card = document.createElement("div");
+      card.className = "cat-stat-card";
+      card.innerHTML = `
                         <div style="display:flex; justify-content:space-between; align-items:center;">
                             <span class="cat-badge" style="background-color: ${color}; color: ${textColor}; font-size: 13px;">${cat}</span>
                             <span style="font-size: 13px; font-weight: 600; color: var(--md-sys-color-outline);">${perc.toFixed(0)}%</span>
@@ -4505,501 +4388,481 @@
                             <b>${formatRestanteCurrency(d.remaining)}</b>
                         </div>
                     `;
-            cardsContainer.appendChild(card);
-          }
+      cardsContainer.appendChild(card);
+    }
 
-          // Inserimento riga tabella riassuntiva
-          let tr = document.createElement("tr");
-          tr.innerHTML = `
+    // Inserimento riga tabella riassuntiva
+    let tr = document.createElement("tr");
+    tr.innerHTML = `
                     <td><span class="cat-badge" style="background-color: ${color}; color: ${textColor};">${cat}</span></td>
                     <td><b>${formatCurrency(d.total)}</b></td>
                     <td style="color: var(--md-sys-color-primary); font-weight: 500;">${formatCurrency(d.paid)}</td>
                     <td>${formatRestanteCurrency(d.remaining)}</td>
                     <td style="font-weight: 500;">${d.total > 0 ? `<span class="sensitive-value">${perc.toFixed(1)}%</span>` : "-"}</td>
                 `;
-          tbody.appendChild(tr);
-        });
+    tbody.appendChild(tr);
+  });
 
-        let grandPerc = grandTotal > 0 ? (grandPaid / grandTotal) * 100 : 0;
-        let trTotal = document.createElement("tr");
-        trTotal.style.backgroundColor =
-          "var(--md-sys-color-surface-container-high)";
-        trTotal.style.fontWeight = "bold";
-        trTotal.innerHTML = `
+  let grandPerc = grandTotal > 0 ? (grandPaid / grandTotal) * 100 : 0;
+  let trTotal = document.createElement("tr");
+  trTotal.style.backgroundColor = "var(--md-sys-color-surface-container-high)";
+  trTotal.style.fontWeight = "bold";
+  trTotal.innerHTML = `
                 <td><b>TOTALE COMPLESSIVO</b></td>
                 <td><b>${formatCurrency(grandTotal)}</b></td>
                 <td style="color: var(--md-sys-color-primary);"><b>${formatCurrency(grandPaid)}</b></td>
                 <td><b>${formatRestanteCurrency(grandRemaining)}</b></td>
                 <td><b><span class="sensitive-value">${grandPerc.toFixed(1)}%</span></b></td>
             `;
-        tbody.appendChild(trTotal);
+  tbody.appendChild(trTotal);
 
-        const isDark = document.body.classList.contains("dark-mode");
-        const textColor = isDark ? "#E6E1E5" : "#1C1B1F";
-        const gridColor = isDark
-          ? "rgba(255,255,255,0.08)"
-          : "rgba(0,0,0,0.06)";
+  const isDark = document.body.classList.contains("dark-mode");
+  const textColor = isDark ? "#E6E1E5" : "#1C1B1F";
+  const gridColor = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)";
 
-        const ctxCat = document.getElementById("categoriesBarChart");
-        if (ctxCat) {
-          if (catBarChartInstance) catBarChartInstance.destroy();
-          const barBg = isDark ? "#332D41" : "#ECE6F0";
-          catBarChartInstance = new Chart(ctxCat.getContext("2d"), {
-            type: "bar",
-            data: {
-              labels: chartLabels,
-              datasets: [
-                {
-                  label: "Pagato Finora (€)",
-                  data: chartDataPaid,
-                  backgroundColor: chartColors,
-                  borderRadius: 6,
-                },
-                {
-                  label: "Costo Totale (€)",
-                  data: chartDataTotal,
-                  backgroundColor: barBg,
-                  borderRadius: 6,
-                },
-              ],
+  const ctxCat = document.getElementById("categoriesBarChart");
+  if (ctxCat) {
+    if (catBarChartInstance) catBarChartInstance.destroy();
+    const barBg = isDark ? "#332D41" : "#ECE6F0";
+    catBarChartInstance = new Chart(ctxCat.getContext("2d"), {
+      type: "bar",
+      data: {
+        labels: chartLabels,
+        datasets: [
+          {
+            label: "Pagato Finora (€)",
+            data: chartDataPaid,
+            backgroundColor: chartColors,
+            borderRadius: 6,
+          },
+          {
+            label: "Costo Totale (€)",
+            data: chartDataTotal,
+            backgroundColor: barBg,
+            borderRadius: 6,
+          },
+        ],
+      },
+      options: {
+        indexAxis: "y",
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: "top",
+            labels: {
+              font: { family: "'Google Sans Flex', sans-serif" },
+              color: textColor,
             },
-            options: {
-              indexAxis: "y",
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: {
-                legend: {
-                  position: "top",
-                  labels: {
-                    font: { family: "'Google Sans Flex', sans-serif" },
-                    color: textColor,
-                  },
-                },
-              },
-              scales: {
-                x: {
-                  beginAtZero: true,
-                  grid: { color: gridColor },
-                  ticks: { color: textColor },
-                },
-                y: { grid: { display: false }, ticks: { color: textColor } },
-              },
-            },
-          });
-        }
-      }
+          },
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            grid: { color: gridColor },
+            ticks: { color: textColor },
+          },
+          y: { grid: { display: false }, ticks: { color: textColor } },
+        },
+      },
+    });
+  }
+}
 
-      /**
-       * Calcola e aggiorna le metriche globali, i bilanci di conguaglio tra partecipanti,
-       * la liquidità residua e aggiorna i grafici (Bar Chart e Doughnut Chart) nella vista Riepilogo.
-       */
-      function updateChartsAndStats() {
-        let budgetTotale = appData.budget.reduce((acc, curr) => {
-          let s = appData.settings.users.reduce(
-            (a, u) => a + (curr[u.id] || 0),
-            0,
-          );
-          return acc + s;
-        }, 0);
+/**
+ * Calcola e aggiorna le metriche globali, i bilanci di conguaglio tra partecipanti,
+ * la liquidità residua e aggiorna i grafici (Bar Chart e Doughnut Chart) nella vista Riepilogo.
+ */
+function updateChartsAndStats() {
+  let budgetTotale = appData.budget.reduce((acc, curr) => {
+    let s = appData.settings.users.reduce((a, u) => a + (curr[u.id] || 0), 0);
+    return acc + s;
+  }, 0);
 
-        let costoTotale = appData.costi.reduce(
-          (acc, curr) => acc + (curr.prezzo || 0),
-          0,
-        );
-        let userSpesePagate = {};
-        let userBudgetTotali = {};
-        let userMutuoTotali = {};
-        let userBudgetSenzaMutuo = {};
+  let costoTotale = appData.costi.reduce(
+    (acc, curr) => acc + (curr.prezzo || 0),
+    0,
+  );
+  let userSpesePagate = {};
+  let userBudgetTotali = {};
+  let userMutuoTotali = {};
+  let userBudgetSenzaMutuo = {};
 
-        appData.settings.users.forEach((u) => {
-          userSpesePagate[u.id] = appData.costi.reduce(
-            (acc, curr) => acc + (curr[u.id] || 0),
-            0,
-          );
-          userBudgetTotali[u.id] = appData.budget.reduce(
-            (acc, curr) => acc + (curr[u.id] || 0),
-            0,
-          );
+  appData.settings.users.forEach((u) => {
+    userSpesePagate[u.id] = appData.costi.reduce(
+      (acc, curr) => acc + (curr[u.id] || 0),
+      0,
+    );
+    userBudgetTotali[u.id] = appData.budget.reduce(
+      (acc, curr) => acc + (curr[u.id] || 0),
+      0,
+    );
 
-          let mutuoRow = appData.budget.find((b) => b.isMutuo);
-          userMutuoTotali[u.id] = mutuoRow ? mutuoRow[u.id] || 0 : 0;
-          userBudgetSenzaMutuo[u.id] =
-            userBudgetTotali[u.id] - userMutuoTotali[u.id];
-        });
+    let mutuoRow = appData.budget.find((b) => b.isMutuo);
+    userMutuoTotali[u.id] = mutuoRow ? mutuoRow[u.id] || 0 : 0;
+    userBudgetSenzaMutuo[u.id] = userBudgetTotali[u.id] - userMutuoTotali[u.id];
+  });
 
-        let totalePagato = Object.values(userSpesePagate).reduce(
-          (a, b) => a + b,
-          0,
-        );
-        let restante = costoTotale - totalePagato;
-        let progressoPercentuale =
-          costoTotale > 0 ? (totalePagato / costoTotale) * 100 : 0;
+  let totalePagato = Object.values(userSpesePagate).reduce((a, b) => a + b, 0);
+  let restante = costoTotale - totalePagato;
+  let progressoPercentuale =
+    costoTotale > 0 ? (totalePagato / costoTotale) * 100 : 0;
 
-        // Calcolo conguaglio debiti/crediti in base alle quote pattuite
-        let conguagliHtml = "";
-        appData.settings.users.forEach((u) => {
-          let quotaDovuta = totalePagato * (u.share / 100);
-          let saldoU = userSpesePagate[u.id] - quotaDovuta;
-          conguagliHtml += `<div style="font-size: 13px; font-weight: 500;">${u.name}: ${formatColoredCurrency(saldoU)}</div>`;
-        });
+  // Calcolo conguaglio debiti/crediti in base alle quote pattuite
+  let conguagliHtml = "";
+  appData.settings.users.forEach((u) => {
+    let quotaDovuta = totalePagato * (u.share / 100);
+    let saldoU = userSpesePagate[u.id] - quotaDovuta;
+    conguagliHtml += `<div style="font-size: 13px; font-weight: 500;">${u.name}: ${formatColoredCurrency(saldoU)}</div>`;
+  });
 
-        let liquiditaResiduaReale = budgetTotale - costoTotale;
-        let liquiditaUtentiDettaglio = "";
-        appData.settings.users.forEach((u) => {
-          let quotaCostoU = costoTotale * (u.share / 100);
-          let residuoU = userBudgetTotali[u.id] - quotaCostoU;
-          liquiditaUtentiDettaglio += `<small style="font-size: 12px; margin-right: 6px;">${u.name}: <b>${formatCurrency(residuoU)}</b></small>`;
-        });
+  let liquiditaResiduaReale = budgetTotale - costoTotale;
+  let liquiditaUtentiDettaglio = "";
+  appData.settings.users.forEach((u) => {
+    let quotaCostoU = costoTotale * (u.share / 100);
+    let residuoU = userBudgetTotali[u.id] - quotaCostoU;
+    liquiditaUtentiDettaglio += `<small style="font-size: 12px; margin-right: 6px;">${u.name}: <b>${formatCurrency(residuoU)}</b></small>`;
+  });
 
-        document.getElementById("stat-budget-tot").innerHTML =
-          formatColoredCurrency(budgetTotale);
-        document.getElementById("stat-costo-tot").innerHTML =
-          formatCurrency(costoTotale);
-        document.getElementById("stat-restante-tot").innerHTML =
-          formatRestanteCurrency(restante);
+  document.getElementById("stat-budget-tot").innerHTML =
+    formatColoredCurrency(budgetTotale);
+  document.getElementById("stat-costo-tot").innerHTML =
+    formatCurrency(costoTotale);
+  document.getElementById("stat-restante-tot").innerHTML =
+    formatRestanteCurrency(restante);
 
-        document.getElementById("stat-progresso").innerText =
-          progressoPercentuale.toFixed(1) + "%";
-        document.getElementById("stat-conguaglio").innerHTML = conguagliHtml;
-        document.getElementById("stat-liquidita").innerHTML = `
+  document.getElementById("stat-progresso").innerText =
+    progressoPercentuale.toFixed(1) + "%";
+  document.getElementById("stat-conguaglio").innerHTML = conguagliHtml;
+  document.getElementById("stat-liquidita").innerHTML = `
                 ${formatColoredCurrency(liquiditaResiduaReale)}
                 <div style="font-size: 12px; font-weight: 400; color: var(--md-sys-color-outline); margin-top: 4px;">${liquiditaUtentiDettaglio}</div>
             `;
 
-        const repTotals = document.getElementById("riepilogo-users-totals");
-        if (repTotals) {
-          repTotals.innerHTML = "";
-          appData.settings.users.forEach((u) => {
-            let costU = userSpesePagate[u.id];
-            let rimanentiSenzaMutuo = userBudgetSenzaMutuo[u.id] - costU;
-            let rimanentiConMutuo = userBudgetTotali[u.id] - costU;
+  const repTotals = document.getElementById("riepilogo-users-totals");
+  if (repTotals) {
+    repTotals.innerHTML = "";
+    appData.settings.users.forEach((u) => {
+      let costU = userSpesePagate[u.id];
+      let rimanentiSenzaMutuo = userBudgetSenzaMutuo[u.id] - costU;
+      let rimanentiConMutuo = userBudgetTotali[u.id] - costU;
 
-            let div = document.createElement("div");
-            let html = `
+      let div = document.createElement("div");
+      let html = `
                         <span style="font-size: 13px; color: var(--md-sys-color-outline);">${u.name}</span>
                         <div style="font-size: 20px; font-weight: 500;">Speso: ${formatCurrency(costU)}</div>
                         <div style="font-size: 13px; margin-top:4px;">Rimanenti: <b>${formatColoredCurrency(rimanentiSenzaMutuo)}</b> <small>(senza mutuo)</small></div>
                     `;
 
-            if (userMutuoTotali[u.id] > 0) {
-              html += `<div style="font-size: 13px; margin-top:2px;">Rimanenti: <b>${formatColoredCurrency(rimanentiConMutuo)}</b> <small>(con mutuo)</small></div>`;
-            }
+      if (userMutuoTotali[u.id] > 0) {
+        html += `<div style="font-size: 13px; margin-top:2px;">Rimanenti: <b>${formatColoredCurrency(rimanentiConMutuo)}</b> <small>(con mutuo)</small></div>`;
+      }
 
-            div.innerHTML = html;
-            repTotals.appendChild(div);
-          });
-        }
+      div.innerHTML = html;
+      repTotals.appendChild(div);
+    });
+  }
 
-        let statCostiTot = document.getElementById("stat-costi-page-tot");
-        if (statCostiTot) statCostiTot.innerHTML = formatCurrency(costoTotale);
+  let statCostiTot = document.getElementById("stat-costi-page-tot");
+  if (statCostiTot) statCostiTot.innerHTML = formatCurrency(costoTotale);
 
-        appData.settings.users.forEach((u) => {
-          let el = document.getElementById(`stat-costi-page-${u.id}`);
-          if (el) el.innerHTML = formatColoredCurrency(userSpesePagate[u.id]);
-        });
+  appData.settings.users.forEach((u) => {
+    let el = document.getElementById(`stat-costi-page-${u.id}`);
+    if (el) el.innerHTML = formatColoredCurrency(userSpesePagate[u.id]);
+  });
 
-        let statCostiRest = document.getElementById("stat-costi-page-restante");
-        if (statCostiRest)
-          statCostiRest.innerHTML = formatRestanteCurrency(restante);
+  let statCostiRest = document.getElementById("stat-costi-page-restante");
+  if (statCostiRest) statCostiRest.innerHTML = formatRestanteCurrency(restante);
 
-        let statBudgetTot = document.getElementById("stat-budget-page-tot");
-        if (statBudgetTot)
-          statBudgetTot.innerHTML = formatColoredCurrency(budgetTotale);
+  let statBudgetTot = document.getElementById("stat-budget-page-tot");
+  if (statBudgetTot)
+    statBudgetTot.innerHTML = formatColoredCurrency(budgetTotale);
 
-        appData.settings.users.forEach((u) => {
-          let el = document.getElementById(`stat-budget-page-${u.id}`);
-          if (el) {
-            let html = `${formatColoredCurrency(userBudgetTotali[u.id])}`;
-            if (userMutuoTotali[u.id] > 0) {
-              html += `<div style="font-size: 12px; font-weight: 400; color: var(--md-sys-color-outline); margin-top: 2px;">Senza mutuo: <b>${formatCurrency(userBudgetSenzaMutuo[u.id])}</b></div>`;
-            }
-            el.innerHTML = html;
-          }
-        });
+  appData.settings.users.forEach((u) => {
+    let el = document.getElementById(`stat-budget-page-${u.id}`);
+    if (el) {
+      let html = `${formatColoredCurrency(userBudgetTotali[u.id])}`;
+      if (userMutuoTotali[u.id] > 0) {
+        html += `<div style="font-size: 12px; font-weight: 400; color: var(--md-sys-color-outline); margin-top: 2px;">Senza mutuo: <b>${formatCurrency(userBudgetSenzaMutuo[u.id])}</b></div>`;
+      }
+      el.innerHTML = html;
+    }
+  });
 
-        const isDark = document.body.classList.contains("dark-mode");
-        const primaryColor = isDark ? "#D0BCFF" : "#6750A4";
-        const secondaryColor = isDark ? "#4F378B" : "#EADDFF";
-        const tertiaryColor = isDark ? "#633B48" : "#FFD8E4";
-        const surfaceContainerHigh = isDark ? "#302E34" : "#ECE6F0";
-        const fedeColor = isDark ? "#FFB1C8" : "#d81b60";
-        const textColor = isDark ? "#E6E1E5" : "#1C1B1F";
-        const gridColor = isDark
-          ? "rgba(255,255,255,0.08)"
-          : "rgba(0,0,0,0.06)";
+  const isDark = document.body.classList.contains("dark-mode");
+  const primaryColor = isDark ? "#D0BCFF" : "#6750A4";
+  const secondaryColor = isDark ? "#4F378B" : "#EADDFF";
+  const tertiaryColor = isDark ? "#633B48" : "#FFD8E4";
+  const surfaceContainerHigh = isDark ? "#302E34" : "#ECE6F0";
+  const fedeColor = isDark ? "#FFB1C8" : "#d81b60";
+  const textColor = isDark ? "#E6E1E5" : "#1C1B1F";
+  const gridColor = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)";
 
-        // Render Grafico a Barre Stato Finanziario
-        if (barChartInstance) barChartInstance.destroy();
-        const ctxBar = document.getElementById("barChart");
-        if (ctxBar) {
-          Chart.defaults.font.family = "'Google Sans Flex', sans-serif";
-          barChartInstance = new Chart(ctxBar.getContext("2d"), {
-            type: "bar",
-            data: {
-              labels: ["Budget Totale", "Costo Stimato", "Speso", "Da Pagare"],
-              datasets: [
-                {
-                  label: "Importo in €",
-                  data: [budgetTotale, costoTotale, totalePagato, restante],
-                  backgroundColor: [
-                    secondaryColor,
-                    tertiaryColor,
-                    primaryColor,
-                    surfaceContainerHigh,
-                  ],
-                  borderRadius: 8,
-                },
-              ],
+  // Render Grafico a Barre Stato Finanziario
+  if (barChartInstance) barChartInstance.destroy();
+  const ctxBar = document.getElementById("barChart");
+  if (ctxBar) {
+    Chart.defaults.font.family = "'Google Sans Flex', sans-serif";
+    barChartInstance = new Chart(ctxBar.getContext("2d"), {
+      type: "bar",
+      data: {
+        labels: ["Budget Totale", "Costo Stimato", "Speso", "Da Pagare"],
+        datasets: [
+          {
+            label: "Importo in €",
+            data: [budgetTotale, costoTotale, totalePagato, restante],
+            backgroundColor: [
+              secondaryColor,
+              tertiaryColor,
+              primaryColor,
+              surfaceContainerHigh,
+            ],
+            borderRadius: 8,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: { color: gridColor },
+            ticks: { color: textColor },
+          },
+          x: {
+            grid: { display: false },
+            ticks: { color: textColor },
+          },
+        },
+      },
+    });
+  }
+
+  // Render Grafico a Ciambella Ripartizione Spese
+  if (pieChartInstance) pieChartInstance.destroy();
+  const ctxPie = document.getElementById("pieChart");
+  if (ctxPie) {
+    let pieData = appData.settings.users.map((u) => userSpesePagate[u.id]);
+    let pieColors = appData.settings.users.map((u, idx) =>
+      idx === 0
+        ? primaryColor
+        : idx === 1
+          ? fedeColor
+          : autoColors[idx % autoColors.length],
+    );
+    if (pieData.every((v) => v === 0))
+      pieData = appData.settings.users.map(() => 0.1);
+
+    pieChartInstance = new Chart(ctxPie.getContext("2d"), {
+      type: "doughnut",
+      data: {
+        labels: appData.settings.users.map((u) => u.name),
+        datasets: [
+          {
+            data: pieData,
+            backgroundColor: pieColors,
+            borderWidth: 0,
+            hoverOffset: 4,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: "75%",
+        plugins: {
+          legend: {
+            display: true,
+            position: "bottom",
+            labels: {
+              boxWidth: 12,
+              padding: 12,
+              color: textColor,
             },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: { legend: { display: false } },
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  grid: { color: gridColor },
-                  ticks: { color: textColor },
-                },
-                x: {
-                  grid: { display: false },
-                  ticks: { color: textColor },
-                },
-              },
-            },
-          });
-        }
+          },
+        },
+      },
+    });
+  }
+}
 
-        // Render Grafico a Ciambella Ripartizione Spese
-        if (pieChartInstance) pieChartInstance.destroy();
-        const ctxPie = document.getElementById("pieChart");
-        if (ctxPie) {
-          let pieData = appData.settings.users.map(
-            (u) => userSpesePagate[u.id],
-          );
-          let pieColors = appData.settings.users.map((u, idx) =>
-            idx === 0
-              ? primaryColor
-              : idx === 1
-                ? fedeColor
-                : autoColors[idx % autoColors.length],
-          );
-          if (pieData.every((v) => v === 0))
-            pieData = appData.settings.users.map(() => 0.1);
+// ===== SISTEMA PAGAMENTI A RATE =====
 
-          pieChartInstance = new Chart(ctxPie.getContext("2d"), {
-            type: "doughnut",
-            data: {
-              labels: appData.settings.users.map((u) => u.name),
-              datasets: [
-                {
-                  data: pieData,
-                  backgroundColor: pieColors,
-                  borderWidth: 0,
-                  hoverOffset: 4,
-                },
-              ],
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              cutout: "75%",
-              plugins: {
-                legend: {
-                  display: true,
-                  position: "bottom",
-                  labels: {
-                    boxWidth: 12,
-                    padding: 12,
-                    color: textColor,
-                  },
-                },
-              },
-            },
-          });
-        }
-      }
+/**
+ * Funzione di utilità per sanificare stringhe HTML.
+ * @param {string} str - Stringa da sanificare.
+ */
+function escapeHTML(str) {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
 
-      // ===== SISTEMA PAGAMENTI A RATE =====
+/** ID della voce costo attualmente visualizzata nel dettaglio */
+let currentDetailId = null;
 
-      /**
-       * Funzione di utilità per sanificare stringhe HTML.
-       * @param {string} str - Stringa da sanificare.
-       */
-      function escapeHTML(str) {
-        if (!str) return "";
-        return String(str)
-          .replace(/&/g, "&amp;")
-          .replace(/"/g, "&quot;")
-          .replace(/'/g, "&#39;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;");
-      }
+/**
+ * Calcola la somma dei pagamenti registrati formalmente per una voce di costo.
+ * @param {Object} item - Voce costo.
+ * @returns {number} Somma totale registrata nei pagamenti.
+ */
+function getPaymentsRegisteredTotal(item) {
+  if (!item || !item.pagamenti || item.pagamenti.length === 0) return 0;
+  return item.pagamenti.reduce((acc, p) => {
+    if (!p.quote) return acc;
+    return (
+      acc +
+      appData.settings.users.reduce(
+        (a, u) => a + (parseFloat(p.quote[u.id]) || 0),
+        0,
+      )
+    );
+  }, 0);
+}
 
-      /** ID della voce costo attualmente visualizzata nel dettaglio */
-      let currentDetailId = null;
+/**
+ * Calcola la somma dei pagamenti registrati per un singolo utente.
+ * @param {Object} item - Voce costo.
+ * @param {string} userId - ID utente (es: 'u1', 'u2').
+ * @returns {number} Somma registrata per l'utente.
+ */
+function getPaymentsRegisteredForUser(item, userId) {
+  if (!item || !item.pagamenti || item.pagamenti.length === 0) return 0;
+  return item.pagamenti.reduce((acc, p) => {
+    return (
+      acc + (p.quote && p.quote[userId] ? parseFloat(p.quote[userId]) || 0 : 0)
+    );
+  }, 0);
+}
 
-      /**
-       * Calcola la somma dei pagamenti registrati formalmente per una voce di costo.
-       * @param {Object} item - Voce costo.
-       * @returns {number} Somma totale registrata nei pagamenti.
-       */
-      function getPaymentsRegisteredTotal(item) {
-        if (!item || !item.pagamenti || item.pagamenti.length === 0) return 0;
-        return item.pagamenti.reduce((acc, p) => {
-          if (!p.quote) return acc;
-          return (
-            acc +
-            appData.settings.users.reduce(
-              (a, u) => a + (parseFloat(p.quote[u.id]) || 0),
-              0,
-            )
-          );
-        }, 0);
-      }
+/**
+ * Calcola l'importo pagato dichiarato che non è ancora stato formalmente registrato a rate.
+ * @param {Object} item - Voce costo.
+ * @returns {number} Importo ancora da registrare.
+ */
+function getUnregisteredPaymentAmount(item) {
+  if (!item) return 0;
+  const currentPaid = appData.settings.users.reduce(
+    (acc, u) => acc + (parseFloat(item[u.id]) || 0),
+    0,
+  );
+  const originPaid =
+    item.originPaid !== undefined
+      ? Math.max(parseFloat(item.originPaid) || 0, currentPaid)
+      : currentPaid;
+  const registered = getPaymentsRegisteredTotal(item);
+  return Math.max(0, originPaid - registered);
+}
 
-      /**
-       * Calcola la somma dei pagamenti registrati per un singolo utente.
-       * @param {Object} item - Voce costo.
-       * @param {string} userId - ID utente (es: 'u1', 'u2').
-       * @returns {number} Somma registrata per l'utente.
-       */
-      function getPaymentsRegisteredForUser(item, userId) {
-        if (!item || !item.pagamenti || item.pagamenti.length === 0) return 0;
-        return item.pagamenti.reduce((acc, p) => {
-          return (
-            acc +
-            (p.quote && p.quote[userId] ? parseFloat(p.quote[userId]) || 0 : 0)
-          );
-        }, 0);
-      }
+/**
+ * Ricalcola i totali per ogni utente sommando le quote dai pagamenti.
+ * IMPORTANTE: Non sovrascrive né riduce le quote storiche/originarie se i pagamenti
+ * registrati non le hanno ancora coperte per intero. Se i pagamenti registrati
+ * superano il valore originario, incrementa correttamente il Totale Pagato.
+ * @param {Object} item - Voce di costo da ricalcolare.
+ */
+function recalcUserTotals(item) {
+  if (!item) return;
+  if (!item.pagamenti) item.pagamenti = [];
 
-      /**
-       * Calcola l'importo pagato dichiarato che non è ancora stato formalmente registrato a rate.
-       * @param {Object} item - Voce costo.
-       * @returns {number} Importo ancora da registrare.
-       */
-      function getUnregisteredPaymentAmount(item) {
-        if (!item) return 0;
-        const currentPaid = appData.settings.users.reduce(
-          (acc, u) => acc + (parseFloat(item[u.id]) || 0),
-          0,
-        );
-        const originPaid =
-          item.originPaid !== undefined
-            ? Math.max(parseFloat(item.originPaid) || 0, currentPaid)
-            : currentPaid;
-        const registered = getPaymentsRegisteredTotal(item);
-        return Math.max(0, originPaid - registered);
-      }
+  // Assicura originQuote per non perdere la memoria del totale pagato dichiarato
+  if (!item.originQuote) {
+    item.originQuote = {};
+    appData.settings.users.forEach((u) => {
+      item.originQuote[u.id] = parseFloat(item[u.id]) || 0;
+    });
+  }
+  const sumOrigin = appData.settings.users.reduce(
+    (acc, u) => acc + (item.originQuote[u.id] || 0),
+    0,
+  );
+  if (item.originPaid === undefined) {
+    item.originPaid = sumOrigin;
+  }
 
-      /**
-       * Ricalcola i totali per ogni utente sommando le quote dai pagamenti.
-       * IMPORTANTE: Non sovrascrive né riduce le quote storiche/originarie se i pagamenti
-       * registrati non le hanno ancora coperte per intero. Se i pagamenti registrati
-       * superano il valore originario, incrementa correttamente il Totale Pagato.
-       * @param {Object} item - Voce di costo da ricalcolare.
-       */
-      function recalcUserTotals(item) {
-        if (!item) return;
-        if (!item.pagamenti) item.pagamenti = [];
+  // Per ogni utente, l'importo pagato visualizzato è il massimo tra la quota storica
+  // e la somma dei pagamenti formali registrati a rate
+  appData.settings.users.forEach((u) => {
+    const regUser = getPaymentsRegisteredForUser(item, u.id);
+    const origUser =
+      item.originQuote && item.originQuote[u.id] !== undefined
+        ? item.originQuote[u.id]
+        : parseFloat(item[u.id]) || 0;
+    item[u.id] = Math.max(origUser, regUser);
+  });
 
-        // Assicura originQuote per non perdere la memoria del totale pagato dichiarato
-        if (!item.originQuote) {
-          item.originQuote = {};
-          appData.settings.users.forEach((u) => {
-            item.originQuote[u.id] = parseFloat(item[u.id]) || 0;
-          });
-        }
-        const sumOrigin = appData.settings.users.reduce(
-          (acc, u) => acc + (item.originQuote[u.id] || 0),
-          0,
-        );
-        if (item.originPaid === undefined) {
-          item.originPaid = sumOrigin;
-        }
+  // Se i pagamenti registrati superano il vecchio totale dichiarato, aggiorna originPaid
+  const totalRegistered = getPaymentsRegisteredTotal(item);
+  if (totalRegistered > item.originPaid) {
+    item.originPaid = totalRegistered;
+    appData.settings.users.forEach((u) => {
+      item.originQuote[u.id] = item[u.id];
+    });
+  }
+}
 
-        // Per ogni utente, l'importo pagato visualizzato è il massimo tra la quota storica
-        // e la somma dei pagamenti formali registrati a rate
-        appData.settings.users.forEach((u) => {
-          const regUser = getPaymentsRegisteredForUser(item, u.id);
-          const origUser =
-            item.originQuote && item.originQuote[u.id] !== undefined
-              ? item.originQuote[u.id]
-              : parseFloat(item[u.id]) || 0;
-          item[u.id] = Math.max(origUser, regUser);
-        });
+/**
+ * Apre la pagina di dettaglio per una voce di costo.
+ * @param {number} id - ID della voce.
+ */
+function openDetailView(id) {
+  currentDetailId = id;
+  const item = appData.costi.find((c) => c.id === id);
+  if (!item) return;
+  // Inizializza pagamenti se assenti (retrocompatibilità)
+  if (!item.pagamenti) item.pagamenti = [];
+  renderDetailView(item);
+  document
+    .querySelectorAll(".view-section")
+    .forEach((el) => el.classList.remove("active"));
+  document.getElementById("view-detail").classList.add("active");
+  const mainContainer = document.getElementById("main-scroll-container");
+  if (mainContainer) mainContainer.scrollTop = 0;
+}
 
-        // Se i pagamenti registrati superano il vecchio totale dichiarato, aggiorna originPaid
-        const totalRegistered = getPaymentsRegisteredTotal(item);
-        if (totalRegistered > item.originPaid) {
-          item.originPaid = totalRegistered;
-          appData.settings.users.forEach((u) => {
-            item.originQuote[u.id] = item[u.id];
-          });
-        }
-      }
+/**
+ * Torna alla lista costi e nasconde la pagina di dettaglio.
+ */
+function closeDetailView() {
+  currentDetailId = null;
+  document.getElementById("view-detail").classList.remove("active");
+  document
+    .querySelectorAll(".view-section")
+    .forEach((el) => el.classList.remove("active"));
+  document.getElementById("view-costi").classList.add("active");
+  document.title = "Costi Casa | Costi Casa";
+  const titleEl = document.getElementById("page-main-title");
+  if (titleEl) titleEl.innerText = "Costi Casa";
+}
 
-      /**
-       * Apre la pagina di dettaglio per una voce di costo.
-       * @param {number} id - ID della voce.
-       */
-      function openDetailView(id) {
-        currentDetailId = id;
-        const item = appData.costi.find((c) => c.id === id);
-        if (!item) return;
-        // Inizializza pagamenti se assenti (retrocompatibilità)
-        if (!item.pagamenti) item.pagamenti = [];
-        renderDetailView(item);
-        document
-          .querySelectorAll(".view-section")
-          .forEach((el) => el.classList.remove("active"));
-        document.getElementById("view-detail").classList.add("active");
-        const mainContainer = document.getElementById("main-scroll-container");
-        if (mainContainer) mainContainer.scrollTop = 0;
-      }
+/**
+ * Renderizza tutte le informazioni di una voce di costo nella pagina dettaglio.
+ * @param {Object} item - Voce di costo da visualizzare.
+ */
+function renderDetailView(item) {
+  // Badge categoria
+  const catObj = appData.settings.categories[item.cat];
+  const catColor =
+    typeof catObj === "string" ? catObj : catObj ? catObj.color : "#9E9E9E";
+  document.getElementById("detail-badge").innerHTML =
+    `<span class="cat-badge" style="background-color: ${catColor}; color: white;">${item.cat || ""}</span>`;
 
-      /**
-       * Torna alla lista costi e nasconde la pagina di dettaglio.
-       */
-      function closeDetailView() {
-        currentDetailId = null;
-        document.getElementById("view-detail").classList.remove("active");
-        document
-          .querySelectorAll(".view-section")
-          .forEach((el) => el.classList.remove("active"));
-        document.getElementById("view-costi").classList.add("active");
-        document.title = "Costi Casa | Costi Casa";
-        const titleEl = document.getElementById("page-main-title");
-        if (titleEl) titleEl.innerText = "Costi Casa";
-      }
+  // Titolo descrizione
+  document.getElementById("detail-desc").innerText = item.desc || "";
 
-      /**
-       * Renderizza tutte le informazioni di una voce di costo nella pagina dettaglio.
-       * @param {Object} item - Voce di costo da visualizzare.
-       */
-      function renderDetailView(item) {
-        // Badge categoria
-        const catObj = appData.settings.categories[item.cat];
-        const catColor =
-          typeof catObj === "string"
-            ? catObj
-            : catObj
-              ? catObj.color
-              : "#9E9E9E";
-        document.getElementById("detail-badge").innerHTML =
-          `<span class="cat-badge" style="background-color: ${catColor}; color: white;">${item.cat || ""}</span>`;
-
-        // Titolo descrizione
-        document.getElementById("detail-desc").innerText = item.desc || "";
-
-        // Griglia info
-        const sumPaid = appData.settings.users.reduce(
-          (acc, u) => acc + (item[u.id] || 0),
-          0,
-        );
-        const restante = (item.prezzo || 0) - sumPaid;
-        let gridHTML = `
+  // Griglia info
+  const sumPaid = appData.settings.users.reduce(
+    (acc, u) => acc + (item[u.id] || 0),
+    0,
+  );
+  const restante = (item.prezzo || 0) - sumPaid;
+  let gridHTML = `
           <div class="detail-info-chip">
             <span class="chip-label">Prezzo Totale</span>
             <span class="chip-value sensitive-value">${formatCurrency(item.prezzo || 0)}</span>
@@ -5012,65 +4875,65 @@
             <span class="chip-label">Restante</span>
             <span class="chip-value sensitive-value">${formatRestanteCurrency(restante)}</span>
           </div>`;
-        appData.settings.users.forEach((u) => {
-          gridHTML += `
+  appData.settings.users.forEach((u) => {
+    gridHTML += `
             <div class="detail-info-chip">
               <span class="chip-label">Pagato da ${u.name}</span>
               <span class="chip-value sensitive-value" style="color: var(--md-sys-color-primary)">${formatCurrency(item[u.id] || 0)}</span>
             </div>`;
-        });
-        const numPagamenti = item.pagamenti ? item.pagamenti.length : 0;
-        gridHTML += `
+  });
+  const numPagamenti = item.pagamenti ? item.pagamenti.length : 0;
+  gridHTML += `
           <div class="detail-info-chip">
             <span class="chip-label">N° Pagamenti</span>
             <span class="chip-value">${numPagamenti}</span>
           </div>`;
-        document.getElementById("detail-info-grid").innerHTML = gridHTML;
+  document.getElementById("detail-info-grid").innerHTML = gridHTML;
 
-        // Note
-        const noteSection = document.getElementById("detail-note-section");
-        if (item.note && item.note.trim()) {
-          document.getElementById("detail-note").innerText = item.note;
-          noteSection.style.display = "block";
-        } else {
-          noteSection.style.display = "none";
-        }
+  // Note
+  const noteSection = document.getElementById("detail-note-section");
+  if (item.note && item.note.trim()) {
+    document.getElementById("detail-note").innerText = item.note;
+    noteSection.style.display = "block";
+  } else {
+    noteSection.style.display = "none";
+  }
 
-        // Gestione stato completamento al 100%
-        const isCompletato = (item.prezzo || 0) > 0 && restante <= 0.005;
-        const addPayBtn = document.getElementById("detail-add-payment-btn");
-        const compBadge = document.getElementById("detail-completato-badge");
-        if (addPayBtn && compBadge) {
-          if (isCompletato) {
-            addPayBtn.style.display = "none";
-            compBadge.style.display = "inline-flex";
-          } else {
-            addPayBtn.style.display = "inline-flex";
-            compBadge.style.display = "none";
-          }
-        }
+  // Gestione stato completamento al 100%
+  const isCompletato = (item.prezzo || 0) > 0 && restante <= 0.005;
+  const addPayBtn = document.getElementById("detail-add-payment-btn");
+  const compBadge = document.getElementById("detail-completato-badge");
+  if (addPayBtn && compBadge) {
+    if (isCompletato) {
+      addPayBtn.style.display = "none";
+      compBadge.style.display = "inline-flex";
+    } else {
+      addPayBtn.style.display = "inline-flex";
+      compBadge.style.display = "none";
+    }
+  }
 
-        // Banner Warning per Pagamenti Dichiarati ma NON ANCORA REGISTRATI a rate:
-        const nonRegistrato = getUnregisteredPaymentAmount(item);
-        const registratoTot = getPaymentsRegisteredTotal(item);
-        const totalePagato = appData.settings.users.reduce(
-          (acc, u) => acc + (parseFloat(item[u.id]) || 0),
-          0,
-        );
+  // Banner Warning per Pagamenti Dichiarati ma NON ANCORA REGISTRATI a rate:
+  const nonRegistrato = getUnregisteredPaymentAmount(item);
+  const registratoTot = getPaymentsRegisteredTotal(item);
+  const totalePagato = appData.settings.users.reduce(
+    (acc, u) => acc + (parseFloat(item[u.id]) || 0),
+    0,
+  );
 
-        let draftBanner = document.getElementById("detail-draft-banner");
-        if (nonRegistrato > 0.005) {
-          if (!draftBanner) {
-            draftBanner = document.createElement("div");
-            draftBanner.id = "detail-draft-banner";
-            const paymentCard = document
-              .getElementById("detail-payment-list")
-              ?.closest(".card");
-            if (paymentCard)
-              paymentCard.insertAdjacentElement("beforebegin", draftBanner);
-          }
-          draftBanner.className = "draft-payment-banner";
-          draftBanner.innerHTML = `
+  let draftBanner = document.getElementById("detail-draft-banner");
+  if (nonRegistrato > 0.005) {
+    if (!draftBanner) {
+      draftBanner = document.createElement("div");
+      draftBanner.id = "detail-draft-banner";
+      const paymentCard = document
+        .getElementById("detail-payment-list")
+        ?.closest(".card");
+      if (paymentCard)
+        paymentCard.insertAdjacentElement("beforebegin", draftBanner);
+    }
+    draftBanner.className = "draft-payment-banner";
+    draftBanner.innerHTML = `
             <span class="material-symbols-outlined banner-icon">warning</span>
             <div class="banner-body">
               <p class="banner-title">Pagamento da registrare a rate</p>
@@ -5080,89 +4943,93 @@
                 Registra quota mancante (${formatCurrency(nonRegistrato)})
               </button>
             </div>`;
-          draftBanner.style.display = "flex";
-        } else if (draftBanner) {
-          draftBanner.style.display = "none";
-        }
+    draftBanner.style.display = "flex";
+  } else if (draftBanner) {
+    draftBanner.style.display = "none";
+  }
 
-        // Lista pagamenti
-        renderPaymentList(item);
-      }
+  // Lista pagamenti
+  renderPaymentList(item);
+}
 
-      /**
-       * Renderizza la lista pagamenti nella pagina dettaglio.
-       * @param {Object} item - Voce di costo.
-       */
-      function renderPaymentList(item) {
-        const container = document.getElementById("detail-payment-list");
-        if (!container) return;
-        container.innerHTML = "";
-        if (!item.pagamenti || item.pagamenti.length === 0) {
-          container.innerHTML = `<div class="payment-empty">
+/**
+ * Renderizza la lista pagamenti nella pagina dettaglio.
+ * @param {Object} item - Voce di costo.
+ */
+function renderPaymentList(item) {
+  const container = document.getElementById("detail-payment-list");
+  if (!container) return;
+  container.innerHTML = "";
+  if (!item.pagamenti || item.pagamenti.length === 0) {
+    container.innerHTML = `<div class="payment-empty">
             <span class="material-symbols-outlined">payments</span>
             Nessun pagamento registrato.<br>Clicca "Aggiungi Pagamento" per iniziare.
           </div>`;
-          return;
-        }
+    return;
+  }
 
-        // Ordina per data decrescente
-        const sorted = [...item.pagamenti].sort((a, b) =>
-          (b.data || "").localeCompare(a.data || ""),
-        );
-        sorted.forEach((p) => {
-          const totPagamento = appData.settings.users.reduce(
-            (acc, u) => acc + (p.quote && p.quote[u.id] ? p.quote[u.id] : 0),
-            0,
-          );
-          const userBadges = appData.settings.users
-            .filter((u) => p.quote && p.quote[u.id] > 0)
-            .map((u) => `<span class="payment-user-badge">${u.name}</span>`)
-            .join("");
+  // Ordina per data decrescente
+  const sorted = [...item.pagamenti].sort((a, b) =>
+    (b.data || "").localeCompare(a.data || ""),
+  );
+  sorted.forEach((p) => {
+    const totPagamento = appData.settings.users.reduce(
+      (acc, u) => acc + (p.quote && p.quote[u.id] ? p.quote[u.id] : 0),
+      0,
+    );
+    const userBadges = appData.settings.users
+      .filter((u) => p.quote && p.quote[u.id] > 0)
+      .map((u) => `<span class="payment-user-badge">${u.name}</span>`)
+      .join("");
 
-          const amountChips = appData.settings.users
-            .filter((u) => p.quote && p.quote[u.id] > 0)
-            .map(
-              (u) =>
-                `<span class="payment-amount-chip">${u.name}: ${formatCurrency(p.quote[u.id])}</span>`,
-            )
-            .join(
-              '<span style="color: var(--md-sys-color-outline); margin: 0 2px">·</span>',
-            );
+    const amountChips = appData.settings.users
+      .filter((u) => p.quote && p.quote[u.id] > 0)
+      .map(
+        (u) =>
+          `<span class="payment-amount-chip">${u.name}: ${formatCurrency(p.quote[u.id])}</span>`,
+      )
+      .join(
+        '<span style="color: var(--md-sys-color-outline); margin: 0 2px">·</span>',
+      );
 
-          const dataFormatted = p.data
-            ? new Date(p.data + "T00:00:00").toLocaleDateString("it-IT", {
-                day: "2-digit",
-                month: "long",
-                year: "numeric",
-              })
-            : "—";
+    const dataFormatted = p.data
+      ? new Date(p.data + "T00:00:00").toLocaleDateString("it-IT", {
+          day: "2-digit",
+          month: "long",
+          year: "numeric",
+        })
+      : "—";
 
-          // Fatture / Documenti come link chip (supporta { nome, url } o stringa url legacy)
-          const fattureHTML =
-            p.fatture && p.fatture.length > 0
-              ? `<div class="payment-item-fatture">${p.fatture
-                  .map((f, i) => {
-                    const url = typeof f === "string" ? f : (f && f.url ? f.url : "");
-                    let label = (typeof f === "object" && f && f.nome && f.nome.trim()) ? f.nome.trim() : "";
-                    if (!label && url) {
-                      try {
-                        label =
-                          new URL(url).hostname.replace("www.", "") ||
-                          `Doc ${i + 1}`;
-                      } catch {
-                        label = `Doc ${i + 1}`;
-                      }
-                    }
-                    if (!label) label = `Doc ${i + 1}`;
-                    const hrefAttr = url ? `href="${url}" target="_blank" rel="noopener"` : `href="javascript:void(0)"`;
-                    return `<a ${hrefAttr} class="fattura-link-chip" onclick="event.stopPropagation()" title="${url || label}"><span class="material-symbols-outlined">receipt_long</span>${label}</a>`;
-                  })
-                  .join("")}</div>`
-              : "";
+    // Fatture / Documenti come link chip (supporta { nome, url } o stringa url legacy)
+    const fattureHTML =
+      p.fatture && p.fatture.length > 0
+        ? `<div class="payment-item-fatture">${p.fatture
+            .map((f, i) => {
+              const url = typeof f === "string" ? f : f && f.url ? f.url : "";
+              let label =
+                typeof f === "object" && f && f.nome && f.nome.trim()
+                  ? f.nome.trim()
+                  : "";
+              if (!label && url) {
+                try {
+                  label =
+                    new URL(url).hostname.replace("www.", "") || `Doc ${i + 1}`;
+                } catch {
+                  label = `Doc ${i + 1}`;
+                }
+              }
+              if (!label) label = `Doc ${i + 1}`;
+              const hrefAttr = url
+                ? `href="${url}" target="_blank" rel="noopener"`
+                : `href="javascript:void(0)"`;
+              return `<a ${hrefAttr} class="fattura-link-chip" onclick="event.stopPropagation()" title="${url || label}"><span class="material-symbols-outlined">receipt_long</span>${label}</a>`;
+            })
+            .join("")}</div>`
+        : "";
 
-          const div = document.createElement("div");
-          div.className = "payment-item";
-          div.innerHTML = `
+    const div = document.createElement("div");
+    div.className = "payment-item";
+    div.innerHTML = `
             <span class="material-symbols-outlined payment-item-icon">payments</span>
             <div class="payment-item-body">
               <div class="payment-item-top">
@@ -5179,164 +5046,161 @@
                 <span class="material-symbols-outlined">edit</span>
               </button>
             </div>`;
-          container.appendChild(div);
+    container.appendChild(div);
+  });
+}
+
+/**
+ * Apre il modale edit dalla pagina dettaglio.
+ */
+function openDetailEditModal() {
+  if (currentDetailId !== null) openEditModal("costo", currentDetailId);
+}
+
+/**
+ * Apre il modale pagamento pre-compilato con le quote mancanti ancora da registrare a rate.
+ * @param {number} costoId - ID della voce costo.
+ */
+function openDraftRemainingPaymentModal(costoId) {
+  openPaymentModal(costoId, null);
+  requestAnimationFrame(() => {
+    const item = appData.costi.find((c) => c.id === costoId);
+    if (!item) return;
+    appData.settings.users.forEach((u) => {
+      const regUser = getPaymentsRegisteredForUser(item, u.id);
+      const origUser =
+        item.originQuote && item.originQuote[u.id] !== undefined
+          ? item.originQuote[u.id]
+          : parseFloat(item[u.id]) || 0;
+      const diff = Math.max(0, origUser - regUser);
+      const inp = document.getElementById(`pay-quota-${u.id}`);
+      if (inp && diff > 0) inp.value = diff.toFixed(2);
+    });
+  });
+}
+
+/**
+ * Apre il modale per aggiungere o modificare un pagamento.
+ * @param {number} costoId - ID della voce costo.
+ * @param {string|null} payId - ID del pagamento da modificare (null per nuovo).
+ */
+function openPaymentModal(costoId, payId = null) {
+  const item = appData.costi.find((c) => c.id === costoId);
+  if (!item) return;
+
+  const sumPaid = appData.settings.users.reduce(
+    (acc, u) => acc + (item[u.id] || 0),
+    0,
+  );
+  const totalePrezzo = item.prezzo || 0;
+  const restante = totalePrezzo - sumPaid;
+
+  // Se non è modifica ed è già saldato al 100%, blocca l'inserimento
+  if (!payId && totalePrezzo > 0 && restante <= 0.005) {
+    return M3Swal.fire({
+      title: "Costo già saldato",
+      text: "Questa voce è già stata pagata al 100%. Non è possibile aggiungere ulteriori pagamenti.",
+      icon: "info",
+    });
+  }
+
+  document.getElementById("pay-costo-id").value = costoId;
+  document.getElementById("pay-edit-id").value = payId || "";
+
+  const isEdit = !!payId;
+  document.getElementById("payment-modal-title").innerText = isEdit
+    ? "Modifica Pagamento"
+    : "Aggiungi Pagamento";
+  document.getElementById("pay-delete-btn").style.display = isEdit
+    ? "inline-flex"
+    : "none";
+
+  // Calcola il limite massimo per questo pagamento (escludendo il pagamento in modifica)
+  let giaPagatoAltri = 0;
+  if (item.pagamenti && item.pagamenti.length > 0) {
+    item.pagamenti.forEach((p) => {
+      if (!payId || p.id != payId) {
+        appData.settings.users.forEach((u) => {
+          giaPagatoAltri += p.quote && p.quote[u.id] ? p.quote[u.id] : 0;
         });
       }
-
-      /**
-       * Apre il modale edit dalla pagina dettaglio.
-       */
-      function openDetailEditModal() {
-        if (currentDetailId !== null) openEditModal("costo", currentDetailId);
-      }
-
-      /**
-       * Apre il modale pagamento pre-compilato con le quote mancanti ancora da registrare a rate.
-       * @param {number} costoId - ID della voce costo.
-       */
-      function openDraftRemainingPaymentModal(costoId) {
-        openPaymentModal(costoId, null);
-        requestAnimationFrame(() => {
-          const item = appData.costi.find((c) => c.id === costoId);
-          if (!item) return;
-          appData.settings.users.forEach((u) => {
-            const regUser = getPaymentsRegisteredForUser(item, u.id);
-            const origUser =
-              item.originQuote && item.originQuote[u.id] !== undefined
-                ? item.originQuote[u.id]
-                : parseFloat(item[u.id]) || 0;
-            const diff = Math.max(0, origUser - regUser);
-            const inp = document.getElementById(`pay-quota-${u.id}`);
-            if (inp && diff > 0) inp.value = diff.toFixed(2);
-          });
-        });
-      }
-
-      /**
-       * Apre il modale per aggiungere o modificare un pagamento.
-       * @param {number} costoId - ID della voce costo.
-       * @param {string|null} payId - ID del pagamento da modificare (null per nuovo).
-       */
-      function openPaymentModal(costoId, payId = null) {
-        const item = appData.costi.find((c) => c.id === costoId);
-        if (!item) return;
-
-        const sumPaid = appData.settings.users.reduce(
-          (acc, u) => acc + (item[u.id] || 0),
-          0,
-        );
-        const totalePrezzo = item.prezzo || 0;
-        const restante = totalePrezzo - sumPaid;
-
-        // Se non è modifica ed è già saldato al 100%, blocca l'inserimento
-        if (!payId && totalePrezzo > 0 && restante <= 0.005) {
-          return M3Swal.fire({
-            title: "Costo già saldato",
-            text: "Questa voce è già stata pagata al 100%. Non è possibile aggiungere ulteriori pagamenti.",
-            icon: "info",
-          });
-        }
-
-        document.getElementById("pay-costo-id").value = costoId;
-        document.getElementById("pay-edit-id").value = payId || "";
-
-        const isEdit = !!payId;
-        document.getElementById("payment-modal-title").innerText = isEdit
-          ? "Modifica Pagamento"
-          : "Aggiungi Pagamento";
-        document.getElementById("pay-delete-btn").style.display = isEdit
-          ? "inline-flex"
-          : "none";
-
-        // Calcola il limite massimo per questo pagamento (escludendo il pagamento in modifica)
-        let giaPagatoAltri = 0;
-        if (item.pagamenti && item.pagamenti.length > 0) {
-          item.pagamenti.forEach((p) => {
-            if (!payId || p.id != payId) {
-              appData.settings.users.forEach((u) => {
-                giaPagatoAltri += p.quote && p.quote[u.id] ? p.quote[u.id] : 0;
-              });
-            }
-          });
-        }
-        const maxConsentito =
-          totalePrezzo > 0 ? Math.max(0, totalePrezzo - giaPagatoAltri) : null;
-        const maxInfoEl = document.getElementById("pay-max-info");
-        if (maxInfoEl) {
-          if (maxConsentito !== null) {
-            maxInfoEl.innerHTML = `
+    });
+  }
+  const maxConsentito =
+    totalePrezzo > 0 ? Math.max(0, totalePrezzo - giaPagatoAltri) : null;
+  const maxInfoEl = document.getElementById("pay-max-info");
+  if (maxInfoEl) {
+    if (maxConsentito !== null) {
+      maxInfoEl.innerHTML = `
               <span class="material-symbols-outlined" style="font-size: 18px; margin-top: 2px; flex-shrink: 0;">info</span>
               <div style="display: flex; flex-direction: column; gap: 4px; line-height: 1.4;">
                 <div>Massimo registrabile per questo pagamento: <b>${formatCurrency(maxConsentito)}</b></div>
                 <div style="font-size: 12px; color: var(--md-sys-color-outline);">(Costo totale: ${formatCurrency(totalePrezzo)})</div>
               </div>`;
-            maxInfoEl.style.display = "flex";
-          } else {
-            maxInfoEl.style.display = "none";
-          }
-        }
+      maxInfoEl.style.display = "flex";
+    } else {
+      maxInfoEl.style.display = "none";
+    }
+  }
 
-        // Data default: oggi
-        const today = new Date().toISOString().split("T")[0];
+  // Data default: oggi
+  const today = new Date().toISOString().split("T")[0];
 
-        // Costruisce i campi importo per utente
-        const usersContainer = document.getElementById("pay-users-inputs");
-        usersContainer.innerHTML = "";
-        appData.settings.users.forEach((u) => {
-          const row = document.createElement("div");
-          row.className = "pay-user-row";
-          row.innerHTML = `
+  // Costruisce i campi importo per utente
+  const usersContainer = document.getElementById("pay-users-inputs");
+  usersContainer.innerHTML = "";
+  appData.settings.users.forEach((u) => {
+    const row = document.createElement("div");
+    row.className = "pay-user-row";
+    row.innerHTML = `
             <label for="pay-quota-${u.id}">${u.name} (€)</label>
             <div class="input-field">
               <input type="number" step="0.01" id="pay-quota-${u.id}" placeholder="0.00" onblur="roundInput(this)">
             </div>`;
-          usersContainer.appendChild(row);
-        });
+    usersContainer.appendChild(row);
+  });
 
-        // Resetta sezione fatture
-        document.getElementById("pay-fatture-inputs").innerHTML = "";
+  // Resetta sezione fatture
+  document.getElementById("pay-fatture-inputs").innerHTML = "";
 
-        if (isEdit) {
-          const payment =
-            item && item.pagamenti
-              ? item.pagamenti.find((p) => p.id == payId)
-              : null;
-          if (payment) {
-            document.getElementById("pay-data").value = payment.data || today;
-            document.getElementById("pay-commento").value =
-              payment.commento || "";
-            appData.settings.users.forEach((u) => {
-              const inp = document.getElementById(`pay-quota-${u.id}`);
-              if (inp)
-                inp.value =
-                  payment.quote && payment.quote[u.id]
-                    ? payment.quote[u.id].toFixed(2)
-                    : "";
-            });
-            // Carica le fatture / documenti esistenti
-            (payment.fatture || []).forEach((f) => addFatturaRow(f));
-          }
-        } else {
-          document.getElementById("pay-data").value = today;
-          document.getElementById("pay-commento").value = "";
-        }
+  if (isEdit) {
+    const payment =
+      item && item.pagamenti ? item.pagamenti.find((p) => p.id == payId) : null;
+    if (payment) {
+      document.getElementById("pay-data").value = payment.data || today;
+      document.getElementById("pay-commento").value = payment.commento || "";
+      appData.settings.users.forEach((u) => {
+        const inp = document.getElementById(`pay-quota-${u.id}`);
+        if (inp)
+          inp.value =
+            payment.quote && payment.quote[u.id]
+              ? payment.quote[u.id].toFixed(2)
+              : "";
+      });
+      // Carica le fatture / documenti esistenti
+      (payment.fatture || []).forEach((f) => addFatturaRow(f));
+    }
+  } else {
+    document.getElementById("pay-data").value = today;
+    document.getElementById("pay-commento").value = "";
+  }
 
-        document.getElementById("paymentModal").classList.add("active");
-      }
+  document.getElementById("paymentModal").classList.add("active");
+}
 
-      /**
-       * Aggiunge una riga input per documento/fattura nel modale pagamento (con Nome e URL).
-       * @param {Object|string} data - Dati documento { nome, url } o stringa url.
-       */
-      function addFatturaRow(data = {}) {
-        const nome =
-          typeof data === "string" ? "" : data && data.nome ? data.nome : "";
-        const url =
-          typeof data === "string" ? data : data && data.url ? data.url : "";
-        const container = document.getElementById("pay-fatture-inputs");
-        const row = document.createElement("div");
-        row.className = "fattura-row";
-        row.innerHTML = `
+/**
+ * Aggiunge una riga input per documento/fattura nel modale pagamento (con Nome e URL).
+ * @param {Object|string} data - Dati documento { nome, url } o stringa url.
+ */
+function addFatturaRow(data = {}) {
+  const nome =
+    typeof data === "string" ? "" : data && data.nome ? data.nome : "";
+  const url =
+    typeof data === "string" ? data : data && data.url ? data.url : "";
+  const container = document.getElementById("pay-fatture-inputs");
+  const row = document.createElement("div");
+  row.className = "fattura-row";
+  row.innerHTML = `
           <div class="fattura-inputs">
             <div class="input-field fattura-nome-field">
               <input type="text" class="fattura-nome" placeholder="Nome doc (es: Acconto)" value="${nome.replace(/"/g, "&quot;")}" style="font-size: 13px;">
@@ -5348,317 +5212,305 @@
           <button type="button" class="btn-icon fattura-del-btn" title="Rimuovi documento" onclick="this.closest('.fattura-row').remove()">
             <span class="material-symbols-outlined">close</span>
           </button>`;
-        container.appendChild(row);
-        if (!url && !nome) {
-          const firstInp = row.querySelector(".fattura-nome");
-          if (firstInp) firstInp.focus();
-        }
-      }
+  container.appendChild(row);
+  if (!url && !nome) {
+    const firstInp = row.querySelector(".fattura-nome");
+    if (firstInp) firstInp.focus();
+  }
+}
 
-      /**
-       * Chiude il modale pagamento.
-       */
-      function closePaymentModal() {
-        document.getElementById("paymentModal").classList.remove("active");
-      }
+/**
+ * Chiude il modale pagamento.
+ */
+function closePaymentModal() {
+  document.getElementById("paymentModal").classList.remove("active");
+}
 
-      /**
-       * Salva un pagamento (nuovo o modifica esistente).
-       */
-      function savePayment() {
-        const costoId = parseInt(document.getElementById("pay-costo-id").value);
-        const payId = document.getElementById("pay-edit-id").value;
-        const data = document.getElementById("pay-data").value;
-        const commento = document.getElementById("pay-commento").value.trim();
+/**
+ * Salva un pagamento (nuovo o modifica esistente).
+ */
+function savePayment() {
+  const costoId = parseInt(document.getElementById("pay-costo-id").value);
+  const payId = document.getElementById("pay-edit-id").value;
+  const data = document.getElementById("pay-data").value;
+  const commento = document.getElementById("pay-commento").value.trim();
 
-        const quote = {};
-        let hasSomething = false;
+  const quote = {};
+  let hasSomething = false;
+  appData.settings.users.forEach((u) => {
+    const val =
+      parseFloat(document.getElementById(`pay-quota-${u.id}`)?.value) || 0;
+    quote[u.id] = val;
+    if (val > 0) hasSomething = true;
+  });
+
+  if (!hasSomething) {
+    return M3Swal.fire({
+      title: "Attenzione",
+      text: "Inserisci almeno un importo per uno degli utenti.",
+      icon: "warning",
+    });
+  }
+
+  const item = appData.costi.find((c) => c.id === costoId);
+  if (!item) return;
+  if (!item.pagamenti) item.pagamenti = [];
+
+  // Validazione limite 100%: il pagamento non deve superare il totale del costo
+  const totalePrezzo = item.prezzo || 0;
+  let giaPagatoAltri = 0;
+  if (item.pagamenti && item.pagamenti.length > 0) {
+    item.pagamenti.forEach((p) => {
+      if (!payId || p.id != payId) {
         appData.settings.users.forEach((u) => {
-          const val =
-            parseFloat(document.getElementById(`pay-quota-${u.id}`)?.value) ||
-            0;
-          quote[u.id] = val;
-          if (val > 0) hasSomething = true;
+          giaPagatoAltri += p.quote && p.quote[u.id] ? p.quote[u.id] : 0;
         });
+      }
+    });
+  }
+  const totaleQuesto = Object.values(quote).reduce((acc, v) => acc + v, 0);
+  if (totalePrezzo > 0) {
+    const maxConsentito = Math.max(0, totalePrezzo - giaPagatoAltri);
+    if (totaleQuesto > maxConsentito + 0.005) {
+      return M3Swal.fire({
+        title: "Importo non consentito",
+        text: `L'importo inserito (${formatCurrency(totaleQuesto)}) supera il limite massimo disponibile di ${formatCurrency(maxConsentito)}. Il totale pagato non può superare il 100% del costo (${formatCurrency(totalePrezzo)}).`,
+        icon: "warning",
+      });
+    }
+  }
 
-        if (!hasSomething) {
-          return M3Swal.fire({
-            title: "Attenzione",
-            text: "Inserisci almeno un importo per uno degli utenti.",
-            icon: "warning",
-          });
-        }
+  // Raccoglie i documenti / fatture con nome e URL
+  const fatture = Array.from(
+    document
+      .getElementById("pay-fatture-inputs")
+      .querySelectorAll(".fattura-row"),
+  )
+    .map((row) => {
+      const nome = row.querySelector(".fattura-nome")?.value.trim() || "";
+      const url = row.querySelector(".fattura-url")?.value.trim() || "";
+      return { nome, url };
+    })
+    .filter((f) => f.url.length > 0 || f.nome.length > 0);
 
-        const item = appData.costi.find((c) => c.id === costoId);
-        if (!item) return;
-        if (!item.pagamenti) item.pagamenti = [];
+  if (payId) {
+    // Modifica pagamento esistente
+    const idx = item.pagamenti.findIndex((p) => p.id == payId);
+    if (idx !== -1) {
+      item.pagamenti[idx] = {
+        id: item.pagamenti[idx].id,
+        data,
+        quote,
+        commento,
+        fatture,
+      };
+    }
+  } else {
+    // Nuovo pagamento
+    item.pagamenti.push({
+      id: Date.now(),
+      data,
+      quote,
+      commento,
+      fatture,
+    });
+  }
 
-        // Validazione limite 100%: il pagamento non deve superare il totale del costo
-        const totalePrezzo = item.prezzo || 0;
-        let giaPagatoAltri = 0;
-        if (item.pagamenti && item.pagamenti.length > 0) {
-          item.pagamenti.forEach((p) => {
-            if (!payId || p.id != payId) {
-              appData.settings.users.forEach((u) => {
-                giaPagatoAltri += p.quote && p.quote[u.id] ? p.quote[u.id] : 0;
-              });
-            }
-          });
-        }
-        const totaleQuesto = Object.values(quote).reduce((acc, v) => acc + v, 0);
-        if (totalePrezzo > 0) {
-          const maxConsentito = Math.max(0, totalePrezzo - giaPagatoAltri);
-          if (totaleQuesto > maxConsentito + 0.005) {
-            return M3Swal.fire({
-              title: "Importo non consentito",
-              text: `L'importo inserito (${formatCurrency(totaleQuesto)}) supera il limite massimo disponibile di ${formatCurrency(maxConsentito)}. Il totale pagato non può superare il 100% del costo (${formatCurrency(totalePrezzo)}).`,
-              icon: "warning",
-            });
-          }
-        }
+  recalcUserTotals(item);
+  saveDataLocally();
+  renderTables();
+  closePaymentModal();
 
-        // Raccoglie i documenti / fatture con nome e URL
-        const fatture = Array.from(
-          document
-            .getElementById("pay-fatture-inputs")
-            .querySelectorAll(".fattura-row"),
+  // Aggiorna il dettaglio se aperto
+  if (currentDetailId === costoId) renderDetailView(item);
+
+  showNotification(payId ? "Pagamento aggiornato!" : "Pagamento aggiunto!");
+}
+
+/**
+ * Elimina il pagamento attualmente aperto nel modale.
+ */
+async function deletePaymentFromModal() {
+  const result = await showConfirm(
+    "Eliminare questo pagamento?",
+    "Questa azione è irreversibile.",
+  );
+  if (!result.isConfirmed) return;
+  const costoId = parseInt(document.getElementById("pay-costo-id").value);
+  const payId = document.getElementById("pay-edit-id").value;
+  deletePayment(costoId, payId);
+  closePaymentModal();
+}
+
+/**
+ * Elimina un pagamento da una voce costo.
+ * @param {number} costoId - ID della voce costo.
+ * @param {string} payId - ID del pagamento da eliminare.
+ */
+function deletePayment(costoId, payId) {
+  const item = appData.costi.find((c) => c.id === costoId);
+  if (!item || !item.pagamenti) return;
+  item.pagamenti = item.pagamenti.filter((p) => p.id != payId);
+  recalcUserTotals(item);
+  saveDataLocally();
+  renderTables();
+  if (currentDetailId === costoId) renderDetailView(item);
+  showNotification("Pagamento eliminato");
+}
+
+/**
+ * Esegue il rendering delle tabelle Costi e Budget gestendo ordinamento, eventi Drag & Drop e badge.
+ */
+function renderTables() {
+  updateSortHeaders();
+  const tCosti = document.querySelector("#table-costi tbody");
+  if (tCosti) {
+    tCosti.innerHTML = "";
+    getSortedData("costi").forEach((c, index) => {
+      const catObj = appData.settings.categories[c.cat];
+      const catColor =
+        typeof catObj === "string" ? catObj : catObj ? catObj.color : "#9E9E9E";
+      const isImmobile =
+        typeof catObj === "object" ? !!catObj.isImmobile : c.cat === "Immobili";
+
+      let badgeHTML = `<span class="cat-badge" style="background-color: ${catColor}; color: white;">${c.cat || ""}</span>`;
+      let sumPaid = appData.settings.users.reduce(
+        (acc, u) => acc + (c[u.id] || 0),
+        0,
+      );
+      let restante = (c.prezzo || 0) - sumPaid;
+
+      let tr = document.createElement("tr");
+      tr.setAttribute("draggable", "false");
+      tr.addEventListener("dragstart", (e) =>
+        handleDragStart(e, index, "costi"),
+      );
+      tr.addEventListener("drop", (e) => handleDrop(e, index, "costi"));
+      tr.addEventListener("dragover", handleDragOver);
+      tr.addEventListener("dragend", handleDragEnd);
+
+      // Click sulla riga apre il dettaglio (ma non sulla colonna azioni)
+      tr.addEventListener("click", (e) => {
+        if (
+          e.target.closest("td:last-child") ||
+          e.target.classList.contains("drag-handle")
         )
-          .map((row) => {
-            const nome = row.querySelector(".fattura-nome")?.value.trim() || "";
-            const url = row.querySelector(".fattura-url")?.value.trim() || "";
-            return { nome, url };
-          })
-          .filter((f) => f.url.length > 0 || f.nome.length > 0);
+          return;
+        openDetailView(c.id);
+      });
 
-        if (payId) {
-          // Modifica pagamento esistente
-          const idx = item.pagamenti.findIndex((p) => p.id == payId);
-          if (idx !== -1) {
-            item.pagamenti[idx] = {
-              id: item.pagamenti[idx].id,
-              data,
-              quote,
-              commento,
-              fatture,
-            };
-          }
-        } else {
-          // Nuovo pagamento
-          item.pagamenti.push({
-            id: Date.now(),
-            data,
-            quote,
-            commento,
-            fatture,
-          });
-        }
+      let immobileBadge = isImmobile
+        ? '<span style="font-size:11px; background:var(--md-sys-color-secondary-container); color:var(--md-sys-color-on-secondary-container); padding:2px 6px; border-radius:4px; margin-left:6px;" title="Incluso nel valore immobile per il mutuo">Immobile Mutuo</span>'
+        : "";
 
-        recalcUserTotals(item);
-        saveDataLocally();
-        renderTables();
-        closePaymentModal();
+      // Badge conteggio pagamenti
+      const numPagamenti = c.pagamenti ? c.pagamenti.length : 0;
+      const pagamentiBadge =
+        numPagamenti > 0
+          ? `<span class="payments-count-badge"><span class="material-symbols-outlined">payments</span>${numPagamenti}</span>`
+          : "";
 
-        // Aggiorna il dettaglio se aperto
-        if (currentDetailId === costoId) renderDetailView(item);
+      // Warning mancata registrazione: mostra SOLO l'icona di warning accanto alla matita
+      const nonRegistrato = getUnregisteredPaymentAmount(c);
+      const warningIcon =
+        nonRegistrato > 0.005
+          ? `<span class="material-symbols-outlined" style="color: #f59e0b; font-size: 20px; vertical-align: middle; cursor: pointer;" title="Pagamenti non ancora registrati a rate" onclick="event.stopPropagation(); openDetailView(${c.id})">warning</span>`
+          : "";
 
-        showNotification(
-          payId ? "Pagamento aggiornato!" : "Pagamento aggiunto!",
-        );
-      }
-
-      /**
-       * Elimina il pagamento attualmente aperto nel modale.
-       */
-      async function deletePaymentFromModal() {
-        const result = await showConfirm(
-          "Eliminare questo pagamento?",
-          "Questa azione è irreversibile.",
-        );
-        if (!result.isConfirmed) return;
-        const costoId = parseInt(document.getElementById("pay-costo-id").value);
-        const payId = document.getElementById("pay-edit-id").value;
-        deletePayment(costoId, payId);
-        closePaymentModal();
-      }
-
-      /**
-       * Elimina un pagamento da una voce costo.
-       * @param {number} costoId - ID della voce costo.
-       * @param {string} payId - ID del pagamento da eliminare.
-       */
-      function deletePayment(costoId, payId) {
-        const item = appData.costi.find((c) => c.id === costoId);
-        if (!item || !item.pagamenti) return;
-        item.pagamenti = item.pagamenti.filter((p) => p.id != payId);
-        recalcUserTotals(item);
-        saveDataLocally();
-        renderTables();
-        if (currentDetailId === costoId) renderDetailView(item);
-        showNotification("Pagamento eliminato");
-      }
-
-      /**
-       * Esegue il rendering delle tabelle Costi e Budget gestendo ordinamento, eventi Drag & Drop e badge.
-       */
-      function renderTables() {
-        updateSortHeaders();
-        const tCosti = document.querySelector("#table-costi tbody");
-        if (tCosti) {
-          tCosti.innerHTML = "";
-          getSortedData("costi").forEach((c, index) => {
-            const catObj = appData.settings.categories[c.cat];
-            const catColor =
-              typeof catObj === "string"
-                ? catObj
-                : catObj
-                  ? catObj.color
-                  : "#9E9E9E";
-            const isImmobile =
-              typeof catObj === "object"
-                ? !!catObj.isImmobile
-                : c.cat === "Immobili";
-
-            let badgeHTML = `<span class="cat-badge" style="background-color: ${catColor}; color: white;">${c.cat || ""}</span>`;
-            let sumPaid = appData.settings.users.reduce(
-              (acc, u) => acc + (c[u.id] || 0),
-              0,
-            );
-            let restante = (c.prezzo || 0) - sumPaid;
-
-            let tr = document.createElement("tr");
-            tr.setAttribute("draggable", "false");
-            tr.addEventListener("dragstart", (e) =>
-              handleDragStart(e, index, "costi"),
-            );
-            tr.addEventListener("drop", (e) => handleDrop(e, index, "costi"));
-            tr.addEventListener("dragover", handleDragOver);
-            tr.addEventListener("dragend", handleDragEnd);
-
-            // Click sulla riga apre il dettaglio (ma non sulla colonna azioni)
-            tr.addEventListener("click", (e) => {
-              if (
-                e.target.closest("td:last-child") ||
-                e.target.classList.contains("drag-handle")
-              )
-                return;
-              openDetailView(c.id);
-            });
-
-            let immobileBadge = isImmobile
-              ? '<span style="font-size:11px; background:var(--md-sys-color-secondary-container); color:var(--md-sys-color-on-secondary-container); padding:2px 6px; border-radius:4px; margin-left:6px;" title="Incluso nel valore immobile per il mutuo">Immobile Mutuo</span>'
-              : "";
-
-            // Badge conteggio pagamenti
-            const numPagamenti = c.pagamenti ? c.pagamenti.length : 0;
-            const pagamentiBadge =
-              numPagamenti > 0
-                ? `<span class="payments-count-badge"><span class="material-symbols-outlined">payments</span>${numPagamenti}</span>`
-                : "";
-
-            // Warning mancata registrazione: mostra SOLO l'icona di warning accanto alla matita
-            const nonRegistrato = getUnregisteredPaymentAmount(c);
-            const warningIcon =
-              nonRegistrato > 0.005
-                ? `<span class="material-symbols-outlined" style="color: #f59e0b; font-size: 20px; vertical-align: middle; cursor: pointer;" title="Pagamenti non ancora registrati a rate" onclick="event.stopPropagation(); openDetailView(${c.id})">warning</span>`
-                : "";
-
-            let rowHtml = `<td style="width: 30px; padding: 12px 4px;"><span class="material-symbols-outlined drag-handle" onmouseenter="this.closest('tr').setAttribute('draggable', 'true')" onmouseleave="this.closest('tr').setAttribute('draggable', 'false')">drag_indicator</span></td>
+      let rowHtml = `<td style="width: 30px; padding: 12px 4px;"><span class="material-symbols-outlined drag-handle" onmouseenter="this.closest('tr').setAttribute('draggable', 'true')" onmouseleave="this.closest('tr').setAttribute('draggable', 'false')">drag_indicator</span></td>
                                    <td>${badgeHTML}</td><td style="white-space: pre-wrap;"><b>${c.desc}</b>${pagamentiBadge} ${immobileBadge}</td><td>${formatCurrency(c.prezzo)}</td>`;
-            appData.settings.users.forEach((u) => {
-              rowHtml += `<td style="color:var(--md-sys-color-primary);">${formatCurrency(c[u.id] || 0)}</td>`;
-            });
-            rowHtml += `<td style="font-weight: 500;">${formatRestanteCurrency(restante)}</td><td style="white-space: pre-wrap;"><small>${c.note || ""}</small></td><td style="white-space: nowrap;"><div style="display: inline-flex; align-items: center; gap: 4px;">${warningIcon}<button class="btn-icon" title="Modifica voce" onclick="event.stopPropagation(); openEditModal('costo', ${c.id})"><span class="material-symbols-outlined">edit</span></button></div></td>`;
-            tr.innerHTML = rowHtml;
-            tCosti.appendChild(tr);
-          });
-        }
+      appData.settings.users.forEach((u) => {
+        rowHtml += `<td style="color:var(--md-sys-color-primary);">${formatCurrency(c[u.id] || 0)}</td>`;
+      });
+      rowHtml += `<td style="font-weight: 500;">${formatRestanteCurrency(restante)}</td><td style="white-space: pre-wrap;"><small>${c.note || ""}</small></td><td style="white-space: nowrap;"><div style="display: inline-flex; align-items: center; gap: 4px;">${warningIcon}<button class="btn-icon" title="Modifica voce" onclick="event.stopPropagation(); openEditModal('costo', ${c.id})"><span class="material-symbols-outlined">edit</span></button></div></td>`;
+      tr.innerHTML = rowHtml;
+      tCosti.appendChild(tr);
+    });
+  }
 
-        const tBudget = document.querySelector("#table-budget tbody");
-        if (tBudget) {
-          tBudget.innerHTML = "";
-          getSortedData("budget").forEach((b, index) => {
-            let sumB = appData.settings.users.reduce(
-              (acc, u) => acc + (b[u.id] || 0),
-              0,
-            );
-            let tr = document.createElement("tr");
-            tr.setAttribute("draggable", "false");
-            tr.addEventListener("dragstart", (e) =>
-              handleDragStart(e, index, "budget"),
-            );
-            tr.addEventListener("drop", (e) => handleDrop(e, index, "budget"));
-            tr.addEventListener("dragover", handleDragOver);
-            tr.addEventListener("dragend", handleDragEnd);
+  const tBudget = document.querySelector("#table-budget tbody");
+  if (tBudget) {
+    tBudget.innerHTML = "";
+    getSortedData("budget").forEach((b, index) => {
+      let sumB = appData.settings.users.reduce(
+        (acc, u) => acc + (b[u.id] || 0),
+        0,
+      );
+      let tr = document.createElement("tr");
+      tr.setAttribute("draggable", "false");
+      tr.addEventListener("dragstart", (e) =>
+        handleDragStart(e, index, "budget"),
+      );
+      tr.addEventListener("drop", (e) => handleDrop(e, index, "budget"));
+      tr.addEventListener("dragover", handleDragOver);
+      tr.addEventListener("dragend", handleDragEnd);
 
-            let rowHtml = `<td style="width: 30px; padding: 12px 4px;"><span class="material-symbols-outlined drag-handle" onmouseenter="this.closest('tr').setAttribute('draggable', 'true')" onmouseleave="this.closest('tr').setAttribute('draggable', 'false')">drag_indicator</span></td>
+      let rowHtml = `<td style="width: 30px; padding: 12px 4px;"><span class="material-symbols-outlined drag-handle" onmouseenter="this.closest('tr').setAttribute('draggable', 'true')" onmouseleave="this.closest('tr').setAttribute('draggable', 'false')">drag_indicator</span></td>
                                    <td style="white-space: pre-wrap;"><b>${b.desc}</b> ${b.isMutuo ? '<span style="font-size:11px; background:var(--md-sys-color-primary-container); color:var(--md-sys-color-on-primary-container); padding:2px 6px; border-radius:4px; margin-left:6px;">Mutuo</span>' : ""}</td>`;
-            appData.settings.users.forEach((u) => {
-              rowHtml += `<td>${formatColoredCurrency(b[u.id] || 0)}</td>`;
-            });
-            rowHtml += `<td style="font-weight: 500;">${formatColoredCurrency(sumB)}</td><td style="white-space: pre-wrap;"><small>${b.note || ""}</small></td><td><button class="btn-icon" onclick="openEditModal('budget', ${b.id})"><span class="material-symbols-outlined">edit</span></button></td>`;
-            tr.innerHTML = rowHtml;
-            tBudget.appendChild(tr);
-          });
-        }
-      }
+      appData.settings.users.forEach((u) => {
+        rowHtml += `<td>${formatColoredCurrency(b[u.id] || 0)}</td>`;
+      });
+      rowHtml += `<td style="font-weight: 500;">${formatColoredCurrency(sumB)}</td><td style="white-space: pre-wrap;"><small>${b.note || ""}</small></td><td><button class="btn-icon" onclick="openEditModal('budget', ${b.id})"><span class="material-symbols-outlined">edit</span></button></td>`;
+      tr.innerHTML = rowHtml;
+      tBudget.appendChild(tr);
+    });
+  }
+}
 
-      // Avvio dell'applicazione: controllo configurazione, selezione tab predefinita e rendering iniziale
-      initPrivacyMode();
-      checkWizard();
-      switchTab("riepilogo", "Riepilogo Generale");
-      renderAll();
-      // Sincronizza all'avvio se abilitato
-      if (casaGithubConfig && casaGithubConfig.enabled) {
-        syncToGist(true);
-      }
+// Avvio dell'applicazione: controllo configurazione, selezione tab predefinita e rendering iniziale
+initPrivacyMode();
+checkWizard();
+switchTab("riepilogo", "Riepilogo Generale");
+renderAll();
+// Sincronizza all'avvio se abilitato
+if (casaGithubConfig && casaGithubConfig.enabled) {
+  syncToGist(true);
+}
 
-      // Registrazione Service Worker per PWA
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", () => {
-          navigator.serviceWorker
-            .register("./service-worker.js?v=1.7.4")
-            .then((registration) => {
+// Registrazione Service Worker per PWA
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("./service-worker.js?v=1.7.4")
+      .then((registration) => {
+        console.log(
+          "ServiceWorker registrato con successo: ",
+          registration.scope,
+        );
+
+        // Controlla aggiornamenti — quando ne trova uno lo attiva subito
+        registration.onupdatefound = () => {
+          const installingWorker = registration.installing;
+          if (installingWorker == null) return;
+          installingWorker.onstatechange = () => {
+            if (
+              installingWorker.state === "installed" &&
+              navigator.serviceWorker.controller
+            ) {
+              // Nuovo SW pronto: invia skipWaiting per attivazione immediata
               console.log(
-                "ServiceWorker registrato con successo: ",
-                registration.scope,
+                "Nuova versione disponibile, aggiornamento in corso...",
               );
-
-              // Controlla aggiornamenti — quando ne trova uno lo attiva subito
-              registration.onupdatefound = () => {
-                const installingWorker = registration.installing;
-                if (installingWorker == null) return;
-                installingWorker.onstatechange = () => {
-                  if (
-                    installingWorker.state === "installed" &&
-                    navigator.serviceWorker.controller
-                  ) {
-                    // Nuovo SW pronto: invia skipWaiting per attivazione immediata
-                    console.log(
-                      "Nuova versione disponibile, aggiornamento in corso...",
-                    );
-                    installingWorker.postMessage({ type: "SKIP_WAITING" });
-                  }
-                };
-              };
-
-              // Polling leggero per aggiornamenti (ogni 60 minuti)
-              setInterval(() => registration.update(), 60 * 60 * 1000);
-            })
-            .catch((error) => {
-              console.log("Registrazione ServiceWorker fallita: ", error);
-            });
-
-          // Quando il controller cambia (nuovo SW attivo) → ricarica automatica
-          let refreshing = false;
-          navigator.serviceWorker.addEventListener("controllerchange", () => {
-            if (!refreshing) {
-              refreshing = true;
-              console.log(
-                "Nuovo ServiceWorker attivo. Ricaricamento in corso...",
-              );
-              window.location.reload();
+              installingWorker.postMessage({ type: "SKIP_WAITING" });
             }
-          });
-        });
+          };
+        };
+
+        // Polling leggero per aggiornamenti (ogni 60 minuti)
+        setInterval(() => registration.update(), 60 * 60 * 1000);
+      })
+      .catch((error) => {
+        console.log("Registrazione ServiceWorker fallita: ", error);
+      });
+
+    // Quando il controller cambia (nuovo SW attivo) → ricarica automatica
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (!refreshing) {
+        refreshing = true;
+        console.log("Nuovo ServiceWorker attivo. Ricaricamento in corso...");
+        window.location.reload();
       }
-    
+    });
+  });
+}
