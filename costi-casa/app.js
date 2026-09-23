@@ -3476,6 +3476,14 @@ function buildDynamicForms() {
                         <div class="stat-value" id="stat-costi-page-restante">€ 0.00</div>
                     </div>
                 `;
+    appData.settings.users.forEach((u) => {
+      cardsHTML += `
+                    <div class="stat-card" style="background-color: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface);">
+                        <span style="font-size: 14px; opacity: 0.9;">Da Pagare ${u.name}</span>
+                        <div class="stat-value" id="stat-costi-page-restante-${u.id}">€ 0.00</div>
+                    </div>
+                `;
+    });
     costiCards.innerHTML = cardsHTML;
   }
 
@@ -4950,6 +4958,19 @@ function updateChartsAndStats() {
   let statCostiRest = document.getElementById("stat-costi-page-restante");
   if (statCostiRest) statCostiRest.innerHTML = formatRestanteCurrency(restante);
 
+  appData.settings.users.forEach((u) => {
+    let el = document.getElementById(`stat-costi-page-restante-${u.id}`);
+    if (el) {
+      let sharePercent =
+        typeof u.share === "number"
+          ? u.share
+          : 100 / appData.settings.users.length;
+      let quotaU = costoTotale * (sharePercent / 100);
+      let restU = quotaU - (userSpesePagate[u.id] || 0);
+      el.innerHTML = formatRestanteCurrency(restU);
+    }
+  });
+
   let statBudgetTot = document.getElementById("stat-budget-page-tot");
   if (statBudgetTot)
     statBudgetTot.innerHTML = formatColoredCurrency(budgetTotale);
@@ -5257,6 +5278,20 @@ function renderDetailView(item) {
             <span class="chip-label">Restante</span>
             <span class="chip-value sensitive-value">${formatRestanteCurrency(restante)}</span>
           </div>`;
+  appData.settings.users.forEach((u) => {
+    const sharePercent =
+      typeof u.share === "number"
+        ? u.share
+        : 100 / appData.settings.users.length;
+    const quotaU = (item.prezzo || 0) * (sharePercent / 100);
+    const paidU = parseFloat(item[u.id]) || 0;
+    const restU = quotaU - paidU;
+    gridHTML += `
+          <div class="detail-info-chip">
+            <span class="chip-label">Restante ${u.name}</span>
+            <span class="chip-value sensitive-value">${formatRestanteCurrency(restU)}</span>
+          </div>`;
+  });
   appData.settings.users.forEach((u) => {
     gridHTML += `
             <div class="detail-info-chip">
