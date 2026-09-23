@@ -1,5 +1,6 @@
-const CACHE_NAME = "casa-app-v1.7.8";
+const CACHE_NAME = "casa-app-v1.8.0"; // Incrementa ad ogni rilascio di codice
 const MEDIA_CACHE = "casa-media-v1"; // Does not get deleted on version bumps
+
 const urlsToCache = [
   "./index.html",
   "./style.css",
@@ -31,7 +32,7 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-  // Ignora le richieste alle API di GitHub e tutte le chiamate non GET (es. POST, PATCH, PUT, DELETE)
+  // Ignora le richieste alle API di GitHub e tutte le chiamate non GET
   if (
     event.request.url.includes("api.github.com") ||
     event.request.method !== "GET"
@@ -40,17 +41,56 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  const url = new URL(event.request.url);
+
+  // Asset principali dell'app: index, script, fogli di stile e manifest
+  const isCoreAsset =
+    event.request.mode === "navigate" ||
+    url.pathname.endsWith("/app.js") ||
+    url.pathname.endsWith("/style.css") ||
+    url.pathname.endsWith("/manifest.json");
+
+  // 1. STRATEGIA NETWORK-FIRST per i file di logica e interfaccia
+  // Se connesso scarica la versione aggiornata, se offline usa la cache
+  if (isCoreAsset) {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseToCache);
+            });
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          return caches.match(event.request).then((cachedResponse) => {
+            if (cachedResponse) {
+              return cachedResponse;
+            }
+            // Fallback specifico se la navigazione fallisce offline
+            if (event.request.mode === "navigate") {
+              return caches.match("./index.html");
+            }
+          });
+        }),
+    );
+    return;
+  }
+
   const isMedia =
     event.request.url.includes("drive.google.com/thumbnail") ||
     event.request.url.includes("googleusercontent.com");
 
+  // 2. STRATEGIA CACHE-FIRST per immagini, Google Fonts e CDN esterni (SweetAlert2)
   event.respondWith(
     caches.match(event.request).then((response) => {
       if (response) {
         return response;
       }
 
-      return fetch(event.request).then(function (networkResponse) {
+      return fetch(event.request).then((networkResponse) => {
         if (!networkResponse || !event.request.url.startsWith("http")) {
           return networkResponse;
         }
@@ -62,9 +102,9 @@ self.addEventListener("fetch", (event) => {
         const isOpaque = networkResponse.type === "opaque";
 
         if (isBasic || isCors || (isMedia && isOpaque)) {
-          var responseToCache = networkResponse.clone();
+          const responseToCache = networkResponse.clone();
           const targetCache = isMedia ? MEDIA_CACHE : CACHE_NAME;
-          caches.open(targetCache).then(function (cache) {
+          caches.open(targetCache).then((cache) => {
             cache.put(event.request, responseToCache);
           });
         }
@@ -80,7 +120,7 @@ self.addEventListener("activate", (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
+          if (!cacheWhitelist.includes(cacheName)) {
             return caches.delete(cacheName);
           }
         }),

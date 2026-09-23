@@ -5954,26 +5954,21 @@ if (casaGithubConfig && casaGithubConfig.enabled) {
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
-      .register("./service-worker.js?v=1.7.4")
+      .register("./service-worker.js") // Rimosso ?v=1.7.4
       .then((registration) => {
-        console.log(
-          "ServiceWorker registrato con successo: ",
-          registration.scope,
-        );
+        // Forza subito il controllo di un eventuale nuovo service-worker.js sul server
+        registration.update();
 
-        // Controlla aggiornamenti — quando ne trova uno lo attiva subito
         registration.onupdatefound = () => {
           const installingWorker = registration.installing;
-          if (installingWorker == null) return;
+          if (!installingWorker) return;
+
           installingWorker.onstatechange = () => {
             if (
               installingWorker.state === "installed" &&
               navigator.serviceWorker.controller
             ) {
-              // Nuovo SW pronto: invia skipWaiting per attivazione immediata
-              console.log(
-                "Nuova versione disponibile, aggiornamento in corso...",
-              );
+              console.log("Nuova versione trovata, attivazione...");
               installingWorker.postMessage({ type: "SKIP_WAITING" });
             }
           };
@@ -5983,7 +5978,7 @@ if ("serviceWorker" in navigator) {
         setInterval(() => registration.update(), 60 * 60 * 1000);
       })
       .catch((error) => {
-        console.log("Registrazione ServiceWorker fallita: ", error);
+        console.error("Registrazione ServiceWorker fallita: ", error);
       });
 
     // Quando il controller cambia (nuovo SW attivo) → ricarica automatica
