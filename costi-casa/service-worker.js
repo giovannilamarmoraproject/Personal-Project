@@ -1,7 +1,8 @@
-const CACHE_NAME = "casa-app-v1.8.5"; // Incrementa ad ogni rilascio di codice
+const CACHE_NAME = "casa-app-v1.8.6"; // Incrementa ad ogni rilascio di codice
 const MEDIA_CACHE = "casa-media-v1"; // Does not get deleted on version bumps
 
 const urlsToCache = [
+  "./",
   "./index.html",
   "./style.css",
   "./app.js",
@@ -46,15 +47,26 @@ self.addEventListener("fetch", (event) => {
   // Asset principali dell'app: index, script, fogli di stile e manifest
   const isCoreAsset =
     event.request.mode === "navigate" ||
+    url.pathname.endsWith("/index.html") ||
+    url.pathname.endsWith("/") ||
     url.pathname.endsWith("/app.js") ||
     url.pathname.endsWith("/style.css") ||
     url.pathname.endsWith("/manifest.json");
 
   // 1. STRATEGIA NETWORK-FIRST per i file di logica e interfaccia
-  // Se connesso scarica la versione aggiornata, se offline usa la cache
+  // Forza "no-cache" sulla richiesta di rete per evitare che il browser
+  // restituisca index.html o gli asset core dalla vecchia cache HTTP su disco
   if (isCoreAsset) {
+    const fetchRequest =
+      event.request.mode === "navigate"
+        ? new Request(event.request.url, {
+            headers: event.request.headers,
+            cache: "no-cache",
+          })
+        : new Request(event.request, { cache: "no-cache" });
+
     event.respondWith(
-      fetch(event.request)
+      fetch(fetchRequest)
         .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             const responseToCache = networkResponse.clone();
@@ -71,7 +83,9 @@ self.addEventListener("fetch", (event) => {
             }
             // Fallback specifico se la navigazione fallisce offline
             if (event.request.mode === "navigate") {
-              return caches.match("./index.html");
+              return caches
+                .match("./index.html")
+                .then((fallback) => fallback || caches.match("./"));
             }
           });
         }),
