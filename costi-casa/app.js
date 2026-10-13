@@ -846,6 +846,8 @@ function saveModalChanges() {
         (acc, u) => acc + (item[u.id] || 0),
         0,
       );
+    } else {
+      recalcUserTotals(item);
     }
   } else {
     let item = appData.budget.find((b) => b.id === id);
@@ -859,6 +861,10 @@ function saveModalChanges() {
   }
   closeModal();
   saveDataLocally();
+  if (currentDetailId !== null) {
+    const curItem = appData.costi.find((c) => c.id === currentDetailId);
+    if (curItem) renderDetailView(curItem);
+  }
   showNotification("Modifiche salvate!");
 }
 
@@ -887,6 +893,9 @@ async function deleteFromModal() {
         if (n.linkedCostIds)
           n.linkedCostIds = n.linkedCostIds.filter((cid) => cid !== id);
       });
+      if (currentDetailId === id) {
+        closeDetailView();
+      }
     } else {
       appData.budget = appData.budget.filter((b) => b.id !== id);
     }
@@ -2987,6 +2996,14 @@ function renderAll() {
   renderNoteSection();
   updateChartsAndStats();
   calculateMortgage();
+  if (currentDetailId !== null) {
+    const curCost = appData.costi.find((c) => c.id === currentDetailId);
+    if (curCost) {
+      renderDetailView(curCost);
+    } else {
+      closeDetailView();
+    }
+  }
 }
 
 /**
