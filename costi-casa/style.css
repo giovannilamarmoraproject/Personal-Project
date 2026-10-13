@@ -1112,6 +1112,66 @@ input[type="color"] {
     padding: 16px;
   }
 
+  /* Mobile Dashboard Grids - Affiancamento Card a 2 Colonne */
+  .dashboard-grid-riepilogo-secondary,
+  #costi-top-cards,
+  #budget-top-cards {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .dashboard-grid-riepilogo-secondary .stat-card-full-mobile,
+  #costi-top-cards .stat-card-full,
+  #budget-top-cards .stat-card-full {
+    grid-column: 1 / -1 !important;
+    padding: 18px 16px;
+  }
+
+  .dashboard-grid-riepilogo-secondary .stat-card-compact-mobile,
+  #costi-top-cards .stat-card-user,
+  #budget-top-cards .stat-card-user {
+    grid-column: span 1 !important;
+    padding: 16px 14px;
+    min-width: 0;
+  }
+
+  .dashboard-grid-riepilogo-secondary .stat-card-compact-mobile span,
+  #costi-top-cards .stat-card-user span,
+  #budget-top-cards .stat-card-user span,
+  .dashboard-grid-riepilogo-secondary .stat-card-compact-mobile .stat-card-label,
+  #costi-top-cards .stat-card-user .stat-card-label,
+  #budget-top-cards .stat-card-user .stat-card-label {
+    font-size: 12px !important;
+    line-height: 1.25;
+  }
+
+  .dashboard-grid-riepilogo-secondary .stat-card-compact-mobile .stat-value,
+  #costi-top-cards .stat-card-user .stat-value,
+  #costi-top-cards .stat-card-user .stat-value *,
+  #budget-top-cards .stat-card-user .stat-value,
+  #budget-top-cards .stat-card-user .stat-value * {
+    font-size: 18px !important;
+    line-height: 1.2;
+    word-break: break-word;
+  }
+
+  #budget-top-cards .stat-card-user .stat-value div {
+    font-size: 11px !important;
+    line-height: 1.25;
+    margin-top: 4px;
+  }
+  #budget-top-cards .stat-card-user .stat-value div * {
+    font-size: 11px !important;
+  }
+
+  #stat-conguaglio div {
+    font-size: 11.5px !important;
+    line-height: 1.35;
+    white-space: nowrap;
+  }
+
   .app-header {
     padding: 12px 16px;
     flex-wrap: nowrap;
@@ -1633,6 +1693,38 @@ input[type="color"] {
 @media (max-width: 500px) {
   .detail-info-grid {
     grid-template-columns: 1fr 1fr;
+  }
+  .dashboard-grid-riepilogo-secondary,
+  #costi-top-cards,
+  #budget-top-cards {
+    gap: 10px;
+  }
+  .dashboard-grid-riepilogo-secondary .stat-card-compact-mobile,
+  #costi-top-cards .stat-card-user,
+  #budget-top-cards .stat-card-user {
+    padding: 14px 12px;
+  }
+  .dashboard-grid-riepilogo-secondary .stat-card-compact-mobile .stat-value,
+  #costi-top-cards .stat-card-user .stat-value,
+  #costi-top-cards .stat-card-user .stat-value *,
+  #budget-top-cards .stat-card-user .stat-value,
+  #budget-top-cards .stat-card-user .stat-value * {
+    font-size: 16.5px !important;
+  }
+  .dashboard-grid-riepilogo-secondary .stat-card-compact-mobile span,
+  #costi-top-cards .stat-card-user span,
+  #budget-top-cards .stat-card-user span,
+  .dashboard-grid-riepilogo-secondary .stat-card-compact-mobile .stat-card-label,
+  #costi-top-cards .stat-card-user .stat-card-label,
+  #budget-top-cards .stat-card-user .stat-card-label {
+    font-size: 11px !important;
+  }
+  #budget-top-cards .stat-card-user .stat-value div,
+  #budget-top-cards .stat-card-user .stat-value div * {
+    font-size: 10.5px !important;
+  }
+  #stat-conguaglio div {
+    font-size: 10.5px !important;
   }
 }
 

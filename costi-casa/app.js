@@ -3456,31 +3456,31 @@ function buildDynamicForms() {
   const costiCards = document.getElementById("costi-top-cards");
   if (costiCards) {
     let cardsHTML = `
-                    <div class="stat-card" style="background-color: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface);">
-                        <span style="font-size: 14px; opacity: 0.9;">Costo Totale Stimato</span>
+                    <div class="stat-card stat-card-full" style="background-color: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface);">
+                        <span class="stat-card-label" style="font-size: 14px; opacity: 0.9;">Costo Totale Stimato</span>
                         <div class="stat-value" id="stat-costi-page-tot">€ 0.00</div>
                     </div>
                 `;
     appData.settings.users.forEach((u, i) => {
       let colorClass = i % 2 === 0 ? "secondary" : "tertiary";
       cardsHTML += `
-                        <div class="stat-card ${colorClass}">
-                            <span style="font-size: 14px; opacity: 0.9;">Pagato ${u.name}</span>
-                            <div class="stat-value" id="stat-costi-page-${u.id}">€ 0.00</div>
+                        <div class="stat-card ${colorClass} stat-card-user">
+                            <span class="stat-card-label" style="font-size: 14px; opacity: 0.9;">Pagato ${u.name}</span>
+                            <div class="stat-value sensitive-value" id="stat-costi-page-${u.id}">€ 0.00</div>
                         </div>
                     `;
     });
     cardsHTML += `
-                    <div class="stat-card" style="background-color: var(--md-sys-color-primary-container);">
-                        <span style="font-size: 14px; opacity: 0.9;">Da Pagare</span>
-                        <div class="stat-value" id="stat-costi-page-restante">€ 0.00</div>
+                    <div class="stat-card stat-card-full" style="background-color: var(--md-sys-color-primary-container);">
+                        <span class="stat-card-label" style="font-size: 14px; opacity: 0.9;">Da Pagare</span>
+                        <div class="stat-value sensitive-value" id="stat-costi-page-restante">€ 0.00</div>
                     </div>
                 `;
     appData.settings.users.forEach((u) => {
       cardsHTML += `
-                    <div class="stat-card" style="background-color: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface);">
-                        <span style="font-size: 14px; opacity: 0.9;">Da Pagare ${u.name}</span>
-                        <div class="stat-value" id="stat-costi-page-restante-${u.id}">€ 0.00</div>
+                    <div class="stat-card stat-card-user" style="background-color: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface);">
+                        <span class="stat-card-label" style="font-size: 14px; opacity: 0.9;">Da Pagare ${u.name}</span>
+                        <div class="stat-value sensitive-value" id="stat-costi-page-restante-${u.id}">€ 0.00</div>
                     </div>
                 `;
     });
@@ -3490,17 +3490,17 @@ function buildDynamicForms() {
   const budgetCards = document.getElementById("budget-top-cards");
   if (budgetCards) {
     let bCardsHTML = `
-                    <div class="stat-card" style="background-color: var(--md-sys-color-primary-container);">
-                        <span style="font-size: 14px; opacity: 0.9;">Budget Totale</span>
-                        <div class="stat-value" id="stat-budget-page-tot">€ 0.00</div>
+                    <div class="stat-card stat-card-full" style="background-color: var(--md-sys-color-primary-container);">
+                        <span class="stat-card-label" style="font-size: 14px; opacity: 0.9;">Budget Totale</span>
+                        <div class="stat-value sensitive-value" id="stat-budget-page-tot">€ 0.00</div>
                     </div>
                 `;
     appData.settings.users.forEach((u, i) => {
       let colorClass = i % 2 === 0 ? "secondary" : "tertiary";
       bCardsHTML += `
-                        <div class="stat-card ${colorClass}">
-                            <span style="font-size: 14px; opacity: 0.9;">Quota ${u.name}</span>
-                            <div class="stat-value" id="stat-budget-page-${u.id}">€ 0.00</div>
+                        <div class="stat-card ${colorClass} stat-card-user">
+                            <span class="stat-card-label" style="font-size: 14px; opacity: 0.9;">Quota ${u.name}</span>
+                            <div class="stat-value sensitive-value" id="stat-budget-page-${u.id}">€ 0.00</div>
                         </div>
                     `;
     });
