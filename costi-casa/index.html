@@ -1618,7 +1618,25 @@
         <div id="view-costi" class="view-section">
           <div id="costi-top-cards" class="dashboard-grid"></div>
 
-          <div class="card">
+          <!-- Bottone Mostra Form Aggiungi Costo -->
+          <div
+            id="costi-add-btn-container"
+            style="
+              display: flex;
+              justify-content: flex-end;
+              margin-bottom: 16px;
+            "
+          >
+            <button
+              class="btn btn-filled"
+              id="btn-show-add-costo"
+              onclick="toggleAddForm('costo', true)"
+            >
+              <span class="material-symbols-outlined">add</span> Aggiungi Costo
+            </button>
+          </div>
+
+          <div class="card" id="card-add-costo" style="display: none">
             <h2 class="card-title">Aggiungi Costo</h2>
             <div class="input-group">
               <div class="input-field" style="flex: 1.2">
@@ -1672,8 +1690,20 @@
               </div>
             </div>
             <div
-              style="display: flex; justify-content: flex-end; margin-top: 8px"
+              style="
+                display: flex;
+                justify-content: flex-end;
+                gap: 8px;
+                margin-top: 16px;
+              "
             >
+              <button
+                type="button"
+                class="btn btn-tonal"
+                onclick="cancelAddForm('costo')"
+              >
+                Annulla
+              </button>
               <button class="btn btn-filled" onclick="addEntry('costo')">
                 <span class="material-symbols-outlined">add</span> Aggiungi
                 Costo
@@ -1995,7 +2025,26 @@
         <div id="view-budget" class="view-section">
           <div id="budget-top-cards" class="dashboard-grid"></div>
 
-          <div class="card">
+          <!-- Bottone Mostra Form Aggiungi Budget -->
+          <div
+            id="budget-add-btn-container"
+            style="
+              display: flex;
+              justify-content: flex-end;
+              margin-bottom: 16px;
+            "
+          >
+            <button
+              class="btn btn-filled"
+              id="btn-show-add-budget"
+              onclick="toggleAddForm('budget', true)"
+            >
+              <span class="material-symbols-outlined">add</span> Aggiungi
+              Budget
+            </button>
+          </div>
+
+          <div class="card" id="card-add-budget" style="display: none">
             <h2 class="card-title">Aggiungi Voce di Budget</h2>
             <div class="input-group">
               <div class="input-field" style="flex: 2">
@@ -2027,8 +2076,20 @@
               </div>
             </div>
             <div
-              style="display: flex; justify-content: flex-end; margin-top: 8px"
+              style="
+                display: flex;
+                justify-content: flex-end;
+                gap: 8px;
+                margin-top: 16px;
+              "
             >
+              <button
+                type="button"
+                class="btn btn-tonal"
+                onclick="cancelAddForm('budget')"
+              >
+                Annulla
+              </button>
               <button class="btn btn-filled" onclick="addEntry('budget')">
                 <span class="material-symbols-outlined">add</span> Aggiungi
                 Budget
@@ -2754,7 +2815,7 @@
             <a href="https://giovannilamarmora.github.io/" target="_blank"
               >Giovanni Lamarmora</a
             >
-            <span class="version-number">v1.8.3</span>
+            <span class="version-number">v1.8.4</span>
           </h4>
         </div>
       </div>

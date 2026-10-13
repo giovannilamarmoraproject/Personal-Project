@@ -648,6 +648,7 @@ function addEntry(type) {
       if (inp) inp.value = "";
     });
     showNotification("Costo aggiunto con successo!");
+    toggleAddForm("costo", false);
   } else {
     const desc = document.getElementById("add-budget-desc").value.trim();
     const note = document.getElementById("add-budget-note").value;
@@ -676,8 +677,63 @@ function addEntry(type) {
       if (inp) inp.value = "";
     });
     showNotification("Voce di budget aggiunta!");
+    toggleAddForm("budget", false);
   }
   saveDataLocally();
+}
+
+/**
+ * Mostra o nasconde il form di inserimento per Costi o Budget.
+ * @param {'costo'|'budget'} type - Tipo di voce.
+ * @param {boolean} show - True per mostrare, false per nascondere.
+ */
+function toggleAddForm(type, show) {
+  const cardId = type === "costo" ? "card-add-costo" : "card-add-budget";
+  const btnId =
+    type === "costo" ? "costi-add-btn-container" : "budget-add-btn-container";
+  const cardEl = document.getElementById(cardId);
+  const btnEl = document.getElementById(btnId);
+
+  if (show) {
+    if (btnEl) btnEl.style.display = "none";
+    if (cardEl) {
+      cardEl.style.display = "block";
+      cardEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      const firstInput = cardEl.querySelector(
+        "input:not([type=hidden]), select",
+      );
+      if (firstInput) setTimeout(() => firstInput.focus(), 150);
+    }
+  } else {
+    if (cardEl) cardEl.style.display = "none";
+    if (btnEl) btnEl.style.display = "flex";
+  }
+}
+
+/**
+ * Annulla l'inserimento, pulisce i campi e nasconde il form.
+ * @param {'costo'|'budget'} type - Tipo di voce.
+ */
+function cancelAddForm(type) {
+  if (type === "costo") {
+    document.getElementById("add-costo-desc").value = "";
+    document.getElementById("add-costo-prezzo").value = "";
+    document.getElementById("add-costo-note").value = "";
+    appData.settings.users.forEach((u) => {
+      let inp = document.getElementById(`add-costo-${u.id}`);
+      if (inp) inp.value = "";
+    });
+  } else {
+    document.getElementById("add-budget-desc").value = "";
+    document.getElementById("add-budget-note").value = "";
+    const isMutuoEl = document.getElementById("add-budget-is-mutuo");
+    if (isMutuoEl) isMutuoEl.checked = false;
+    appData.settings.users.forEach((u) => {
+      let inp = document.getElementById(`add-budget-${u.id}`);
+      if (inp) inp.value = "";
+    });
+  }
+  toggleAddForm(type, false);
 }
 
 /**
