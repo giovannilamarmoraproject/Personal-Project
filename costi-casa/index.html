@@ -1279,6 +1279,72 @@
       </div>
     </div>
 
+    <!-- Modale Aggiungi / Modifica Debito & Finanziamento -->
+    <div id="debitoModal" class="modal-overlay">
+      <div class="modal-content" style="max-width: 680px; width: 100%; max-height: 90vh; overflow-y: auto;">
+        <h2 id="debito-modal-title" style="margin-top: 0; color: var(--md-sys-color-primary); display: flex; align-items: center; gap: 8px;">
+          <span class="material-symbols-outlined">credit_card_off</span> Nuovo Finanziamento / Debito
+        </h2>
+        <p style="font-size: 13px; color: var(--md-sys-color-outline); margin-top: -6px; margin-bottom: 20px;">
+          Inserisci i dettagli del debito in corso. Il valore residuo (rata × mesi rimanenti) verrà detratto automaticamente dal budget dell'intestatario finché non arriva a 0.
+        </p>
+
+        <input type="hidden" id="debito-edit-id" />
+
+        <div class="input-group">
+          <div class="input-field" style="flex: 2;">
+            <label>Descrizione / Nome Finanziamento</label>
+            <input type="text" id="debito-desc" placeholder="es. Finanziamento Auto, Prestito Personale..." />
+          </div>
+          <div class="input-field" style="flex: 1.2;">
+            <label>Intestatario</label>
+            <select id="debito-user"></select>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <div class="input-field" style="flex: 1.2;">
+            <label>Rata Mensile (€)</label>
+            <input type="number" step="0.01" min="0" id="debito-rata" placeholder="es. 350.00" oninput="updateDebitoModalPreview()" />
+          </div>
+          <div class="input-field" style="flex: 1;">
+            <label>Mesi Rimasti</label>
+            <input type="number" step="1" min="0" id="debito-mesi" placeholder="es. 24" oninput="updateDebitoModalPreview()" />
+          </div>
+          <div class="input-field" style="flex: 1;">
+            <label>Giorno Addebito</label>
+            <input type="number" step="1" min="1" max="31" id="debito-giorno" placeholder="1 - 31" oninput="updateDebitoModalPreview()" />
+          </div>
+        </div>
+
+        <!-- Box Anteprima Live Impatto Budget -->
+        <div id="debito-preview-box" style="margin: 14px 0 18px 0; padding: 14px 18px; border-radius: 12px; background: var(--md-sys-color-surface-container); border: 1px solid var(--md-sys-color-surface-container-high); display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-size: 11px; text-transform: uppercase; color: var(--md-sys-color-outline); font-weight: 600; letter-spacing: 0.5px;">Impatto nel Budget</div>
+            <div id="debito-preview-calc" style="font-size: 14px; color: var(--md-sys-color-on-surface); font-weight: 500; margin-top: 2px;">0,00 € &times; 0 rate</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 11px; color: var(--md-sys-color-error); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Detrazione Totale</div>
+            <div id="debito-preview-totale" style="font-size: 20px; font-weight: 700; color: var(--md-sys-color-error); margin-top: 2px;">- 0,00 €</div>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <div class="input-field">
+            <label>Note (Opzionale)</label>
+            <textarea id="debito-note" placeholder="es. Banca Findomestic, TAN 4.5%, scadenza fine 2026..."></textarea>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px;">
+          <button type="button" class="btn btn-tonal" onclick="closeDebitoModal()">Annulla</button>
+          <button type="button" class="btn btn-filled" onclick="saveDebitoModal()">
+            <span class="material-symbols-outlined">save</span> Salva Finanziamento
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Nav Rail Desktop -->
     <div class="nav-rail">
       <div
@@ -1328,6 +1394,14 @@
         title="Calcolatore Mutuo"
       >
         <span class="material-symbols-outlined">calculate</span>
+      </div>
+      <div
+        class="nav-item"
+        onclick="switchTab('debiti', 'Debiti & Finanziamenti')"
+        id="tab-debiti-desktop"
+        title="Debiti & Finanziamenti"
+      >
+        <span class="material-symbols-outlined">credit_card_off</span>
       </div>
       <div
         class="nav-item"
@@ -1486,6 +1560,15 @@
         >
           <span class="material-symbols-outlined">calculate</span>
           <span class="nav-drawer-label">Calcolatore Mutuo</span>
+        </button>
+
+        <button
+          class="nav-drawer-item"
+          onclick="switchTab('debiti', 'Debiti & Finanziamenti'); closeNavDrawer();"
+          id="drawer-item-debiti"
+        >
+          <span class="material-symbols-outlined">credit_card_off</span>
+          <span class="nav-drawer-label">Debiti & Finanziamenti</span>
         </button>
 
         <div class="nav-drawer-divider"></div>
@@ -2253,9 +2336,17 @@
             style="
               display: flex;
               justify-content: flex-end;
+              gap: 8px;
               margin-bottom: 16px;
             "
           >
+            <button
+              class="btn btn-tonal"
+              onclick="switchTab('debiti', 'Debiti & Finanziamenti')"
+              title="Gestisci prestiti e debiti attivi"
+            >
+              <span class="material-symbols-outlined">credit_card_off</span> Gestisci Debiti
+            </button>
             <button
               class="btn btn-filled"
               id="btn-show-add-budget"
@@ -2664,6 +2755,39 @@
             <!-- Tabella Ripartizione Costi & Anticipo per Quota (%) (senza card) -->
             <div id="liquidity-split-container"></div>
           </div>
+        </div>
+
+        <!-- DEBITI & FINANZIAMENTI -->
+        <div id="view-debiti" class="view-section">
+          <!-- Header Sezione con Azioni e Titoli -->
+          <div class="view-header-bar" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-bottom: 20px;">
+            <div>
+              <h1 class="view-page-title" style="margin: 0 0 6px 0; display: flex; align-items: center; gap: 10px; font-size: 24px; color: var(--md-sys-color-on-surface);">
+                <span class="material-symbols-outlined" style="color: var(--md-sys-color-primary); font-size: 30px;">credit_card_off</span>
+                Debiti & Finanziamenti
+              </h1>
+              <p style="margin: 0; font-size: 13px; color: var(--md-sys-color-outline); max-width: 800px;">
+                Gestione dei finanziamenti e delle rate attive. Il debito residuo viene sincronizzato automaticamente come valore negativo nel budget dell'intestatario finché non arriva a 0.
+              </p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <button class="btn btn-filled" onclick="openAddDebitoModal()">
+                <span class="material-symbols-outlined">add</span> Nuovo Finanziamento
+              </button>
+            </div>
+          </div>
+
+          <!-- KPI Cards Grid -->
+          <div id="debiti-kpi-grid" class="dashboard-grid"></div>
+
+          <!-- Barra Filtro Partecipante -->
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+            <div id="debiti-user-filter-chips" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
+            <div id="debiti-count-indicator" style="font-size: 13px; color: var(--md-sys-color-outline);"></div>
+          </div>
+
+          <!-- Contenitore Card Debiti -->
+          <div id="debiti-cards-container"></div>
         </div>
 
         <!-- DOMANDE E RISPOSTE (Q&A) -->

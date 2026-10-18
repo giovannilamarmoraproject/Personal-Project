@@ -66,9 +66,12 @@ body.privacy-mode input.sensitive-value:focus {
   -webkit-tap-highlight-color: transparent;
 }
 
+body, button, input, select, textarea {
+  font-family: "Google Sans Flex", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
 body {
   margin: 0;
-  font-family: "Google Sans Flex", sans-serif;
   background-color: var(--md-sys-color-surface-container-low);
   color: var(--md-sys-color-on-surface);
   display: flex;
@@ -3034,5 +3037,200 @@ input[type="color"] {
   font-weight: 700;
 }
 
+/* ========================================================
+   SEZIONE DEBITI & FINANZIAMENTI
+   ======================================================== */
+.debito-card {
+  background: var(--md-sys-color-surface-container-low);
+  border: 1px solid var(--md-sys-color-surface-container-high);
+  border-radius: var(--md-sys-shape-corner-large);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  position: relative;
+}
 
+.debito-card:hover {
+  border-color: var(--md-sys-color-outline-variant);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
 
+.debito-card.saldato {
+  opacity: 0.85;
+  background: var(--md-sys-color-surface-container-lowest);
+  border-color: rgba(34, 197, 94, 0.25);
+}
+
+.debito-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.debito-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.debito-icon-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.debito-card.saldato .debito-icon-avatar {
+  background: var(--md-sys-color-success-container);
+  color: var(--md-sys-color-on-success-container);
+}
+
+.debito-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--md-sys-color-on-surface);
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+.debito-user-tag {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--md-sys-color-outline);
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.debito-status-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.debito-status-attivo {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+}
+
+.debito-status-saldato {
+  background: var(--md-sys-color-success-container);
+  color: var(--md-sys-color-on-success-container);
+}
+
+.debito-grid-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  background: var(--md-sys-color-surface);
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--md-sys-color-surface-container-high);
+}
+
+.debito-metric-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.debito-metric-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--md-sys-color-outline);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.debito-metric-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--md-sys-color-on-surface);
+}
+
+.debito-metric-value.highlight-red {
+  color: var(--md-sys-color-error);
+}
+
+.debito-progress-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.debito-progress-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--md-sys-color-outline);
+}
+
+.debito-progress-track {
+  width: 100%;
+  height: 8px;
+  background: var(--md-sys-color-surface-container-highest);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.debito-progress-fill {
+  height: 100%;
+  background: var(--md-sys-color-primary);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.debito-card.saldato .debito-progress-fill {
+  background: var(--md-sys-color-success);
+}
+
+.debito-footer-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--md-sys-color-surface-container-high);
+}
+
+.debito-filter-chip {
+  font-family: "Google Sans Flex", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  background: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface-variant);
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.2;
+}
+
+.debito-filter-chip:hover {
+  background: var(--md-sys-color-surface-container-highest);
+}
+
+.debito-filter-chip.active {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  border-color: var(--md-sys-color-primary);
+  font-weight: 600;
+}
