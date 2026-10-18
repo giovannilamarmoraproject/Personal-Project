@@ -1084,6 +1084,201 @@
       </div>
     </div>
 
+    <!-- Modale Dedicato: Imposta Capitale Iniziale (Setup di Partenza) -->
+    <div id="savingsInitialModal" class="modal-overlay">
+      <div class="modal-content" style="max-width: 520px; max-height: 90vh; overflow-y: auto;">
+        <h2 style="margin-top: 0; color: var(--md-sys-color-primary); display: flex; align-items: center; gap: 8px;">
+          <span class="material-symbols-outlined">account_balance</span> Imposta Capitale Iniziale
+        </h2>
+        <p style="font-size: 13px; color: var(--md-sys-color-outline); margin-top: -6px; margin-bottom: 20px;">
+          Seleziona la risorsa di partenza dai tuoi Budget e la data di avvio. Una volta salvata, rimarrà bloccata per calcolare il risparmio nel tempo.
+        </p>
+
+        <div class="input-field" style="margin-bottom: 16px;">
+          <label>Utente</label>
+          <select id="savings-initial-user" onchange="onSavingsInitialUserChange()"></select>
+        </div>
+
+        <div class="input-field" style="margin-bottom: 16px;">
+          <label style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+            <span class="material-symbols-outlined" style="font-size: 18px; color: var(--md-sys-color-primary);">account_balance_wallet</span>
+            Capitale Iniziale dai Budget (€)
+          </label>
+          <input type="hidden" id="savings-initial-capitale-value" value="" />
+
+          <!-- Selettore Custom M3 dai Budget -->
+          <div class="savings-budget-picker-container" id="savings-initial-budget-picker-container">
+            <button type="button" class="savings-budget-picker-trigger" id="savings-initial-budget-picker-trigger" onclick="toggleSavingsInitialBudgetPicker(event)">
+              <div style="display: flex; align-items: center; gap: 8px; min-width: 0;">
+                <span class="material-symbols-outlined trigger-icon">account_balance_wallet</span>
+                <span id="savings-initial-budget-trigger-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--md-sys-color-outline);">Seleziona dai Budget...</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                <span class="savings-budget-trigger-pill" id="savings-initial-budget-trigger-pill" style="display: none;">0,00 €</span>
+                <span class="material-symbols-outlined trigger-arrow">expand_more</span>
+              </div>
+            </button>
+            <div class="savings-budget-picker-menu" id="savings-initial-budget-picker-menu"></div>
+          </div>
+          <small style="font-size: 11px; color: var(--md-sys-color-outline); margin-top: 4px; display: block;">
+            Seleziona la quota di risparmio/fondi iniziali registrata nel Budget.
+          </small>
+        </div>
+
+        <div class="input-field" style="margin-bottom: 24px;">
+          <label style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+            <span class="material-symbols-outlined" style="font-size: 18px; color: var(--md-sys-color-primary);">event_note</span>
+            Data Avvio / Registrazione Capitale Iniziale
+          </label>
+          <input type="date" id="savings-initial-data-avvio" />
+          <small style="font-size: 11px; color: var(--md-sys-color-outline); display: block; margin-top: 4px;">
+            Giorno di partenza a partire dal quale viene calcolato il tasso di risparmio nel tempo.
+          </small>
+        </div>
+
+        <div class="modal-actions" style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 24px;">
+          <button type="button" class="btn btn-tonal" onclick="closeSavingsInitialModal()">Annulla</button>
+          <button type="button" class="btn btn-filled" onclick="saveSavingsInitialSetup()">
+            <span class="material-symbols-outlined">check_circle</span> Conferma e Fissa Capitale
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modale Registrazione Rilevazione Risparmio (Solo dati correnti / attuali) -->
+    <div id="savingsModal" class="modal-overlay">
+      <div class="modal-content" style="max-width: 650px; max-height: 90vh; overflow-y: auto;">
+        <h2 style="margin-top: 0; color: var(--md-sys-color-primary); display: flex; align-items: center; gap: 8px;">
+          <span class="material-symbols-outlined">trending_up</span> Registra Rilevazione Risparmio
+        </h2>
+        <p style="font-size: 13px; color: var(--md-sys-color-outline); margin-top: -6px; margin-bottom: 16px;">
+          Aggiorna i parametri di liquidità, disinvestimenti e debiti per calcolare e archiviare il risparmio netto.
+        </p>
+
+        <input type="hidden" id="savings-edit-id" />
+
+        <!-- Info Card: Capitale Iniziale e Data Avvio già fissati -->
+        <div class="savings-budget-locked-card" style="margin-bottom: 16px; background: var(--md-sys-color-surface-container);">
+          <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+            <div class="savings-locked-icon-badge">
+              <span class="material-symbols-outlined" style="font-size: 18px;">lock</span>
+            </div>
+            <div style="min-width: 0; flex: 1;">
+              <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--md-sys-color-outline); letter-spacing: 0.5px;">Capitale Iniziale Fissato</div>
+              <div id="savings-modal-fixed-summary" style="font-size: 13px; font-weight: 600; color: var(--md-sys-color-on-surface); word-break: break-word;">—</div>
+            </div>
+          </div>
+        </div>
+
+        <input type="hidden" id="savings-modal-capitale-iniziale" value="" />
+        <input type="hidden" id="savings-modal-data-avvio" value="" />
+
+        <!-- Riga 1: Utente e Data Prevista Rogito / Mutuo -->
+        <div class="input-group">
+          <div class="input-field" style="flex: 1;">
+            <label>Utente</label>
+            <select id="savings-modal-user" onchange="onSavingsUserChange()"></select>
+          </div>
+          <div class="input-field" style="flex: 1;">
+            <label>Data Prevista Rogito / Mutuo</label>
+            <input type="date" id="savings-modal-target-date" onchange="refreshSavingsModalPreview()" />
+            <small id="savings-modal-target-date-countdown" style="font-size: 11px; color: var(--md-sys-color-primary); margin-top: 4px; display: block;"></small>
+          </div>
+        </div>
+
+        <!-- Riga 2: Saldo Conto Attuale e Data Rilevazione insieme -->
+        <div class="input-group">
+          <div class="input-field" style="flex: 1;">
+            <label>Saldo Conto Attuale (€)</label>
+            <input type="number" step="0.01" id="savings-modal-saldo-conto" placeholder="es. 15000" oninput="refreshSavingsModalPreview()" />
+            <small style="font-size: 11px; color: var(--md-sys-color-outline); margin-top: 4px; display: block;">Giacenza lorda disponibile sul conto</small>
+          </div>
+          <div class="input-field" style="flex: 1;">
+            <label>Data Rilevazione</label>
+            <input type="date" id="savings-modal-date" />
+            <small style="font-size: 11px; color: var(--md-sys-color-outline); margin-top: 4px; display: block;">Data a cui fa riferimento la giacenza</small>
+          </div>
+        </div>
+
+        <!-- Riga 3: Spese Totali Sostenute su un'unica riga in basso -->
+        <div class="input-group">
+          <div class="input-field" style="flex: 1 1 100%;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <label style="display: flex; align-items: center; gap: 6px; margin: 0;">
+                <span class="material-symbols-outlined" style="font-size: 16px; color: var(--md-sys-color-primary);">lock</span>
+                Spese Totali Sostenute (€)
+              </label>
+              <span class="savings-badge-pill" style="background: rgba(99, 102, 241, 0.15); color: #6366f1; font-size: 11px;">
+                <span class="material-symbols-outlined" style="font-size: 13px;">sync</span> Calcolato da Costi
+              </span>
+            </div>
+            <input type="number" step="0.01" id="savings-modal-spese" readonly style="background-color: var(--md-sys-color-surface-container-high); cursor: not-allowed; opacity: 0.9;" title="Calcolato automaticamente dalla somma dei costi pagati dall'utente." />
+            <small style="font-size: 11px; color: var(--md-sys-color-outline); margin-top: 4px; display: block;">
+              Totale delle uscite effettivamente pagate dall'utente registrate in Costi Casa (non modificabile).
+            </small>
+          </div>
+        </div>
+
+        <!-- Sezione Trasferimenti Straordinari (Asset / Disinvestimenti) -->
+        <div style="margin-top: 16px; border-top: 1px solid var(--md-sys-color-surface-container-high); padding-top: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div>
+              <strong style="font-size: 14px; color: var(--md-sys-color-primary);">Fondi da Altri Asset / Disinvestimenti</strong>
+              <div style="font-size: 11px; color: var(--md-sys-color-outline);">Entrate che derivano da beni già posseduti (es. disinvestimento titoli, vendita oro)</div>
+            </div>
+            <button type="button" class="btn btn-tonal" style="font-size: 12px; padding: 4px 10px;" onclick="addSavingsAssetRow()">
+              <span class="material-symbols-outlined" style="font-size: 16px;">add</span> Voce
+            </button>
+          </div>
+          <div id="savings-assets-container"></div>
+        </div>
+
+        <!-- Sezione Passività e Debiti -->
+        <div style="margin-top: 16px; border-top: 1px solid var(--md-sys-color-surface-container-high); padding-top: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div>
+              <strong style="font-size: 14px; color: var(--md-sys-color-error);">Debiti e Prestiti da Rimborsare</strong>
+              <div style="font-size: 11px; color: var(--md-sys-color-outline);">Somme anticipate da altri o prestiti ancora aperti da saldare</div>
+            </div>
+            <button type="button" class="btn btn-tonal" style="font-size: 12px; padding: 4px 10px;" onclick="addSavingsDebtRow()">
+              <span class="material-symbols-outlined" style="font-size: 16px;">add</span> Debito
+            </button>
+          </div>
+          <div id="savings-debts-container"></div>
+        </div>
+
+        <div class="input-group" style="margin-top: 16px;">
+          <div class="input-field">
+            <label>Note o Memo Rilevazione (opzionale)</label>
+            <input type="text" id="savings-modal-note" placeholder="Es. Dopo stipendio e conguaglio..." />
+          </div>
+        </div>
+
+        <!-- Box Anteprima Calcolo Live -->
+        <div id="savings-modal-preview-box" style="margin-top: 16px; padding: 12px 16px; border-radius: 12px; background: var(--md-sys-color-surface-container); border: 1px solid var(--md-sys-color-surface-container-high); font-size: 13px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+            <span>Risparmio Lordo da Reddito:</span>
+            <strong id="savings-preview-lordo">€ 0.00</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+            <span>Risparmio Netto Effettivo:</span>
+            <strong id="savings-preview-netto" style="color: #10b981;">€ 0.00</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span>Liquidità Reale Netta Disponibile:</span>
+            <strong id="savings-preview-liquidita">€ 0.00</strong>
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 24px;">
+          <button class="btn btn-tonal" onclick="closeSavingsModal()">Annulla</button>
+          <button class="btn btn-filled" onclick="saveSavingsSnapshot()">
+            <span class="material-symbols-outlined">save</span> Salva Rilevazione
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Nav Rail Desktop -->
     <div class="nav-rail">
       <div
@@ -1117,6 +1312,14 @@
         title="Budget"
       >
         <span class="material-symbols-outlined">account_balance_wallet</span>
+      </div>
+      <div
+        class="nav-item"
+        onclick="switchTab('savings', 'Monitoraggio Risparmio Netto')"
+        id="tab-savings-desktop"
+        title="Monitoraggio Risparmio Netto"
+      >
+        <span class="material-symbols-outlined">trending_up</span>
       </div>
       <div
         class="nav-item"
@@ -1234,14 +1437,116 @@
       </div>
       <div
         class="mobile-nav-item"
-        onclick="toggleMobileMenu(event)"
-        id="tab-more-mobile"
+        onclick="switchTab('savings', 'Monitoraggio Risparmio Netto')"
+        id="tab-savings-mobile"
       >
         <div class="mobile-nav-icon-wrapper">
           <div class="mobile-nav-indicator"></div>
-          <span class="material-symbols-outlined">more_horiz</span>
+          <span class="material-symbols-outlined">trending_up</span>
         </div>
-        <span class="nav-label">Altro</span>
+        <span class="nav-label">Risparmi</span>
+      </div>
+    </div>
+
+    <!-- Navigation Drawer Laterale Mobile -->
+    <div
+      class="nav-drawer-backdrop"
+      id="nav-drawer-backdrop"
+      onclick="closeNavDrawer()"
+    ></div>
+    <div class="nav-drawer" id="nav-drawer">
+      <div class="nav-drawer-header">
+        <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
+          <img
+            src="./icon.jpg?v=1"
+            alt="Logo"
+            style="width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;"
+          />
+          <div style="min-width: 0;">
+            <div style="font-weight: 700; font-size: 15px; color: var(--md-sys-color-on-surface); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              La nostra Casa
+            </div>
+            <div style="font-size: 12px; color: var(--md-sys-color-outline);">
+              Menu Sezioni
+            </div>
+          </div>
+        </div>
+        <button class="btn-icon" onclick="closeNavDrawer()" title="Chiudi menu">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="nav-drawer-content">
+        <div class="nav-drawer-section-title">Finanza & Mutuo</div>
+
+        <button
+          class="nav-drawer-item"
+          onclick="switchTab('mutuo', 'Calcolatore Mutuo'); closeNavDrawer();"
+          id="drawer-item-mutuo"
+        >
+          <span class="material-symbols-outlined">calculate</span>
+          <span class="nav-drawer-label">Calcolatore Mutuo</span>
+        </button>
+
+        <div class="nav-drawer-divider"></div>
+        <div class="nav-drawer-section-title">Organizzazione & Attività</div>
+
+        <button
+          class="nav-drawer-item"
+          onclick="switchTab('task', 'Task & Attività'); closeNavDrawer();"
+          id="drawer-item-task"
+        >
+          <span class="material-symbols-outlined">task_alt</span>
+          <span class="nav-drawer-label" style="flex: 1;">Task & Attività</span>
+          <span
+            id="task-badge-drawer"
+            class="nav-drawer-badge"
+            style="display: none;"
+            >0</span
+          >
+        </button>
+
+        <button
+          class="nav-drawer-item"
+          onclick="switchTab('notes', 'Appunti'); closeNavDrawer();"
+          id="drawer-item-notes"
+        >
+          <span class="material-symbols-outlined">edit_note</span>
+          <span class="nav-drawer-label">Appunti</span>
+        </button>
+
+        <button
+          class="nav-drawer-item"
+          onclick="switchTab('qa', 'Domande & Risposte'); closeNavDrawer();"
+          id="drawer-item-qa"
+        >
+          <span class="material-symbols-outlined">quiz</span>
+          <span class="nav-drawer-label">Domande & Risposte</span>
+        </button>
+
+        <div class="nav-drawer-divider"></div>
+        <div class="nav-drawer-section-title">Media & File</div>
+
+        <button
+          class="nav-drawer-item"
+          onclick="switchTab('gallery', 'Galleria & Documenti'); closeNavDrawer();"
+          id="drawer-item-gallery"
+        >
+          <span class="material-symbols-outlined">collections</span>
+          <span class="nav-drawer-label">Galleria & Documenti</span>
+        </button>
+
+        <div class="nav-drawer-divider"></div>
+        <div class="nav-drawer-section-title">Sistema</div>
+
+        <button
+          class="nav-drawer-item"
+          onclick="switchTab('settings', 'Impostazioni Dati'); closeNavDrawer();"
+          id="drawer-item-settings"
+        >
+          <span class="material-symbols-outlined">settings_applications</span>
+          <span class="nav-drawer-label">Impostazioni Dati</span>
+        </button>
       </div>
     </div>
 
@@ -1249,12 +1554,20 @@
     <div class="main-content" id="main-scroll-container">
       <div class="app-header">
         <div
-          style="display: flex; align-items: center; gap: 12px; min-width: 0"
+          style="display: flex; align-items: center; gap: 8px; min-width: 0"
         >
+          <button
+            class="btn-icon mobile-drawer-btn"
+            id="mobile-drawer-btn"
+            onclick="toggleNavDrawer()"
+            title="Menu Sezioni"
+          >
+            <span class="material-symbols-outlined">menu</span>
+          </button>
           <img
             src="./icon.jpg?v=1"
             alt="Logo"
-            style="width: 32px; height: 32px; border-radius: 8px"
+            style="width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;"
           />
           <h1 id="page-main-title">Riepilogo Generale</h1>
         </div>
@@ -1355,100 +1668,6 @@
           </button>
 
           <div class="mobile-dropdown-menu" id="mobile-dropdown-menu">
-            <div
-              style="
-                padding: 6px 16px;
-                font-size: 11px;
-                font-weight: 600;
-                color: var(--md-sys-color-outline);
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-              "
-            >
-              Altre Sezioni
-            </div>
-            <button
-              class="mobile-menu-item"
-              onclick="
-                switchTab('mutuo', 'Calcolatore Mutuo');
-                toggleMobileMenu();
-              "
-            >
-              <span class="material-symbols-outlined">calculate</span> Mutuo
-            </button>
-            <button
-              class="mobile-menu-item"
-              onclick="
-                switchTab('qa', 'Domande & Risposte');
-                toggleMobileMenu();
-              "
-            >
-              <span class="material-symbols-outlined">quiz</span> Domande &
-              Risposte
-            </button>
-            <button
-              class="mobile-menu-item"
-              onclick="
-                switchTab('task', 'Task & Attività');
-                toggleMobileMenu();
-              "
-            >
-              <span class="material-symbols-outlined">task_alt</span>
-              <span style="flex: 1; text-align: left">Task</span>
-              <span
-                id="task-badge-mobile"
-                style="
-                  display: none;
-                  background-color: var(--md-sys-color-error);
-                  color: white;
-                  font-size: 11px;
-                  font-weight: bold;
-                  padding: 2px 6px;
-                  border-radius: 10px;
-                  margin-right: 8px;
-                "
-                >0</span
-              >
-            </button>
-            <button
-              class="mobile-menu-item"
-              onclick="
-                switchTab('notes', 'Appunti');
-                toggleMobileMenu();
-              "
-            >
-              <span class="material-symbols-outlined">edit_note</span>
-              <span style="flex: 1; text-align: left">Appunti</span>
-            </button>
-            <button
-              class="mobile-menu-item"
-              onclick="
-                switchTab('gallery', 'Galleria & Documenti');
-                toggleMobileMenu();
-              "
-            >
-              <span class="material-symbols-outlined">collections</span>
-              Galleria
-            </button>
-            <button
-              class="mobile-menu-item"
-              onclick="
-                switchTab('settings', 'Impostazioni Dati');
-                toggleMobileMenu();
-              "
-            >
-              <span class="material-symbols-outlined"
-                >settings_applications</span
-              >
-              Impostazioni
-            </button>
-            <div
-              style="
-                height: 1px;
-                background: var(--md-sys-color-surface-container-high);
-                margin: 6px 0;
-              "
-            ></div>
             <div
               style="
                 padding: 6px 16px;
@@ -2108,6 +2327,154 @@
                   <tr id="table-budget-header"></tr>
                 </thead>
                 <tbody id="tbody-budget"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Card Monitoraggio Risparmio Netto Integrata nel Budget -->
+          <div class="card" id="budget-savings-card" style="margin-top: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+              <div>
+                <h2 class="card-title" id="budget-savings-card-title" style="margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">
+                  <span class="material-symbols-outlined" style="color: var(--md-sys-color-primary)">trending_up</span>
+                  Capacità di Risparmio & Copertura Rogito
+                </h2>
+                <p style="margin: 0; font-size: 13px; color: var(--md-sys-color-outline);">
+                  Proiezione del capitale fresco generato dal reddito rispetto alla quota contanti necessaria per il saldo casa.
+                </p>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <!-- Selettore Utente Custom Disegnato M3 identico al Risparmio -->
+                <div class="savings-custom-dropdown" id="budget-savings-user-dropdown-container">
+                  <button type="button" class="savings-dropdown-trigger" id="budget-savings-user-dropdown-btn" onclick="toggleBudgetSavingsUserDropdown(event)" title="Seleziona partecipante da monitorare">
+                    <span class="material-symbols-outlined icon-lead">person</span>
+                    <span class="savings-trigger-text" id="budget-savings-selected-user-name">Utente</span>
+                    <span class="material-symbols-outlined icon-arrow" id="budget-savings-user-dropdown-arrow">expand_more</span>
+                  </button>
+                  <div class="savings-dropdown-menu" id="budget-savings-user-dropdown-menu"></div>
+                </div>
+                <button class="btn btn-tonal" onclick="switchTab('savings', 'Monitoraggio Risparmio Netto')">
+                  <span class="material-symbols-outlined">query_stats</span> Apri Dettaglio Risparmio
+                </button>
+              </div>
+            </div>
+
+            <div class="dashboard-grid" id="budget-savings-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 12px;"></div>
+            <div id="budget-savings-callout" style="padding: 12px 16px; border-radius: 12px; background: var(--md-sys-color-surface-container); font-size: 13px; display: flex; align-items: center; gap: 8px;"></div>
+          </div>
+        </div>
+
+        <!-- MONITORAGGIO RISPARMIO NETTO (NUOVA SEZIONE) -->
+        <div id="view-savings" class="view-section">
+          <!-- Container di setup/onboarding per primo inserimento capitale iniziale -->
+          <div id="savings-onboarding-container"></div>
+
+          <!-- Stat cards superiori -->
+          <div class="dashboard-grid" id="savings-top-cards"></div>
+
+          <!-- Card Breakdown Fondi & Proiezione Rogito -->
+          <div class="card" style="margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+              <div>
+                <h2 class="card-title" style="margin-bottom: 4px;">Composizione Fabbisogno Totale Coperto</h2>
+                <p style="margin: 0; font-size: 13px; color: var(--md-sys-color-outline);">
+                  Distingue il capitale di partenza e i disinvestimenti straordinari dal risparmio reale accumulato.
+                </p>
+              </div>
+              <div class="savings-header-controls">
+                <!-- Selettore Utente Custom Disegnato M3 -->
+                <div class="savings-custom-dropdown" id="savings-user-dropdown-container">
+                  <button type="button" class="savings-dropdown-trigger" id="savings-user-dropdown-btn" onclick="toggleSavingsUserDropdown(event)" title="Seleziona partecipante da monitorare">
+                    <span class="material-symbols-outlined icon-lead">person</span>
+                    <span class="savings-trigger-text" id="savings-selected-user-name">Utente</span>
+                    <span class="material-symbols-outlined icon-arrow" id="savings-user-dropdown-arrow">expand_more</span>
+                  </button>
+                  <div class="savings-dropdown-menu" id="savings-user-dropdown-menu"></div>
+                </div>
+
+                <!-- Selettore Data Prevista Rogito Custom Disegnato M3 -->
+                <div class="savings-custom-dropdown" id="savings-date-dropdown-container">
+                  <button type="button" class="savings-dropdown-trigger" id="savings-date-dropdown-btn" onclick="toggleSavingsDateDropdown(event)" title="Imposta data prevista per rogito / mutuo">
+                    <span class="material-symbols-outlined icon-lead" style="color: var(--md-sys-color-primary);">event</span>
+                    <span class="savings-trigger-label">Rogito / Mutuo:</span>
+                    <span class="savings-trigger-text" id="savings-target-date-display">30 Aprile 2027</span>
+                    <span class="material-symbols-outlined icon-arrow" id="savings-date-dropdown-arrow">expand_more</span>
+                  </button>
+                  <div class="savings-dropdown-menu savings-date-picker-menu" id="savings-date-dropdown-menu">
+                    <!-- Header con navigazione Mese e Anno -->
+                    <div class="savings-date-picker-header">
+                      <button type="button" class="savings-picker-nav-btn" onclick="stepSavingsPickerMonth(-1, event)" title="Mese precedente">
+                        <span class="material-symbols-outlined">chevron_left</span>
+                      </button>
+                      <div class="savings-picker-title-group">
+                        <span class="savings-picker-month-title" id="savings-picker-month-name">Aprile</span>
+                        <span class="savings-picker-year-title" id="savings-picker-year-display">2027</span>
+                      </div>
+                      <div class="savings-picker-year-stepper">
+                        <button type="button" class="savings-picker-nav-btn" onclick="stepSavingsPickerMonth(1, event)" title="Mese successivo">
+                          <span class="material-symbols-outlined">chevron_right</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Intestazione giorni della settimana -->
+                    <div class="savings-calendar-weekdays">
+                      <span>L</span><span>M</span><span>M</span><span>G</span><span>V</span><span>S</span><span>D</span>
+                    </div>
+
+                    <!-- Griglia giorni del mese -->
+                    <div class="savings-calendar-days-grid" id="savings-calendar-days-grid"></div>
+
+                    <!-- Countdown live in tempo reale -->
+                    <div class="savings-date-picker-countdown" id="savings-date-picker-countdown"></div>
+
+                  </div>
+                </div>
+
+                <button class="btn btn-filled" id="btn-savings-register-rilevazione" onclick="openSavingsModal()" style="height: 42px; border-radius: var(--md-sys-shape-corner-full); padding: 0 16px;">
+                  <span class="material-symbols-outlined">add</span> Registra Rilevazione
+                </button>
+              </div>
+            </div>
+
+            <!-- Breakdown Bar Progressiva -->
+            <div class="savings-breakdown-container">
+              <div class="savings-breakdown-bar" id="savings-breakdown-bar"></div>
+              <div class="savings-breakdown-legend" id="savings-breakdown-legend"></div>
+            </div>
+
+            <!-- Proiezione temporale target rogito -->
+            <div id="savings-projection-box" style="margin-top: 20px; padding: 16px; border-radius: 12px; background: var(--md-sys-color-surface-container); border: 1px solid var(--md-sys-color-surface-container-high);"></div>
+          </div>
+
+          <!-- Card Storico Rilevazioni -->
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+              <div>
+                <h2 class="card-title" style="margin-bottom: 4px;">Storico Punti di Controllo</h2>
+                <p style="margin: 0; font-size: 13px; color: var(--md-sys-color-outline);">
+                  Evoluzione del risparmio e della liquidità netta registrati nel corso del tempo.
+                </p>
+              </div>
+            </div>
+            <div class="table-container">
+              <table id="table-savings-history">
+                <thead>
+                  <tr>
+                    <th>Data Rilevazione</th>
+                    <th>Saldo Conto</th>
+                    <th>Spese Sostenute</th>
+                    <th>Fondi Preesistenti</th>
+                    <th>Risparmio Lordo</th>
+                    <th>Debiti/Passività</th>
+                    <th>Risparmio Netto</th>
+                    <th>Variazione (Δ)</th>
+                    <th>Liquidità Netta</th>
+                    <th>Note</th>
+                    <th>Azioni</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-savings-history"></tbody>
               </table>
             </div>
           </div>
@@ -2818,7 +3185,7 @@
             <a href="https://giovannilamarmora.github.io/" target="_blank"
               >Giovanni Lamarmora</a
             >
-            <span class="version-number">v1.8.6</span>
+            <span class="version-number">v1.9.0</span>
           </h4>
         </div>
       </div>
