@@ -1,4 +1,4 @@
-const CACHE_NAME = "casa-app-v2.0.3"; // Incrementa ad ogni rilascio di codice
+const CACHE_NAME = "casa-app-v2.0.5"; // Incrementa ad ogni rilascio di codice
 const MEDIA_CACHE = "casa-media-v1"; // Does not get deleted on version bumps
 
 const urlsToCache = [

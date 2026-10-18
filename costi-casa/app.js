@@ -335,6 +335,7 @@ const autoColors = [
 let isMutuoManualEdit = false;
 let manualCustomMortgage = null;
 let isMortgageEditing = false;
+let lastCalculatedUserMutuo = {};
 
 // Flag to prevent infinite loops when saving from gist
 let isSyncingToGist = false;
@@ -4245,6 +4246,7 @@ function calculateMortgage() {
   let resultCardsHTML = "";
   let totalMutuo = Object.values(userMutuo).reduce((a, b) => a + b, 0);
   let totalAnticipo = Object.values(userAnticipo).reduce((a, b) => a + b, 0);
+  lastCalculatedUserMutuo = { ...userMutuo };
   let percentualeMutuo =
     totaleProgetto > 0 ? (totalMutuo / totaleProgetto) * 100 : 0;
   let percentualeAnticipo =
@@ -4679,30 +4681,56 @@ function renderLiquidityGuard() {
     scopeFondiLiberi = Math.max(0, scopeCapitale - scopeSafetyFund);
   }
 
-  const scopeAnticipoMaxSicuro = Math.max(
+  // Quota Mutuo deliberata/richiesta per chi chiede il mutuo (dal calcolatore mutuo o dalla riga del budget)
+  const mutuoRow = (appData.budget || []).find((b) => b.isMutuo);
+  let userMutuoMap = {};
+  appData.settings.users.forEach((u) => {
+    let mVal = 0;
+    if (lastCalculatedUserMutuo && lastCalculatedUserMutuo[u.id] !== undefined) {
+      mVal = lastCalculatedUserMutuo[u.id];
+    } else if (mutuoRow && mutuoRow[u.id] !== undefined) {
+      mVal = parseFloat(mutuoRow[u.id]) || 0;
+    }
+    userMutuoMap[u.id] = mVal;
+  });
+
+  const scopeMutuo = mortgageUsers.reduce(
+    (sum, u) => sum + (userMutuoMap[u.id] || 0),
     0,
-    Math.min(scopeImmobilePrezzo, scopeFondiLiberi - scopeExtraDaSaldare),
   );
-  const scopeUlterioreAnticipo = Math.max(
+
+  // Differenza da saldare di tasca propria per l'immobile: (Residuo Immobile - Mutuo Concesso)
+  const scopeSaldoImmobileProprio = Math.max(
     0,
-    scopeAnticipoMaxSicuro - scopeImmobileSaldato,
+    scopeImmobileDaSaldare - scopeMutuo,
   );
+
+  // Totale esborso effettivo da versare di tasca propria: Saldo Immobile + Spese Extra non nel mutuo
+  const scopeTotaleEsborso = scopeSaldoImmobileProprio + scopeExtraDaSaldare;
+
+  // Liquidità residua sui conti dopo aver versato l'esborso totale (disponibile per arredamento, imprevisti, ecc.)
+  const scopeLiquiditaResidua = scopeFondiLiberi - scopeTotaleEsborso;
 
   // 6. Render Indicatori Sintetici (KPI Cards)
   const kpiGridEl = document.getElementById("liquidity-kpi-grid");
   if (kpiGridEl) {
     const immTitle = isAllUsers
-      ? "Costo Immobile"
+      ? "Quota Immobile"
       : `Quota Immobile (${mortgageUsers.map((u) => u.name).join(", ")})`;
+    const mutuoTitle = isAllUsers
+      ? "Mutuo Concesso Banca"
+      : `Mutuo Banca (${mortgageUsers.map((u) => u.name).join(", ")})`;
     const extraTitle = isAllUsers
-      ? "Voci Extra Selezionate"
+      ? "Spese Extra non nel Mutuo"
       : `Quota Extra (${mortgageUsers.map((u) => u.name).join(", ")})`;
-    const capTitle = isAllUsers
-      ? "Capitale Partecipanti"
-      : `Capitale (${mortgageUsers.map((u) => u.name).join(", ")})`;
-    const antTitle = isAllUsers
-      ? "Anticipo Max Sicuro Immobile"
-      : `Anticipo Max Sicuro (${mortgageUsers.map((u) => u.name).join(", ")})`;
+    const esborsoTitle = isAllUsers
+      ? "Totale da Versare (Fondi Propri)"
+      : `Esborso Proprio (${mortgageUsers.map((u) => u.name).join(", ")})`;
+
+    const percCoperturaMutuo =
+      scopeImmobileDaSaldare > 0
+        ? Math.min(100, (scopeMutuo / scopeImmobileDaSaldare) * 100).toFixed(1)
+        : "100.0";
 
     kpiGridEl.innerHTML = `
       <div class="liquidity-kpi-card">
@@ -4712,7 +4740,18 @@ function renderLiquidityGuard() {
         </div>
         <div class="liquidity-kpi-card-val sensitive-value">${formatCurrency(scopeImmobilePrezzo)}</div>
         <div class="liquidity-kpi-card-sub">
-          Saldato: <b class="sensitive-value">${formatCurrency(scopeImmobileSaldato)}</b> • Residuo: <b class="sensitive-value">${formatCurrency(scopeImmobileDaSaldare)}</b>
+          Già saldato: <b class="sensitive-value">${formatCurrency(scopeImmobileSaldato)}</b> • Residuo: <b class="sensitive-value">${formatCurrency(scopeImmobileDaSaldare)}</b>
+        </div>
+      </div>
+
+      <div class="liquidity-kpi-card">
+        <div class="liquidity-kpi-card-header">
+          <span class="liquidity-kpi-card-title">${mutuoTitle}</span>
+          <span class="material-symbols-outlined liquidity-kpi-card-icon" style="color: var(--md-sys-color-primary);">account_balance</span>
+        </div>
+        <div class="liquidity-kpi-card-val sensitive-value">${formatCurrency(scopeMutuo)}</div>
+        <div class="liquidity-kpi-card-sub">
+          Copre il <b>${percCoperturaMutuo}%</b> dell'immobile da saldare
         </div>
       </div>
 
@@ -4721,34 +4760,47 @@ function renderLiquidityGuard() {
           <span class="liquidity-kpi-card-title">${extraTitle}</span>
           <span class="material-symbols-outlined liquidity-kpi-card-icon" style="color: #f59e0b;">payments</span>
         </div>
-        <div class="liquidity-kpi-card-val sensitive-value" style="color: #f59e0b;">${formatCurrency(scopeExtraPrezzo)}</div>
+        <div class="liquidity-kpi-card-val sensitive-value" style="color: #f59e0b;">${formatCurrency(scopeExtraDaSaldare)}</div>
         <div class="liquidity-kpi-card-sub">
-          Saldati: <span class="sensitive-value">${formatCurrency(scopeExtraSaldato)}</span> • Da saldare: <b class="sensitive-value" style="color: #f59e0b;">${formatCurrency(scopeExtraDaSaldare)}</b> (${selectedExtraCosts.length}/${eligibleCosts.length} voci)
-        </div>
-      </div>
-
-      <div class="liquidity-kpi-card">
-        <div class="liquidity-kpi-card-header">
-          <span class="liquidity-kpi-card-title">${capTitle}</span>
-          <span class="material-symbols-outlined liquidity-kpi-card-icon">account_balance_wallet</span>
-        </div>
-        <div class="liquidity-kpi-card-val sensitive-value">${formatCurrency(scopeCapitale)}</div>
-        <div class="liquidity-kpi-card-sub">
-          Liberi: <b class="sensitive-value">${formatCurrency(scopeFondiLiberi)}</b> • Riserva: <span class="sensitive-value">${formatCurrency(scopeSafetyFund)}</span>
+          Totale: <span class="sensitive-value">${formatCurrency(scopeExtraPrezzo)}</span> • Saldati: <span class="sensitive-value">${formatCurrency(scopeExtraSaldato)}</span> (${selectedExtraCosts.length}/${eligibleCosts.length} voci)
         </div>
       </div>
 
       <div class="liquidity-kpi-card" style="border-left: 3px solid var(--md-sys-color-primary); background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container);">
         <div class="liquidity-kpi-card-header">
-          <span class="liquidity-kpi-card-title" style="color: var(--md-sys-color-on-primary-container);">${antTitle}</span>
-          <span class="material-symbols-outlined liquidity-kpi-card-icon" style="color: var(--md-sys-color-on-primary-container);">shield_lock</span>
+          <span class="liquidity-kpi-card-title" style="color: var(--md-sys-color-on-primary-container);">${esborsoTitle}</span>
+          <span class="material-symbols-outlined liquidity-kpi-card-icon" style="color: var(--md-sys-color-on-primary-container);">wallet</span>
         </div>
-        <div class="liquidity-kpi-card-val sensitive-value">${formatCurrency(scopeAnticipoMaxSicuro)}</div>
-        <div class="liquidity-kpi-card-sub" style="color: var(--md-sys-color-on-primary-container); opacity: 0.9;">
-          Ulteriore versabile: <b class="sensitive-value">${formatCurrency(scopeUlterioreAnticipo)}</b> (tutela le spese extra)
+        <div class="liquidity-kpi-card-val sensitive-value">${formatCurrency(scopeTotaleEsborso)}</div>
+        <div class="liquidity-kpi-card-sub" style="color: var(--md-sys-color-on-primary-container); opacity: 0.95;">
+          Casa: <b class="sensitive-value">${formatCurrency(scopeSaldoImmobileProprio)}</b> + Extra: <b class="sensitive-value">${formatCurrency(scopeExtraDaSaldare)}</b>
         </div>
       </div>
     `;
+
+    const bannerEl = document.getElementById("liquidity-residua-banner");
+    if (bannerEl) {
+      bannerEl.innerHTML = `
+        <div style="padding: 14px 18px; border-radius: 12px; background: var(--md-sys-color-surface-container); border: 1px solid var(--md-sys-color-surface-container-high); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; width: 100%; box-sizing: border-box;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 38px; height: 38px; border-radius: 50%; background: ${scopeLiquiditaResidua >= 0 ? "rgba(34, 197, 94, 0.15)" : "rgba(239, 68, 68, 0.15)"}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <span class="material-symbols-outlined" style="color: ${scopeLiquiditaResidua >= 0 ? "#16a34a" : "var(--md-sys-color-error)"}; font-size: 22px;">${scopeLiquiditaResidua >= 0 ? "chair" : "warning"}</span>
+            </div>
+            <div>
+              <div style="font-size: 14px; font-weight: 700; color: var(--md-sys-color-on-surface);">
+                Liquidità Residua sul Conto dopo il Saldo: <span class="sensitive-value" style="color: ${scopeLiquiditaResidua >= 0 ? "#16a34a" : "var(--md-sys-color-error)"};">${formatCurrency(scopeLiquiditaResidua)}</span>
+              </div>
+              <div style="font-size: 12px; color: var(--md-sys-color-outline); margin-top: 2px;">
+                ${scopeLiquiditaResidua >= 0 ? `Versati i <b>${formatCurrency(scopeTotaleEsborso)}</b> di tasca tua, ti rimarranno questi fondi liberi sul conto per arredamento, trasloco e spese personali.` : `Attenzione: l'esborso necessario supera i tuoi fondi liquidi attualmente registrati.`}
+              </div>
+            </div>
+          </div>
+          <div style="font-size: 12px; color: var(--md-sys-color-outline); white-space: nowrap;">
+            Fondo di riserva protetto: <b class="sensitive-value">${formatCurrency(scopeSafetyFund)}</b>
+          </div>
+        </div>
+      `;
+    }
   }
 
   // 7. Render Multiselezione Voci Extra Espandibile
@@ -4847,12 +4899,13 @@ function renderLiquidityGuard() {
   if (splitEl) {
     let rowsHTML = "";
     let sumQuotaImm = 0;
-    let sumQuotaExtra = 0;
-    let sumCostoTot = 0;
-    let sumGiaSaldatoTot = 0;
+    let sumGiaSaldatoImm = 0;
+    let sumResiduoImm = 0;
+    let sumMutuo = 0;
+    let sumSaldoImmProprio = 0;
     let sumExtraDaSaldare = 0;
-    let sumAnticipoMaxSicuro = 0;
-    let sumUlterioreAnticipo = 0;
+    let sumTotaleEsborso = 0;
+    let sumLiquiditaResidua = 0;
 
     mortgageUsers.forEach((u) => {
       const sharePct = parseFloat(u.share) || 0;
@@ -4861,32 +4914,28 @@ function renderLiquidityGuard() {
       const userExtraRatio = sharePct / totaleQuote;
 
       const userQuotaImm = immobilePrezzo * userPropertyRatio;
-      const userQuotaExtra = extraPrezzo * userExtraRatio;
-      const userCostoTot = userQuotaImm + userQuotaExtra;
-
       const userGiaSaldatoImm = userImmobilePaid[u.id] || 0;
-      const userGiaSaldatoExtra = userExtraPaid[u.id] || 0;
-      const userGiaSaldatoTot = userGiaSaldatoImm + userGiaSaldatoExtra;
+      const userResiduoImm = Math.max(0, userQuotaImm - userGiaSaldatoImm);
 
-      const userExtraDaSaldare = extraDaSaldare * userExtraRatio;
+      const userMutuo = userMutuoMap[u.id] || 0;
+      const userSaldoImmProprio = Math.max(0, userResiduoImm - userMutuo);
+
+      const userExtraPrezzo = extraPrezzo * userExtraRatio;
+      const userExtraSaldato = userExtraPaid[u.id] || 0;
+      const userExtraDaSaldare = Math.max(0, userExtraPrezzo - userExtraSaldato);
+
+      const userTotaleEsborso = userSaldoImmProprio + userExtraDaSaldare;
       const userFondiLiberi = userLiquidFree[u.id] || 0;
-
-      const userAnticipoMaxSicuro = Math.max(
-        0,
-        Math.min(userQuotaImm, userFondiLiberi - userExtraDaSaldare),
-      );
-      const userUlterioreAnticipo = Math.max(
-        0,
-        userAnticipoMaxSicuro - userGiaSaldatoImm,
-      );
+      const userLiquiditaResidua = userFondiLiberi - userTotaleEsborso;
 
       sumQuotaImm += userQuotaImm;
-      sumQuotaExtra += userQuotaExtra;
-      sumCostoTot += userCostoTot;
-      sumGiaSaldatoTot += userGiaSaldatoTot;
+      sumGiaSaldatoImm += userGiaSaldatoImm;
+      sumResiduoImm += userResiduoImm;
+      sumMutuo += userMutuo;
+      sumSaldoImmProprio += userSaldoImmProprio;
       sumExtraDaSaldare += userExtraDaSaldare;
-      sumAnticipoMaxSicuro += userAnticipoMaxSicuro;
-      sumUlterioreAnticipo += userUlterioreAnticipo;
+      sumTotaleEsborso += userTotaleEsborso;
+      sumLiquiditaResidua += userLiquiditaResidua;
 
       const shareLabel =
         modalita === "singolo" && intero ? "100% (Intero)" : `${sharePct}%`;
@@ -4898,14 +4947,14 @@ function renderLiquidityGuard() {
             <div style="font-size: 11px; color: var(--md-sys-color-outline);">Riserva: <span class="sensitive-value">${formatCurrency(userSafetyFund[u.id] || 0)}</span></div>
           </td>
           <td style="text-align: center; font-weight: 600;">${shareLabel}</td>
-          <td style="text-align: right;" class="sensitive-value">${formatCurrency(userFondiLiberi)}</td>
           <td style="text-align: right;" class="sensitive-value">${formatCurrency(userQuotaImm)}</td>
-          <td style="text-align: right;" class="sensitive-value">${formatCurrency(userQuotaExtra)}</td>
-          <td style="text-align: right; font-weight: 600;" class="sensitive-value">${formatCurrency(userCostoTot)}</td>
-          <td style="text-align: right;" class="sensitive-value">${formatCurrency(userGiaSaldatoTot)}</td>
+          <td style="text-align: right;" class="sensitive-value">${formatCurrency(userGiaSaldatoImm)}</td>
+          <td style="text-align: right; font-weight: 600;" class="sensitive-value">${formatCurrency(userResiduoImm)}</td>
+          <td style="text-align: right; color: var(--md-sys-color-primary);" class="sensitive-value">${formatCurrency(userMutuo)}</td>
+          <td style="text-align: right; font-weight: 600;" class="sensitive-value">${formatCurrency(userSaldoImmProprio)}</td>
           <td style="text-align: right; color: #f59e0b; font-weight: 600;" class="sensitive-value">${formatCurrency(userExtraDaSaldare)}</td>
-          <td style="text-align: right; color: var(--md-sys-color-primary); font-weight: 700;" class="sensitive-value">${formatCurrency(userAnticipoMaxSicuro)}</td>
-          <td style="text-align: right; color: var(--md-sys-color-success); font-weight: 700;" class="sensitive-value">${formatCurrency(userUlterioreAnticipo)}</td>
+          <td style="text-align: right; color: var(--md-sys-color-primary); font-weight: 700;" class="sensitive-value">${formatCurrency(userTotaleEsborso)}</td>
+          <td style="text-align: right; font-weight: 700; color: ${userLiquiditaResidua >= 0 ? "var(--md-sys-color-success)" : "var(--md-sys-color-error)"};" class="sensitive-value">${formatCurrency(userLiquiditaResidua)}</td>
         </tr>
       `;
     });
@@ -4923,8 +4972,8 @@ function renderLiquidityGuard() {
     splitEl.innerHTML = `
       <div style="font-size: 15px; font-weight: 700; margin-bottom: 10px; color: var(--md-sys-color-on-surface); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
         <div style="display: flex; align-items: center; gap: 6px;">
-          <span class="material-symbols-outlined" style="color: var(--md-sys-color-primary); font-size: 20px;">pie_chart</span>
-          <span>Ripartizione Costi & Anticipo Sostenibile ${isAllUsers ? "per Quota Configurazione" : `(Intestatario: ${mortgageUsers.map((u) => escapeHTML(u.name)).join(", ")})`}</span>
+          <span class="material-symbols-outlined" style="color: var(--md-sys-color-primary); font-size: 20px;">account_balance_wallet</span>
+          <span>Piano Esborso Saldo & Liquidità Residua ${isAllUsers ? "per Quota Configurazione" : `(Intestatario: ${mortgageUsers.map((u) => escapeHTML(u.name)).join(", ")})`}</span>
         </div>
         <span style="font-size: 12px; font-weight: 500; color: var(--md-sys-color-outline);">
           ${isAllUsers ? `Quote applicate: ${appData.settings.users.map((u) => `${escapeHTML(u.name)} ${u.share}%`).join(" • ")}` : `Richiesta mutuo: ${mortgageUsers.map((u) => `${escapeHTML(u.name)} (${modalita === "singolo" && intero ? 100 : u.share}%)`).join(" • ")}`}
@@ -4937,14 +4986,14 @@ function renderLiquidityGuard() {
             <tr>
               <th>Partecipante</th>
               <th style="text-align: center;">Quota (%)</th>
-              <th style="text-align: right;">Fondi Liberi</th>
               <th style="text-align: right;">Quota Immobile</th>
-              <th style="text-align: right;">Quota Extra</th>
-              <th style="text-align: right;">Costo Totale</th>
-              <th style="text-align: right;">Già Saldato</th>
+              <th style="text-align: right;">Già Pagato</th>
+              <th style="text-align: right;">Residuo Casa</th>
+              <th style="text-align: right; color: var(--md-sys-color-primary);">Mutuo Banca</th>
+              <th style="text-align: right;">Saldo Immobile</th>
               <th style="text-align: right; color: #f59e0b;">Extra da Saldare</th>
-              <th style="text-align: right; color: var(--md-sys-color-primary);">Anticipo Max Sicuro</th>
-              <th style="text-align: right; color: var(--md-sys-color-success);">Ulteriore Anticipo</th>
+              <th style="text-align: right; color: var(--md-sys-color-primary);">Totale da Versare</th>
+              <th style="text-align: right; color: var(--md-sys-color-success);">Liquidità Residua</th>
             </tr>
           </thead>
           <tbody>
@@ -4952,14 +5001,14 @@ function renderLiquidityGuard() {
             <tr class="total-row">
               <td>${isAllUsers ? "TOTALE PROGETTO" : "TOTALE INTESTATARIO"}</td>
               <td style="text-align: center;">${totalShareLabel}</td>
-              <td style="text-align: right;" class="sensitive-value">${formatCurrency(scopeFondiLiberi)}</td>
               <td style="text-align: right;" class="sensitive-value">${formatCurrency(sumQuotaImm)}</td>
-              <td style="text-align: right;" class="sensitive-value">${formatCurrency(sumQuotaExtra)}</td>
-              <td style="text-align: right;" class="sensitive-value">${formatCurrency(sumCostoTot)}</td>
-              <td style="text-align: right;" class="sensitive-value">${formatCurrency(sumGiaSaldatoTot)}</td>
+              <td style="text-align: right;" class="sensitive-value">${formatCurrency(sumGiaSaldatoImm)}</td>
+              <td style="text-align: right;" class="sensitive-value">${formatCurrency(sumResiduoImm)}</td>
+              <td style="text-align: right; color: var(--md-sys-color-primary);" class="sensitive-value">${formatCurrency(sumMutuo)}</td>
+              <td style="text-align: right;" class="sensitive-value">${formatCurrency(sumSaldoImmProprio)}</td>
               <td style="text-align: right; color: #f59e0b;" class="sensitive-value">${formatCurrency(sumExtraDaSaldare)}</td>
-              <td style="text-align: right; color: var(--md-sys-color-primary);" class="sensitive-value">${formatCurrency(sumAnticipoMaxSicuro)}</td>
-              <td style="text-align: right; color: var(--md-sys-color-success);" class="sensitive-value">${formatCurrency(sumUlterioreAnticipo)}</td>
+              <td style="text-align: right; color: var(--md-sys-color-primary);" class="sensitive-value">${formatCurrency(sumTotaleEsborso)}</td>
+              <td style="text-align: right; color: ${sumLiquiditaResidua >= 0 ? "var(--md-sys-color-success)" : "var(--md-sys-color-error)"};" class="sensitive-value">${formatCurrency(sumLiquiditaResidua)}</td>
             </tr>
           </tbody>
         </table>
@@ -4968,12 +5017,11 @@ function renderLiquidityGuard() {
       <div style="margin-top: 14px; padding: 12px 16px; border-radius: 8px; background: var(--md-sys-color-surface-container); border-left: 4px solid var(--md-sys-color-primary); font-size: 12.5px; line-height: 1.5; color: var(--md-sys-color-on-surface);">
         <div style="font-weight: 700; margin-bottom: 2px; color: var(--md-sys-color-primary); display: flex; align-items: center; gap: 6px;">
           <span class="material-symbols-outlined" style="font-size: 18px;">lightbulb</span>
-          Regola di Salvaguardia della Liquidità
+          Riepilogo Esborso Reale di Tasca Propria
         </div>
-        Per evitare che il capitale si esaurisca prima di aver pagato spese accessorie e lavori non finanziabili dalla banca, 
-        l'anticipo da versare per la casa da parte di ${beneficiaryLabel} non dovrebbe superare <b class="sensitive-value">${formatCurrency(scopeAnticipoMaxSicuro)}</b> 
-        (di cui già saldati <b class="sensitive-value">${formatCurrency(scopeImmobileSaldato)}</b>, con un margine di ulteriore anticipo versabile pari a <b class="sensitive-value">${formatCurrency(scopeUlterioreAnticipo)}</b>). 
-        Il mutuo necessario per finanziare la quota restante dell'immobile viene calcolato ed esposto direttamente nel Calcolatore Mutuo soprastante.
+        Per chiudere l'acquisto dell'immobile, la quota residua da saldare è di <b class="sensitive-value">${formatCurrency(scopeImmobileDaSaldare)}</b>. 
+        Con il mutuo deliberato di <b class="sensitive-value">${formatCurrency(scopeMutuo)}</b>, la quota da versare di tasca propria per l'immobile è di soli <b class="sensitive-value">${formatCurrency(scopeSaldoImmobileProprio)}</b>. 
+        Sommando le spese extra selezionate non mutuabili (<b class="sensitive-value">${formatCurrency(scopeExtraDaSaldare)}</b>), l'esborso totale effettivo da versare per ${beneficiaryLabel} è di <b class="sensitive-value" style="color: var(--md-sys-color-primary);">${formatCurrency(scopeTotaleEsborso)}</b>.
       </div>
     `;
   }
