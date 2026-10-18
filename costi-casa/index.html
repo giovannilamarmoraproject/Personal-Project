@@ -2604,7 +2604,7 @@
 
           <div class="dashboard-grid" id="mutuo-result-cards"></div>
 
-          <div class="card" id="mutuo-details-card" style="display: none">
+          <div class="card" id="mutuo-details-card" style="display: none; margin-top: 24px;">
             <h2 class="card-title">Dettaglio Ripartizione Mutuo & Liquidità</h2>
             <div class="table-container">
               <table id="table-mutuo-utenti">
@@ -2625,6 +2625,44 @@
                 <tbody></tbody>
               </table>
             </div>
+          </div>
+
+          <!-- SEZIONE SALVAGUARDIA LIQUIDITÀ & ANTICIPO MASSIMO IMMOBILE (CARD DEDICATA) -->
+          <div class="card" id="mutuo-liquidity-guard-container" style="margin-top: 24px;">
+            <div style="margin-bottom: 16px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span
+                    class="material-symbols-outlined"
+                    style="color: var(--md-sys-color-primary); font-size: 26px;"
+                    >shield_lock</span
+                  >
+                  <h2 style="font-size: 18px; font-weight: 700; margin: 0; color: var(--md-sys-color-on-surface);">
+                    Quadro Liquidità & Anticipo Massimo Immobile
+                  </h2>
+                </div>
+                <div id="liquidity-target-badge"></div>
+              </div>
+              <p
+                style="
+                  margin: 4px 0 0 0;
+                  font-size: 13px;
+                  color: var(--md-sys-color-outline);
+                  max-width: 820px;
+                "
+              >
+                Calcolo dell'anticipo massimo sostenibile per l'immobile per chi richiede il mutuo, garantendo la copertura delle spese extra con i fondi propri.
+              </p>
+            </div>
+
+            <!-- Griglia 4 Indicatori Chiave Sintetici (Ripartiti per chi chiede il mutuo) -->
+            <div class="liquidity-kpi-grid" id="liquidity-kpi-grid"></div>
+
+            <!-- Sezione Multiselezione Voci Extra Espandibile -->
+            <div id="extra-cost-selection-container" style="margin-bottom: 20px;"></div>
+
+            <!-- Tabella Ripartizione Costi & Anticipo per Quota (%) (senza card) -->
+            <div id="liquidity-split-container"></div>
           </div>
         </div>
 

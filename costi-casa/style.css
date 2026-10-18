@@ -2751,4 +2751,288 @@ input[type="color"] {
   font-variant-numeric: tabular-nums;
 }
 
+/* ========================================================
+   PIANIFICATORE ANTICIPO & SALVAGUARDIA LIQUIDITÀ (MUTUO)
+   ======================================================== */
+.liquidity-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.liquidity-kpi-card {
+  padding: 14px 16px;
+  border-radius: var(--md-sys-shape-corner-medium);
+  background: var(--md-sys-color-surface-container);
+  border: 1px solid var(--md-sys-color-surface-container-high);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.liquidity-kpi-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+}
+
+.liquidity-kpi-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.liquidity-kpi-card-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--md-sys-color-outline);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.liquidity-kpi-card-icon {
+  font-size: 18px;
+  color: var(--md-sys-color-outline);
+}
+
+.liquidity-kpi-card-val {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--md-sys-color-on-surface);
+  font-variant-numeric: tabular-nums;
+}
+
+.liquidity-kpi-card-sub {
+  font-size: 11.5px;
+  color: var(--md-sys-color-outline);
+  line-height: 1.35;
+}
+
+/* Contenitore Multiselezione Voci Extra Espandibile */
+.extra-cost-collapsible {
+  background: var(--md-sys-color-surface-container-low);
+  border: 1px solid var(--md-sys-color-surface-container-high);
+  border-radius: var(--md-sys-shape-corner-large);
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.extra-cost-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+  background: var(--md-sys-color-surface-container-low);
+  transition: background 0.15s ease;
+}
+
+.extra-cost-summary::-webkit-details-marker {
+  display: none;
+}
+
+.extra-cost-summary:hover {
+  background: var(--md-sys-color-surface-container);
+}
+
+.extra-cost-collapsible[open] .extra-cost-summary {
+  border-bottom: 1px solid var(--md-sys-color-surface-container-high);
+}
+
+.extra-cost-collapsible .expand-chevron {
+  transition: transform 0.2s ease;
+  font-size: 22px;
+  color: var(--md-sys-color-outline);
+}
+
+.extra-cost-collapsible[open] .expand-chevron {
+  transform: rotate(180deg);
+}
+
+.extra-cost-body {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.extra-cost-selection-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.extra-cost-selection-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.extra-cost-selection-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--md-sys-color-on-surface);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.extra-cost-selection-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.extra-cost-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 8px;
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.extra-cost-item-card {
+  padding: 8px 12px;
+  border-radius: var(--md-sys-shape-corner-medium);
+  background: var(--md-sys-color-surface-container);
+  border: 1px solid var(--md-sys-color-surface-container-high);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.extra-cost-item-card:hover {
+  background: var(--md-sys-color-surface-container-high);
+  border-color: var(--md-sys-color-outline-variant);
+}
+
+.extra-cost-item-card.checked {
+  background: rgba(99, 102, 241, 0.08);
+  border-color: rgba(99, 102, 241, 0.4);
+}
+
+.extra-cost-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--md-sys-color-primary);
+  flex-shrink: 0;
+}
+
+.extra-cost-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.extra-cost-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.extra-cost-desc {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.extra-cost-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 11.5px;
+  color: var(--md-sys-color-outline);
+}
+
+.extra-cost-cat-pill {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: #ffffff;
+  display: inline-block;
+}
+
+.extra-cost-paid-tag {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.extra-cost-paid-tag.complete {
+  background: rgba(46, 125, 50, 0.15);
+  color: var(--md-sys-color-success);
+}
+
+.extra-cost-paid-tag.partial {
+  background: rgba(245, 158, 11, 0.15);
+  color: #d97706;
+}
+
+.extra-cost-paid-tag.unpaid {
+  background: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-outline);
+}
+
+/* Tabella Ripartizione Quota & Anticipo */
+.liquidity-split-container {
+  border-radius: var(--md-sys-shape-corner-medium);
+  overflow: hidden;
+  border: 1px solid var(--md-sys-color-surface-container-high);
+}
+
+.liquidity-split-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+}
+
+.liquidity-split-table th {
+  background: var(--md-sys-color-surface-container-high);
+  padding: 10px 14px;
+  font-weight: 700;
+  color: var(--md-sys-color-on-surface);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.liquidity-split-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+}
+
+.liquidity-split-table tr:last-child td {
+  border-bottom: none;
+}
+
+.liquidity-split-table tr.total-row {
+  background: var(--md-sys-color-surface-container-low);
+  font-weight: 700;
+}
+
+
 

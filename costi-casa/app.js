@@ -290,6 +290,7 @@ const defaultMortgage = {
   rate: 3.25,
   mode: "auto",
   singleUser: "",
+  selectedExtraCostIds: [],
 };
 
 const defaultData = {
@@ -388,6 +389,9 @@ function sanitizeData() {
 
   if (!appData.settings.mortgage) {
     appData.settings.mortgage = JSON.parse(JSON.stringify(defaultMortgage));
+  }
+  if (!Array.isArray(appData.settings.mortgage.selectedExtraCostIds)) {
+    appData.settings.mortgage.selectedExtraCostIds = [];
   }
 
   if (!appData.qa) appData.qa = [];
@@ -4335,6 +4339,7 @@ function calculateMortgage() {
   if (tableMutuoTbody) tableMutuoTbody.innerHTML = utentiRisultatiHTML;
   let mutuoDetailsCard = document.getElementById("mutuo-details-card");
   if (mutuoDetailsCard) mutuoDetailsCard.style.display = "block";
+  renderLiquidityGuard();
 }
 
 /**
@@ -4357,6 +4362,584 @@ function applyMortgageToBudget(mutuoValues) {
   });
   saveDataLocally();
   showNotification("Valori mutuo aggiornati nel budget!");
+}
+
+/* ========================================================
+   SALVAGUARDIA LIQUIDITÀ & ANTICIPO MASSIMO IMMOBILE
+   ======================================================== */
+let currentMortgageContext = null;
+
+/**
+ * Restituisce le spese che non sono categorizzate come Immobili.
+ * @returns {Array} Elenco dei costi extra
+ */
+function getEligibleExtraCosts() {
+  return (appData.costi || []).filter((c) => {
+    const catObj = appData.settings.categories[c.cat];
+    const isImm =
+      typeof catObj === "object" ? !!catObj.isImmobile : c.cat === "Immobili";
+    return !isImm;
+  });
+}
+
+/**
+ * Restituisce gli ID delle voci extra selezionate dall'utente.
+ * Se non configurate, di default seleziona tutte le voci extra.
+ * @returns {Array<number|string>}
+ */
+function getSelectedExtraCostIds() {
+  if (
+    !appData.settings.mortgage ||
+    !Array.isArray(appData.settings.mortgage.selectedExtraCostIds)
+  ) {
+    return [];
+  }
+  return appData.settings.mortgage.selectedExtraCostIds;
+}
+
+/**
+ * Attiva o disattiva la selezione di una voce extra per il calcolo dell'anticipo massimo sostenibile.
+ * @param {number|string} costId - ID del costo
+ */
+function toggleExtraCostSelection(costId) {
+  if (!appData.settings.mortgage) appData.settings.mortgage = {};
+  let current = getSelectedExtraCostIds().slice();
+  const idNum = Number(costId);
+  const idx = current.findIndex((id) => Number(id) === idNum);
+  if (idx > -1) {
+    current.splice(idx, 1);
+  } else {
+    current.push(idNum);
+  }
+  appData.settings.mortgage.selectedExtraCostIds = current;
+  saveDataLocally();
+  renderLiquidityGuard();
+}
+
+/**
+ * Seleziona tutte le voci extra idonee.
+ */
+function selectAllExtraCosts() {
+  if (!appData.settings.mortgage) appData.settings.mortgage = {};
+  appData.settings.mortgage.selectedExtraCostIds = getEligibleExtraCosts().map(
+    (c) => c.id,
+  );
+  saveDataLocally();
+  renderLiquidityGuard();
+}
+
+/**
+ * Deseleziona tutte le voci extra.
+ */
+function deselectAllExtraCosts() {
+  if (!appData.settings.mortgage) appData.settings.mortgage = {};
+  appData.settings.mortgage.selectedExtraCostIds = [];
+  saveDataLocally();
+  renderLiquidityGuard();
+}
+
+/**
+ * Calcola e renderizza il Quadro Liquidità & Anticipo Massimo Immobile:
+ * - Informazioni tarate su CHI richiede il mutuo (tutti se cointestato, ripartiti se singolo/parziale)
+ * - 4 Indicatori Chiave (Immobile, Extra Selezionate, Capitale Partecipanti, Anticipo Max Sicuro)
+ * - Multiselezione delle voci extra espandibile (escludendo gli immobili)
+ * - Tabella di ripartizione per chi richiede il mutuo con già saldato e anticipo massimo da dare
+ */
+function renderLiquidityGuard() {
+  const container =
+    document.getElementById("mutuo-liquidity-guard-container") ||
+    document.getElementById("mutuo-liquidity-guard-card");
+  if (!container) return;
+
+  // 1. Spese Immobili (escluse dalla selezione perché costituiscono il valore dell'immobile)
+  const immobileCosts = (appData.costi || []).filter((c) => {
+    const catObj = appData.settings.categories[c.cat];
+    return typeof catObj === "object" ? !!catObj.isImmobile : c.cat === "Immobili";
+  });
+
+  let immobilePrezzo = 0;
+  let immobileSaldato = 0;
+  let userImmobilePaid = {};
+  appData.settings.users.forEach((u) => {
+    userImmobilePaid[u.id] = 0;
+  });
+
+  immobileCosts.forEach((c) => {
+    immobilePrezzo += c.prezzo || 0;
+    appData.settings.users.forEach((u) => {
+      const p = parseFloat(c[u.id]) || 0;
+      immobileSaldato += p;
+      userImmobilePaid[u.id] += p;
+    });
+  });
+  const immobileDaSaldare = Math.max(0, immobilePrezzo - immobileSaldato);
+
+  // 2. Voci Extra Idonee e Selezione Attiva
+  const eligibleCosts = getEligibleExtraCosts();
+  const selectedIds = new Set(getSelectedExtraCostIds().map(Number));
+  const selectedExtraCosts = eligibleCosts.filter((c) =>
+    selectedIds.has(Number(c.id)),
+  );
+
+  let extraPrezzo = 0;
+  let extraSaldato = 0;
+  let userExtraPaid = {};
+  appData.settings.users.forEach((u) => {
+    userExtraPaid[u.id] = 0;
+  });
+
+  selectedExtraCosts.forEach((c) => {
+    extraPrezzo += c.prezzo || 0;
+    appData.settings.users.forEach((u) => {
+      const p = parseFloat(c[u.id]) || 0;
+      extraSaldato += p;
+      userExtraPaid[u.id] += p;
+    });
+  });
+  const extraDaSaldare = Math.max(0, extraPrezzo - extraSaldato);
+
+  // 3. Liquidità Totale e per Partecipante (da Budget e Riserve di Sicurezza)
+  let totaleQuote =
+    appData.settings.users.reduce(
+      (acc, u) => acc + (parseFloat(u.share) || 0),
+      0,
+    ) || 100;
+
+  let totalFunds = 0;
+  let totalSafetyFund = 0;
+  let userFunds = {};
+  let userSafetyFund = {};
+  let userLiquidFree = {};
+
+  appData.settings.users.forEach((u) => {
+    const fondiU = (appData.budget || [])
+      .filter((b) => !b.isMutuo)
+      .reduce((sum, b) => sum + (parseFloat(b[u.id]) || 0), 0);
+    const riservaU = parseFloat(u.safetyFund) || 0;
+    const liberiU = Math.max(0, fondiU - riservaU);
+
+    userFunds[u.id] = fondiU;
+    userSafetyFund[u.id] = riservaU;
+    userLiquidFree[u.id] = liberiU;
+
+    totalFunds += fondiU;
+    totalSafetyFund += riservaU;
+  });
+
+  const totalLiquidFree = Math.max(0, totalFunds - totalSafetyFund);
+
+  // 4. Determinazione di chi richiede il mutuo (modalità singolo, entrambi o auto)
+  const modalita = document.getElementById("mutuo-modalita")?.value || "auto";
+  const targetId =
+    document.getElementById("mutuo-singolo-user")?.value ||
+    appData.settings.users[0]?.id;
+  const intero =
+    document.getElementById("mutuo-singolo-intero")?.checked || false;
+
+  let mortgageUsers = [];
+  if (modalita === "singolo") {
+    mortgageUsers = appData.settings.users.filter((u) => u.id === targetId);
+    if (mortgageUsers.length === 0 && appData.settings.users.length > 0) {
+      mortgageUsers = [appData.settings.users[0]];
+    }
+  } else if (modalita === "entrambi") {
+    mortgageUsers = appData.settings.users.slice();
+  } else {
+    // Modalità auto: verifica chi ha un disavanzo rispetto alla propria quota
+    const totProjVal = (appData.costi || []).reduce(
+      (acc, c) => acc + (c.prezzo || 0),
+      0,
+    );
+    const withShortfall = appData.settings.users.filter((u) => {
+      const quotaU = totProjVal * ((parseFloat(u.share) || 0) / totaleQuote);
+      return quotaU > (userLiquidFree[u.id] || 0);
+    });
+    mortgageUsers =
+      withShortfall.length > 0 ? withShortfall : appData.settings.users.slice();
+  }
+
+  const isAllUsers =
+    mortgageUsers.length === appData.settings.users.length;
+
+  // Badge testuale Intestatario Mutuo
+  const badgeEl = document.getElementById("liquidity-target-badge");
+  if (badgeEl) {
+    if (isAllUsers) {
+      badgeEl.innerHTML = `<span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 8px; background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); display: flex; align-items: center; gap: 4px;"><span class="material-symbols-outlined" style="font-size: 16px;">group</span> Mutuo Cointestato (Tutti i partecipanti)</span>`;
+    } else {
+      const targetNames = mortgageUsers.map((u) => u.name).join(", ");
+      const shareDesc =
+        modalita === "singolo" && intero
+          ? "100% Intero Immobile"
+          : `Quota ${mortgageUsers.map((u) => `${u.name} ${u.share}%`).join(" • ")}`;
+      badgeEl.innerHTML = `<span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 8px; background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); display: flex; align-items: center; gap: 4px;"><span class="material-symbols-outlined" style="font-size: 16px;">person</span> Intestatario Mutuo: <b>${targetNames}</b> (${shareDesc})</span>`;
+    }
+  }
+
+  // 5. Calcolo dei valori per chi chiede il mutuo (Scope Card Superiori & Indicatori)
+  let scopeImmobilePrezzo = 0;
+  let scopeImmobileSaldato = 0;
+  let scopeImmobileDaSaldare = 0;
+  let scopeExtraPrezzo = 0;
+  let scopeExtraSaldato = 0;
+  let scopeExtraDaSaldare = 0;
+  let scopeCapitale = 0;
+  let scopeSafetyFund = 0;
+  let scopeFondiLiberi = 0;
+
+  if (isAllUsers) {
+    scopeImmobilePrezzo = immobilePrezzo;
+    scopeImmobileSaldato = immobileSaldato;
+    scopeImmobileDaSaldare = immobileDaSaldare;
+    scopeExtraPrezzo = extraPrezzo;
+    scopeExtraSaldato = extraSaldato;
+    scopeExtraDaSaldare = extraDaSaldare;
+    scopeCapitale = totalFunds;
+    scopeSafetyFund = totalSafetyFund;
+    scopeFondiLiberi = totalLiquidFree;
+  } else {
+    let applicantImmobileRatio = 0;
+    let applicantExtraRatio = 0;
+
+    if (modalita === "singolo" && intero) {
+      applicantImmobileRatio = 1;
+      applicantExtraRatio =
+        (parseFloat(mortgageUsers[0]?.share) || 0) / totaleQuote;
+    } else {
+      const sumShares = mortgageUsers.reduce(
+        (sum, u) => sum + (parseFloat(u.share) || 0),
+        0,
+      );
+      applicantImmobileRatio = sumShares / totaleQuote;
+      applicantExtraRatio = sumShares / totaleQuote;
+    }
+
+    scopeImmobilePrezzo = immobilePrezzo * applicantImmobileRatio;
+    scopeImmobileSaldato = mortgageUsers.reduce(
+      (sum, u) => sum + (userImmobilePaid[u.id] || 0),
+      0,
+    );
+    scopeImmobileDaSaldare = Math.max(
+      0,
+      scopeImmobilePrezzo - scopeImmobileSaldato,
+    );
+
+    scopeExtraPrezzo = extraPrezzo * applicantExtraRatio;
+    scopeExtraSaldato = mortgageUsers.reduce(
+      (sum, u) => sum + (userExtraPaid[u.id] || 0),
+      0,
+    );
+    scopeExtraDaSaldare = Math.max(0, scopeExtraPrezzo - scopeExtraSaldato);
+
+    scopeCapitale = mortgageUsers.reduce(
+      (sum, u) => sum + (userFunds[u.id] || 0),
+      0,
+    );
+    scopeSafetyFund = mortgageUsers.reduce(
+      (sum, u) => sum + (userSafetyFund[u.id] || 0),
+      0,
+    );
+    scopeFondiLiberi = Math.max(0, scopeCapitale - scopeSafetyFund);
+  }
+
+  const scopeAnticipoMaxSicuro = Math.max(
+    0,
+    Math.min(scopeImmobilePrezzo, scopeFondiLiberi - scopeExtraDaSaldare),
+  );
+  const scopeUlterioreAnticipo = Math.max(
+    0,
+    scopeAnticipoMaxSicuro - scopeImmobileSaldato,
+  );
+
+  // 6. Render Indicatori Sintetici (KPI Cards)
+  const kpiGridEl = document.getElementById("liquidity-kpi-grid");
+  if (kpiGridEl) {
+    const immTitle = isAllUsers
+      ? "Costo Immobile"
+      : `Quota Immobile (${mortgageUsers.map((u) => u.name).join(", ")})`;
+    const extraTitle = isAllUsers
+      ? "Voci Extra Selezionate"
+      : `Quota Extra (${mortgageUsers.map((u) => u.name).join(", ")})`;
+    const capTitle = isAllUsers
+      ? "Capitale Partecipanti"
+      : `Capitale (${mortgageUsers.map((u) => u.name).join(", ")})`;
+    const antTitle = isAllUsers
+      ? "Anticipo Max Sicuro Immobile"
+      : `Anticipo Max Sicuro (${mortgageUsers.map((u) => u.name).join(", ")})`;
+
+    kpiGridEl.innerHTML = `
+      <div class="liquidity-kpi-card">
+        <div class="liquidity-kpi-card-header">
+          <span class="liquidity-kpi-card-title">${immTitle}</span>
+          <span class="material-symbols-outlined liquidity-kpi-card-icon">home</span>
+        </div>
+        <div class="liquidity-kpi-card-val sensitive-value">${formatCurrency(scopeImmobilePrezzo)}</div>
+        <div class="liquidity-kpi-card-sub">
+          Saldato: <b class="sensitive-value">${formatCurrency(scopeImmobileSaldato)}</b> • Residuo: <b class="sensitive-value">${formatCurrency(scopeImmobileDaSaldare)}</b>
+        </div>
+      </div>
+
+      <div class="liquidity-kpi-card" style="border-left: 3px solid #f59e0b;">
+        <div class="liquidity-kpi-card-header">
+          <span class="liquidity-kpi-card-title">${extraTitle}</span>
+          <span class="material-symbols-outlined liquidity-kpi-card-icon" style="color: #f59e0b;">payments</span>
+        </div>
+        <div class="liquidity-kpi-card-val sensitive-value" style="color: #f59e0b;">${formatCurrency(scopeExtraPrezzo)}</div>
+        <div class="liquidity-kpi-card-sub">
+          Saldati: <span class="sensitive-value">${formatCurrency(scopeExtraSaldato)}</span> • Da saldare: <b class="sensitive-value" style="color: #f59e0b;">${formatCurrency(scopeExtraDaSaldare)}</b> (${selectedExtraCosts.length}/${eligibleCosts.length} voci)
+        </div>
+      </div>
+
+      <div class="liquidity-kpi-card">
+        <div class="liquidity-kpi-card-header">
+          <span class="liquidity-kpi-card-title">${capTitle}</span>
+          <span class="material-symbols-outlined liquidity-kpi-card-icon">account_balance_wallet</span>
+        </div>
+        <div class="liquidity-kpi-card-val sensitive-value">${formatCurrency(scopeCapitale)}</div>
+        <div class="liquidity-kpi-card-sub">
+          Liberi: <b class="sensitive-value">${formatCurrency(scopeFondiLiberi)}</b> • Riserva: <span class="sensitive-value">${formatCurrency(scopeSafetyFund)}</span>
+        </div>
+      </div>
+
+      <div class="liquidity-kpi-card" style="border-left: 3px solid var(--md-sys-color-primary); background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container);">
+        <div class="liquidity-kpi-card-header">
+          <span class="liquidity-kpi-card-title" style="color: var(--md-sys-color-on-primary-container);">${antTitle}</span>
+          <span class="material-symbols-outlined liquidity-kpi-card-icon" style="color: var(--md-sys-color-on-primary-container);">shield_lock</span>
+        </div>
+        <div class="liquidity-kpi-card-val sensitive-value">${formatCurrency(scopeAnticipoMaxSicuro)}</div>
+        <div class="liquidity-kpi-card-sub" style="color: var(--md-sys-color-on-primary-container); opacity: 0.9;">
+          Ulteriore versabile: <b class="sensitive-value">${formatCurrency(scopeUlterioreAnticipo)}</b> (tutela le spese extra)
+        </div>
+      </div>
+    `;
+  }
+
+  // 7. Render Multiselezione Voci Extra Espandibile
+  const selectionEl = document.getElementById("extra-cost-selection-container");
+  if (selectionEl) {
+    const wasOpen =
+      document.getElementById("extra-cost-collapsible")?.open || false;
+
+    let itemsHTML = "";
+    if (eligibleCosts.length === 0) {
+      itemsHTML = `<div style="grid-column: 1 / -1; padding: 16px; text-align: center; color: var(--md-sys-color-outline); font-size: 13px;">Nessuna voce extra registrata nei costi.</div>`;
+    } else {
+      itemsHTML = eligibleCosts
+        .map((c) => {
+          const catObj = appData.settings.categories[c.cat];
+          const color =
+            typeof catObj === "object" ? catObj.color : catObj || "#6750A4";
+          const sumPaid = appData.settings.users.reduce(
+            (acc, u) => acc + (parseFloat(c[u.id]) || 0),
+            0,
+          );
+          const prezzo = c.prezzo || 0;
+          const isSelected = selectedIds.has(Number(c.id));
+
+          let tagHTML = "";
+          if (sumPaid >= prezzo && prezzo > 0) {
+            tagHTML = `<span class="extra-cost-paid-tag complete">Saldato (100%)</span>`;
+          } else if (sumPaid > 0) {
+            tagHTML = `<span class="extra-cost-paid-tag partial">Parziale: <span class="sensitive-value">${formatCurrency(sumPaid)}</span> / <span class="sensitive-value">${formatCurrency(prezzo)}</span></span>`;
+          } else {
+            tagHTML = `<span class="extra-cost-paid-tag unpaid">Da saldare: <span class="sensitive-value">${formatCurrency(prezzo)}</span></span>`;
+          }
+
+          return `
+            <div class="extra-cost-item-card ${isSelected ? "checked" : ""}" onclick="toggleExtraCostSelection(${c.id})">
+              <input type="checkbox" class="extra-cost-checkbox" ${isSelected ? "checked" : ""} onclick="event.stopPropagation(); toggleExtraCostSelection(${c.id})">
+              <div class="extra-cost-info">
+                <div class="extra-cost-title-row">
+                  <span class="extra-cost-desc" title="${escapeHTML(c.desc || "Senza descrizione")}">${escapeHTML(c.desc || "Senza descrizione")}</span>
+                  <span class="sensitive-value" style="font-size: 13px; font-weight: 700; flex-shrink: 0;">${formatCurrency(prezzo)}</span>
+                </div>
+                <div class="extra-cost-meta-row">
+                  <span class="extra-cost-cat-pill" style="background-color: ${color};">${escapeHTML(c.cat || "Altro")}</span>
+                  ${tagHTML}
+                </div>
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+    }
+
+    selectionEl.innerHTML = `
+      <details class="extra-cost-collapsible" id="extra-cost-collapsible" ${wasOpen ? "open" : ""}>
+        <summary class="extra-cost-summary">
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <span class="material-symbols-outlined" style="font-size: 20px; color: var(--md-sys-color-primary);">checklist</span>
+            <span style="font-size: 14px; font-weight: 700; color: var(--md-sys-color-on-surface);">
+              Seleziona Voci Extra da Anticipare / Saldare con Fondi Propri
+            </span>
+            <span style="font-size: 11.5px; font-weight: 600; padding: 2px 8px; border-radius: 6px; background: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface);">
+              ${selectedExtraCosts.length} di ${eligibleCosts.length} selezionate • <span class="sensitive-value">${formatCurrency(extraPrezzo)}</span>
+            </span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span style="font-size: 12px; color: var(--md-sys-color-outline);">Gestisci voci</span>
+            <span class="material-symbols-outlined expand-chevron">expand_more</span>
+          </div>
+        </summary>
+
+        <div class="extra-cost-body">
+          <div class="extra-cost-selection-header">
+            <div style="font-size: 12px; color: var(--md-sys-color-outline);">
+              Esclude automaticamente gli immobili già computati. Seleziona quali spese accessorie considerare per il calcolo della liquidità riservata.
+            </div>
+            <div class="extra-cost-selection-actions">
+              <button type="button" class="btn btn-tonal" onclick="selectAllExtraCosts()" style="height: 32px; font-size: 12px; padding: 0 10px;">
+                <span class="material-symbols-outlined" style="font-size: 16px;">select_all</span> Seleziona Tutte
+              </button>
+              <button type="button" class="btn btn-tonal" onclick="deselectAllExtraCosts()" style="height: 32px; font-size: 12px; padding: 0 10px;">
+                <span class="material-symbols-outlined" style="font-size: 16px;">deselect</span> Deseleziona Tutte
+              </button>
+            </div>
+          </div>
+
+          <div class="extra-cost-grid">
+            ${itemsHTML}
+          </div>
+        </div>
+      </details>
+    `;
+  }
+
+  // 8. Render Tabella di Ripartizione per chi chiede il mutuo (senza card)
+  const splitEl = document.getElementById("liquidity-split-container");
+  if (splitEl) {
+    let rowsHTML = "";
+    let sumQuotaImm = 0;
+    let sumQuotaExtra = 0;
+    let sumCostoTot = 0;
+    let sumGiaSaldatoTot = 0;
+    let sumExtraDaSaldare = 0;
+    let sumAnticipoMaxSicuro = 0;
+    let sumUlterioreAnticipo = 0;
+
+    mortgageUsers.forEach((u) => {
+      const sharePct = parseFloat(u.share) || 0;
+      const userPropertyRatio =
+        modalita === "singolo" && intero ? 1 : sharePct / totaleQuote;
+      const userExtraRatio = sharePct / totaleQuote;
+
+      const userQuotaImm = immobilePrezzo * userPropertyRatio;
+      const userQuotaExtra = extraPrezzo * userExtraRatio;
+      const userCostoTot = userQuotaImm + userQuotaExtra;
+
+      const userGiaSaldatoImm = userImmobilePaid[u.id] || 0;
+      const userGiaSaldatoExtra = userExtraPaid[u.id] || 0;
+      const userGiaSaldatoTot = userGiaSaldatoImm + userGiaSaldatoExtra;
+
+      const userExtraDaSaldare = extraDaSaldare * userExtraRatio;
+      const userFondiLiberi = userLiquidFree[u.id] || 0;
+
+      const userAnticipoMaxSicuro = Math.max(
+        0,
+        Math.min(userQuotaImm, userFondiLiberi - userExtraDaSaldare),
+      );
+      const userUlterioreAnticipo = Math.max(
+        0,
+        userAnticipoMaxSicuro - userGiaSaldatoImm,
+      );
+
+      sumQuotaImm += userQuotaImm;
+      sumQuotaExtra += userQuotaExtra;
+      sumCostoTot += userCostoTot;
+      sumGiaSaldatoTot += userGiaSaldatoTot;
+      sumExtraDaSaldare += userExtraDaSaldare;
+      sumAnticipoMaxSicuro += userAnticipoMaxSicuro;
+      sumUlterioreAnticipo += userUlterioreAnticipo;
+
+      const shareLabel =
+        modalita === "singolo" && intero ? "100% (Intero)" : `${sharePct}%`;
+
+      rowsHTML += `
+        <tr>
+          <td>
+            <div style="font-weight: 600;">${escapeHTML(u.name)}</div>
+            <div style="font-size: 11px; color: var(--md-sys-color-outline);">Riserva: <span class="sensitive-value">${formatCurrency(userSafetyFund[u.id] || 0)}</span></div>
+          </td>
+          <td style="text-align: center; font-weight: 600;">${shareLabel}</td>
+          <td style="text-align: right;" class="sensitive-value">${formatCurrency(userFondiLiberi)}</td>
+          <td style="text-align: right;" class="sensitive-value">${formatCurrency(userQuotaImm)}</td>
+          <td style="text-align: right;" class="sensitive-value">${formatCurrency(userQuotaExtra)}</td>
+          <td style="text-align: right; font-weight: 600;" class="sensitive-value">${formatCurrency(userCostoTot)}</td>
+          <td style="text-align: right;" class="sensitive-value">${formatCurrency(userGiaSaldatoTot)}</td>
+          <td style="text-align: right; color: #f59e0b; font-weight: 600;" class="sensitive-value">${formatCurrency(userExtraDaSaldare)}</td>
+          <td style="text-align: right; color: var(--md-sys-color-primary); font-weight: 700;" class="sensitive-value">${formatCurrency(userAnticipoMaxSicuro)}</td>
+          <td style="text-align: right; color: var(--md-sys-color-success); font-weight: 700;" class="sensitive-value">${formatCurrency(userUlterioreAnticipo)}</td>
+        </tr>
+      `;
+    });
+
+    const totalShareLabel = isAllUsers
+      ? "100%"
+      : modalita === "singolo" && intero
+        ? "100%"
+        : `${mortgageUsers.reduce((s, u) => s + (parseFloat(u.share) || 0), 0)}%`;
+
+    const beneficiaryLabel = isAllUsers
+      ? "tutti i partecipanti"
+      : `<b>${mortgageUsers.map((u) => escapeHTML(u.name)).join(", ")}</b>`;
+
+    splitEl.innerHTML = `
+      <div style="font-size: 15px; font-weight: 700; margin-bottom: 10px; color: var(--md-sys-color-on-surface); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span class="material-symbols-outlined" style="color: var(--md-sys-color-primary); font-size: 20px;">pie_chart</span>
+          <span>Ripartizione Costi & Anticipo Sostenibile ${isAllUsers ? "per Quota Configurazione" : `(Intestatario: ${mortgageUsers.map((u) => escapeHTML(u.name)).join(", ")})`}</span>
+        </div>
+        <span style="font-size: 12px; font-weight: 500; color: var(--md-sys-color-outline);">
+          ${isAllUsers ? `Quote applicate: ${appData.settings.users.map((u) => `${escapeHTML(u.name)} ${u.share}%`).join(" • ")}` : `Richiesta mutuo: ${mortgageUsers.map((u) => `${escapeHTML(u.name)} (${modalita === "singolo" && intero ? 100 : u.share}%)`).join(" • ")}`}
+        </span>
+      </div>
+
+      <div class="table-container" style="border-radius: var(--md-sys-shape-corner-medium); border: 1px solid var(--md-sys-color-surface-container-high);">
+        <table class="liquidity-split-table">
+          <thead>
+            <tr>
+              <th>Partecipante</th>
+              <th style="text-align: center;">Quota (%)</th>
+              <th style="text-align: right;">Fondi Liberi</th>
+              <th style="text-align: right;">Quota Immobile</th>
+              <th style="text-align: right;">Quota Extra</th>
+              <th style="text-align: right;">Costo Totale</th>
+              <th style="text-align: right;">Già Saldato</th>
+              <th style="text-align: right; color: #f59e0b;">Extra da Saldare</th>
+              <th style="text-align: right; color: var(--md-sys-color-primary);">Anticipo Max Sicuro</th>
+              <th style="text-align: right; color: var(--md-sys-color-success);">Ulteriore Anticipo</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsHTML}
+            <tr class="total-row">
+              <td>${isAllUsers ? "TOTALE PROGETTO" : "TOTALE INTESTATARIO"}</td>
+              <td style="text-align: center;">${totalShareLabel}</td>
+              <td style="text-align: right;" class="sensitive-value">${formatCurrency(scopeFondiLiberi)}</td>
+              <td style="text-align: right;" class="sensitive-value">${formatCurrency(sumQuotaImm)}</td>
+              <td style="text-align: right;" class="sensitive-value">${formatCurrency(sumQuotaExtra)}</td>
+              <td style="text-align: right;" class="sensitive-value">${formatCurrency(sumCostoTot)}</td>
+              <td style="text-align: right;" class="sensitive-value">${formatCurrency(sumGiaSaldatoTot)}</td>
+              <td style="text-align: right; color: #f59e0b;" class="sensitive-value">${formatCurrency(sumExtraDaSaldare)}</td>
+              <td style="text-align: right; color: var(--md-sys-color-primary);" class="sensitive-value">${formatCurrency(sumAnticipoMaxSicuro)}</td>
+              <td style="text-align: right; color: var(--md-sys-color-success);" class="sensitive-value">${formatCurrency(sumUlterioreAnticipo)}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top: 14px; padding: 12px 16px; border-radius: 8px; background: var(--md-sys-color-surface-container); border-left: 4px solid var(--md-sys-color-primary); font-size: 12.5px; line-height: 1.5; color: var(--md-sys-color-on-surface);">
+        <div style="font-weight: 700; margin-bottom: 2px; color: var(--md-sys-color-primary); display: flex; align-items: center; gap: 6px;">
+          <span class="material-symbols-outlined" style="font-size: 18px;">lightbulb</span>
+          Regola di Salvaguardia della Liquidità
+        </div>
+        Per evitare che il capitale si esaurisca prima di aver pagato spese accessorie e lavori non finanziabili dalla banca, 
+        l'anticipo da versare per la casa da parte di ${beneficiaryLabel} non dovrebbe superare <b class="sensitive-value">${formatCurrency(scopeAnticipoMaxSicuro)}</b> 
+        (di cui già saldati <b class="sensitive-value">${formatCurrency(scopeImmobileSaldato)}</b>, con un margine di ulteriore anticipo versabile pari a <b class="sensitive-value">${formatCurrency(scopeUlterioreAnticipo)}</b>). 
+        Il mutuo necessario per finanziare la quota restante dell'immobile viene calcolato ed esposto direttamente nel Calcolatore Mutuo soprastante.
+      </div>
+    `;
+  }
 }
 
 // Variabili globali per memorizzare l'indice e il tipo di lista durante il Drag & Drop
