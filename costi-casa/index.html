@@ -1958,8 +1958,8 @@
               <div class="input-field" style="flex: 1">
                 <label>Stato</label>
                 <select id="add-costo-confermato">
-                  <option value="true" selected>Confermato</option>
-                  <option value="false">Non confermato</option>
+                  <option value="false" selected>Non confermato</option>
+                  <option value="true">Confermato</option>
                 </select>
               </div>
               <div class="input-field" style="flex: 2">
@@ -2633,31 +2633,74 @@
 
         <!-- MUTUO -->
         <div id="view-mutuo" class="view-section">
-          <div class="card">
-            <div
-              style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 20px;
-                flex-wrap: wrap;
-                gap: 12px;
-              "
-            >
+          <!-- Card Parametri Mutuo: Vista Fissa / Sintesi -->
+          <div class="card" id="mutuo-params-view-card">
+            <div class="mutuo-params-header">
               <h2 class="card-title" style="margin-bottom: 0">
                 Parametri Mutuo & Finanziamento
               </h2>
               <button
                 class="btn btn-tonal"
-                id="btn-toggle-edit-mutuo"
-                onclick="toggleEditMutuoInputs()"
-                title="Abilita modifica manuale importi"
+                id="btn-open-mutuo-params-edit"
+                onclick="toggleMutuoParamsEdit(true)"
+                title="Modifica parametri del mutuo"
               >
-                <span class="material-symbols-outlined" id="icon-edit-mutuo"
-                  >edit</span
-                >
-                <span id="text-edit-mutuo">Modifica Prezzi</span>
+                <span class="material-symbols-outlined">edit</span>
+                <span>Modifica</span>
               </button>
+            </div>
+
+            <div class="mutuo-params-summary-grid" id="mutuo-params-summary-grid">
+              <div class="mutuo-param-pill">
+                <span class="mutuo-param-label">Totale Progetto</span>
+                <span class="mutuo-param-value sensitive-value" id="mutuo-summary-totale-progetto">-</span>
+              </div>
+              <div class="mutuo-param-pill">
+                <span class="mutuo-param-label">Valore Immobile</span>
+                <span class="mutuo-param-value sensitive-value" id="mutuo-summary-valore-immobile">-</span>
+              </div>
+              <div class="mutuo-param-pill">
+                <span class="mutuo-param-label">Durata</span>
+                <span class="mutuo-param-value" id="mutuo-summary-durata">30 Anni</span>
+              </div>
+              <div class="mutuo-param-pill">
+                <span class="mutuo-param-label">Tasso Nominale</span>
+                <span class="mutuo-param-value" id="mutuo-summary-tasso">3.25%</span>
+              </div>
+              <div class="mutuo-param-pill">
+                <span class="mutuo-param-label">Modalità</span>
+                <span class="mutuo-param-value" id="mutuo-summary-modalita">Calcolo Automatico</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card Parametri Mutuo: Modalità Modifica Completa -->
+          <div class="card" id="mutuo-params-edit-card" style="display: none;">
+            <div class="mutuo-params-header">
+              <h2 class="card-title" style="margin-bottom: 0">
+                Parametri Mutuo & Finanziamento
+              </h2>
+              <div class="mutuo-edit-actions">
+                <button
+                  class="btn btn-tonal"
+                  id="btn-toggle-edit-mutuo"
+                  onclick="toggleEditMutuoInputs()"
+                  title="Abilita modifica manuale importi"
+                >
+                  <span class="material-symbols-outlined" id="icon-edit-mutuo"
+                    >edit</span
+                  >
+                  <span id="text-edit-mutuo">Modifica Prezzi</span>
+                </button>
+                <button
+                  class="btn btn-filled"
+                  onclick="toggleMutuoParamsEdit(false)"
+                  title="Salva e chiudi modifica parametri"
+                >
+                  <span class="material-symbols-outlined">check</span>
+                  <span>Fine</span>
+                </button>
+              </div>
             </div>
 
             <div class="input-group">

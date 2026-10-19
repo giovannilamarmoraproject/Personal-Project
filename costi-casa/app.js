@@ -340,6 +340,7 @@ const autoColors = [
 ];
 
 let isMutuoManualEdit = false;
+let isMutuoParamsEditing = false;
 let manualCustomMortgage = null;
 let isMortgageEditing = false;
 let lastCalculatedUserMutuo = {};
@@ -826,7 +827,7 @@ function addEntry(type) {
       });
 
     const confermatoEl = document.getElementById("add-costo-confermato");
-    const confermato = confermatoEl ? confermatoEl.value === "true" : true;
+    const confermato = confermatoEl ? confermatoEl.value === "true" : false;
 
     let item = { id: Date.now(), cat, desc, prezzo, note, confermato };
     appData.settings.users.forEach((u) => {
@@ -839,7 +840,7 @@ function addEntry(type) {
     document.getElementById("add-costo-desc").value = "";
     document.getElementById("add-costo-prezzo").value = "";
     document.getElementById("add-costo-note").value = "";
-    if (confermatoEl) confermatoEl.value = "true";
+    if (confermatoEl) confermatoEl.value = "false";
     appData.settings.users.forEach((u) => {
       let inp = document.getElementById(`add-costo-${u.id}`);
       if (inp) inp.value = "";
@@ -955,7 +956,7 @@ function openEditModal(type, id) {
     );
     const confEl = document.getElementById("modal-confermato");
     if (confEl) {
-      confEl.value = item.confermato === false ? "false" : "true";
+      confEl.value = item.confermato === true ? "true" : "false";
     }
     const sumPaid = appData.settings.users.reduce(
       (acc, u) => acc + (item[u.id] || 0),
@@ -2895,8 +2896,8 @@ function getSortedData(type) {
           0,
         );
       } else if (currentSort.column === "confermato") {
-        valA = a.confermato !== false ? 1 : 0;
-        valB = b.confermato !== false ? 1 : 0;
+        valA = a.confermato === true ? 1 : 0;
+        valB = b.confermato === true ? 1 : 0;
       }
       if (typeof valA === "string")
         return currentSort.asc
@@ -3945,6 +3946,84 @@ function parseCurrencyInput(value) {
 }
 
 /**
+ * Alterna tra la vista a card fissa di sintesi e la scheda di modifica parametri mutuo.
+ * @param {boolean} [forceState] - True per aprire la modifica, False per tornare alla sintesi.
+ */
+function toggleMutuoParamsEdit(forceState) {
+  if (typeof forceState === "boolean") {
+    isMutuoParamsEditing = forceState;
+  } else {
+    isMutuoParamsEditing = !isMutuoParamsEditing;
+  }
+
+  const viewCard = document.getElementById("mutuo-params-view-card");
+  const editCard = document.getElementById("mutuo-params-edit-card");
+
+  if (viewCard && editCard) {
+    if (isMutuoParamsEditing) {
+      viewCard.style.display = "none";
+      editCard.style.display = "block";
+    } else {
+      editCard.style.display = "none";
+      viewCard.style.display = "block";
+      updateMutuoParamsSummaryUI();
+    }
+  }
+}
+
+/**
+ * Aggiorna i valori visualizzati nella card fissa di sintesi dei parametri mutuo.
+ */
+function updateMutuoParamsSummaryUI() {
+  const totProjEl = document.getElementById("mutuo-totale-progetto");
+  const costoCasaEl = document.getElementById("mutuo-casa-costo");
+  const anniEl = document.getElementById("mutuo-anni");
+  const tassoEl = document.getElementById("mutuo-tasso");
+  const modalitaEl = document.getElementById("mutuo-modalita");
+  const singoloUserEl = document.getElementById("mutuo-singolo-user");
+  const singoloInteroEl = document.getElementById("mutuo-singolo-intero");
+
+  const sumTotProj = document.getElementById("mutuo-summary-totale-progetto");
+  const sumCasa = document.getElementById("mutuo-summary-valore-immobile");
+  const sumDurata = document.getElementById("mutuo-summary-durata");
+  const sumTasso = document.getElementById("mutuo-summary-tasso");
+  const sumModalita = document.getElementById("mutuo-summary-modalita");
+
+  if (sumTotProj && totProjEl) {
+    const val = parseCurrencyInput(totProjEl.value);
+    sumTotProj.innerText = formatter.format(val);
+  }
+  if (sumCasa && costoCasaEl) {
+    const val = parseCurrencyInput(costoCasaEl.value);
+    sumCasa.innerText = formatter.format(val);
+  }
+  if (sumDurata && anniEl) {
+    sumDurata.innerText = `${anniEl.value || 30} Anni`;
+  }
+  if (sumTasso && tassoEl) {
+    sumTasso.innerText = `${tassoEl.value || 0}%`;
+  }
+  if (sumModalita && modalitaEl) {
+    const mode = modalitaEl.value;
+    if (mode === "singolo") {
+      let userName = "Singolo";
+      if (singoloUserEl && singoloUserEl.value) {
+        const u = (appData.settings.users || []).find(
+          (x) => x.id === singoloUserEl.value,
+        );
+        if (u) userName = u.name;
+      }
+      const isIntero = singoloInteroEl && singoloInteroEl.checked;
+      sumModalita.innerText = `${userName}${isIntero ? " (100% Intero)" : ""}`;
+    } else if (mode === "entrambi") {
+      sumModalita.innerText = "Cointestato (Quote %)";
+    } else {
+      sumModalita.innerText = "Calcolo Automatico";
+    }
+  }
+}
+
+/**
  * Abilita o disabilita la modalità di override manuale per il Totale Progetto e il Valore Immobile del Mutuo.
  */
 function toggleEditMutuoInputs() {
@@ -4482,6 +4561,7 @@ function calculateMortgage() {
   let mutuoDetailsCard = document.getElementById("mutuo-details-card");
   if (mutuoDetailsCard) mutuoDetailsCard.style.display = "block";
   updateTableViewModeUI();
+  updateMutuoParamsSummaryUI();
   renderLiquidityGuard();
 }
 
@@ -6341,7 +6421,7 @@ function renderDetailView(item) {
   );
   const restante = (item.prezzo || 0) - sumPaid;
 
-  const isConfermato = item.confermato !== false;
+  const isConfermato = item.confermato === true;
   const statusBadgeHTML = `<span class="status-badge ${isConfermato ? "confermato" : "non-confermato"}" style="cursor: pointer; margin-left: 8px;" title="Clicca per invertire lo stato" onclick="toggleCostoConfermato(${item.id})"><span class="material-symbols-outlined">${isConfermato ? "check_circle" : "cancel"}</span> ${isConfermato ? "Confermato" : "Non confermato"}</span>`;
   const isPagato = restante <= 0.005 && ((item.prezzo || 0) > 0 || sumPaid > 0);
   const pagatoBadgeHTML = isPagato ? `<span class="badge-pagato" style="margin-left: 8px;"><span class="material-symbols-outlined">check_circle</span> Pagato</span>` : "";
@@ -6987,7 +7067,7 @@ function deletePayment(costoId, payId) {
 function toggleCostoConfermato(id) {
   const item = appData.costi.find((c) => c.id === id);
   if (!item) return;
-  const nuovoStato = item.confermato === false ? true : false;
+  const nuovoStato = item.confermato === true ? false : true;
   item.confermato = nuovoStato;
   saveDataLocally();
   renderTables();
@@ -7109,7 +7189,7 @@ function renderTables() {
           : "";
 
       // Stato Confermato / Non Confermato
-      const isConfermato = c.confermato !== false;
+      const isConfermato = c.confermato === true;
       const statusBadge = `<span class="status-badge ${isConfermato ? "confermato" : "non-confermato"}" title="Clicca per invertire lo stato" onclick="event.stopPropagation(); toggleCostoConfermato(${c.id})"><span class="material-symbols-outlined">${isConfermato ? "check_circle" : "cancel"}</span> ${isConfermato ? "Confermato" : "Non confermato"}</span>`;
 
       // Badge Pagato nella colonna Restante: se saldato mostra direttamente il badge Pagato

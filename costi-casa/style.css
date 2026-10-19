@@ -3088,6 +3088,89 @@ body.dark-mode .badge-pagato {
   color: var(--md-sys-color-outline);
 }
 
+/* Intestazione Card Parametri Mutuo */
+.mutuo-params-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.mutuo-edit-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+@media (max-width: 768px) {
+  .mutuo-params-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  #btn-open-mutuo-params-edit {
+    width: 100%;
+    justify-content: center;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .mutuo-edit-actions {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+  }
+  .mutuo-edit-actions .btn {
+    flex: 1;
+    justify-content: center;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+}
+
+/* Griglia Parametri Mutuo Fissi (Sintesi) */
+.mutuo-params-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+@media (max-width: 768px) {
+  .mutuo-params-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .mutuo-params-summary-grid .mutuo-param-pill:last-child {
+    grid-column: 1 / -1;
+  }
+}
+.mutuo-param-pill {
+  background: var(--md-sys-color-surface-container, #ece7e0);
+  border: 1px solid var(--md-sys-color-outline-variant, rgba(0, 0, 0, 0.08));
+  border-radius: var(--md-sys-shape-corner-medium, 12px);
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+body.dark-mode .mutuo-param-pill {
+  background: var(--md-sys-color-surface-container-high, #2b2930);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+.mutuo-param-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--md-sys-color-outline);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  margin-bottom: 3px;
+}
+.mutuo-param-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--md-sys-color-on-surface);
+}
+
 /* Tabella Ripartizione Quota & Anticipo */
 .liquidity-split-container {
   border-radius: var(--md-sys-shape-corner-medium);
@@ -3401,6 +3484,27 @@ body.dark-mode .table-view-toggle .btn-toggle:hover {
 
 /* Quando la vista Schede è attiva su mobile (di default o per preferenza utente) */
 @media (max-width: 768px) {
+  /* Intestazione tabelle su mobile: titolo sopra, tab Schede/Tabella a tutta larghezza sotto */
+  .table-card-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .table-view-toggle {
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .table-view-toggle .btn-toggle {
+    flex: 1;
+    justify-content: center;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
   body:not(.mobile-table-as-table) .table-container {
     overflow-x: visible;
   }
