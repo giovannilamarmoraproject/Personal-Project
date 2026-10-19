@@ -4386,7 +4386,7 @@ function calculateMortgage() {
                         <td class="col-metric" data-label="Fondi Totali">${formatCurrency(userFunds[u.id])}</td>
                         <td class="col-metric" data-label="Fondo Sicurezza" style="color: var(--md-sys-color-outline);">${formatCurrency(userFondoSicurezza[u.id])}</td>
                         <td class="col-metric" data-label="Disponibile">${formatCurrency(Math.max(0, userFunds[u.id] - userFondoSicurezza[u.id]))}</td>
-                        <td class="col-metric" data-label="Anticipo">${formatCurrency(userAnticipo[u.id])}</td>
+                        <td class="col-metric" data-label="Anticipo"><span class="sensitive-value">${formatCurrency(userAnticipo[u.id])}</span></td>
                         <td class="col-metric" data-label="Mutuo Necessario" style="color: var(--md-sys-color-primary); font-weight: 500;">${formatCurrency(m)}</td>
                         <td class="col-metric" data-label="Rata Mensile" style="font-weight: 700;"><span class="sensitive-value" style="white-space: nowrap;">${formatCurrency(rataU)}&nbsp;/m</span></td>
                         <td class="col-metric" data-label="Rata Annuale" style="font-weight: 500;"><span class="sensitive-value" style="white-space: nowrap;">${formatCurrency(rataAnnualeU)}&nbsp;/a</span></td>
@@ -4450,12 +4450,12 @@ function calculateMortgage() {
                             : ""
                         }
                     </div>
-                    <div class="stat-value">${formatCurrency(totalAnticipo)}</div>
+                    <div class="stat-value sensitive-value">${formatCurrency(totalAnticipo)}</div>
                     <div style="font-size: 12px; opacity: 0.95; margin-top: 4px; display: flex; flex-direction: column; gap: 2px;">
                         ${appData.settings.users
                           .map(
                             (u) =>
-                              `<div>${u.name}: <b>${formatCurrency(userAnticipo[u.id] || 0)}</b></div>`
+                              `<div>${escapeHTML(u.name)}: <b class="sensitive-value">${formatCurrency(userAnticipo[u.id] || 0)}</b></div>`
                           )
                           .join("")}
                     </div>

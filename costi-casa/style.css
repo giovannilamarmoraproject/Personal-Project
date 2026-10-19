@@ -1250,7 +1250,8 @@ input[type="color"] {
   }
   .hero-header {
     height: 180px;
-    border-radius: 0;
+    border-radius: 0 0 var(--md-sys-shape-corner-extra-large)
+      var(--md-sys-shape-corner-extra-large);
     margin-bottom: 16px;
   }
   .hero-title {
