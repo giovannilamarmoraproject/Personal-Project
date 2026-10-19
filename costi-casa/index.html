@@ -2031,9 +2031,21 @@
           </div>
 
           <div class="card">
-            <h2 class="card-title">
-              Dettaglio Spese (Trascina per riordinare)
-            </h2>
+            <div class="table-card-header">
+              <h2 class="card-title" style="margin: 0;">
+                Dettaglio Spese (Trascina per riordinare)
+              </h2>
+              <div class="table-view-toggle" data-table="costi">
+                <button type="button" class="btn-toggle active" data-view="cards" onclick="setTableViewMode('cards')" title="Visualizza come Schede">
+                  <span class="material-symbols-outlined">grid_view</span>
+                  <span>Schede</span>
+                </button>
+                <button type="button" class="btn-toggle" data-view="table" onclick="setTableViewMode('table')" title="Visualizza come Tabella">
+                  <span class="material-symbols-outlined">table_chart</span>
+                  <span>Tabella</span>
+                </button>
+              </div>
+            </div>
             <div class="table-container">
               <table id="table-costi">
                 <thead>
@@ -2322,7 +2334,19 @@
           </div>
 
           <div class="card">
-            <h2 class="card-title">Tabella Riepilogo Categorie</h2>
+            <div class="table-card-header">
+              <h2 class="card-title" style="margin: 0;">Tabella Riepilogo Categorie</h2>
+              <div class="table-view-toggle" data-table="categories">
+                <button type="button" class="btn-toggle active" data-view="cards" onclick="setTableViewMode('cards')" title="Visualizza come Schede">
+                  <span class="material-symbols-outlined">grid_view</span>
+                  <span>Schede</span>
+                </button>
+                <button type="button" class="btn-toggle" data-view="table" onclick="setTableViewMode('table')" title="Visualizza come Tabella">
+                  <span class="material-symbols-outlined">table_chart</span>
+                  <span>Tabella</span>
+                </button>
+              </div>
+            </div>
             <div class="table-container">
               <table id="table-categories-summary">
                 <thead>
@@ -2425,7 +2449,19 @@
           </div>
 
           <div class="card">
-            <h2 class="card-title">Dettaglio Risorse e Investimenti</h2>
+            <div class="table-card-header">
+              <h2 class="card-title" style="margin: 0;">Dettaglio Risorse e Investimenti</h2>
+              <div class="table-view-toggle" data-table="budget">
+                <button type="button" class="btn-toggle active" data-view="cards" onclick="setTableViewMode('cards')" title="Visualizza come Schede">
+                  <span class="material-symbols-outlined">grid_view</span>
+                  <span>Schede</span>
+                </button>
+                <button type="button" class="btn-toggle" data-view="table" onclick="setTableViewMode('table')" title="Visualizza come Tabella">
+                  <span class="material-symbols-outlined">table_chart</span>
+                  <span>Tabella</span>
+                </button>
+              </div>
+            </div>
             <div class="table-container">
               <table id="table-budget">
                 <thead>
@@ -2554,12 +2590,22 @@
 
           <!-- Card Storico Rilevazioni -->
           <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+            <div class="table-card-header">
               <div>
                 <h2 class="card-title" style="margin-bottom: 4px;">Storico Punti di Controllo</h2>
                 <p style="margin: 0; font-size: 13px; color: var(--md-sys-color-outline);">
                   Evoluzione del risparmio e della liquidità netta registrati nel corso del tempo.
                 </p>
+              </div>
+              <div class="table-view-toggle" data-table="savings">
+                <button type="button" class="btn-toggle active" data-view="cards" onclick="setTableViewMode('cards')" title="Visualizza come Schede">
+                  <span class="material-symbols-outlined">grid_view</span>
+                  <span>Schede</span>
+                </button>
+                <button type="button" class="btn-toggle" data-view="table" onclick="setTableViewMode('table')" title="Visualizza come Tabella">
+                  <span class="material-symbols-outlined">table_chart</span>
+                  <span>Tabella</span>
+                </button>
               </div>
             </div>
             <div class="table-container">
@@ -2710,7 +2756,19 @@
           <div class="dashboard-grid" id="mutuo-result-cards"></div>
 
           <div class="card" id="mutuo-details-card" style="display: none; margin-top: 24px;">
-            <h2 class="card-title">Dettaglio Ripartizione Mutuo & Liquidità</h2>
+            <div class="table-card-header">
+              <h2 class="card-title" style="margin: 0;">Dettaglio Ripartizione Mutuo & Liquidità</h2>
+              <div class="table-view-toggle" data-table="mutuo-utenti">
+                <button type="button" class="btn-toggle active" data-view="cards" onclick="setTableViewMode('cards')" title="Visualizza come Schede">
+                  <span class="material-symbols-outlined">grid_view</span>
+                  <span>Schede</span>
+                </button>
+                <button type="button" class="btn-toggle" data-view="table" onclick="setTableViewMode('table')" title="Visualizza come Tabella">
+                  <span class="material-symbols-outlined">table_chart</span>
+                  <span>Tabella</span>
+                </button>
+              </div>
+            </div>
             <div class="table-container">
               <table id="table-mutuo-utenti">
                 <thead>
@@ -3400,7 +3458,7 @@
             <a href="https://giovannilamarmora.github.io/" target="_blank"
               >Giovanni Lamarmora</a
             >
-            <span class="version-number">v1.9.7</span>
+            <span class="version-number">v1.9.8</span>
           </h4>
         </div>
       </div>

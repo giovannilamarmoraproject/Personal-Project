@@ -3122,6 +3122,16 @@ body.dark-mode .badge-pagato {
   border-bottom: none;
 }
 
+.liquidity-split-table th:not(:first-child),
+.liquidity-split-table td:not(:first-child) {
+  text-align: right;
+}
+
+.liquidity-split-table th:nth-child(2),
+.liquidity-split-table td:nth-child(2) {
+  text-align: center;
+}
+
 .liquidity-split-table tr.total-row {
   background: var(--md-sys-color-surface-container-low);
   font-weight: 700;
@@ -3323,4 +3333,379 @@ body.dark-mode .badge-pagato {
   color: var(--md-sys-color-on-primary-container);
   border-color: var(--md-sys-color-primary);
   font-weight: 600;
+}
+
+/* ==========================================================================
+   VISTA SCHEDE MOBILE PER TUTTE LE TABELLE (Responsive Card View & Toggle)
+   ========================================================================== */
+
+.table-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.table-view-toggle {
+  display: inline-flex;
+  align-items: center;
+  background: var(--md-sys-color-surface-container-high, #e9e5e0);
+  border: 1px solid var(--md-sys-color-outline-variant, rgba(0, 0, 0, 0.12));
+  border-radius: var(--md-sys-shape-corner-full, 999px);
+  padding: 3px;
+  gap: 3px;
+}
+body.dark-mode .table-view-toggle {
+  background: var(--md-sys-color-surface-container-high, #2b2930);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+.table-view-toggle .btn-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: none;
+  background: transparent;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: var(--md-sys-shape-corner-full, 999px);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  line-height: 1;
+}
+.table-view-toggle .btn-toggle .material-symbols-outlined {
+  font-size: 16px;
+}
+.table-view-toggle .btn-toggle:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+body.dark-mode .table-view-toggle .btn-toggle:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+.table-view-toggle .btn-toggle.active {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary, #ffffff);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Su desktop (> 768px) il selettore Schede/Tabella NON deve essere mostrato */
+@media (min-width: 769px) {
+  .table-view-toggle {
+    display: none !important;
+  }
+}
+
+/* Quando la vista Schede è attiva su mobile (di default o per preferenza utente) */
+@media (max-width: 768px) {
+  body:not(.mobile-table-as-table) .table-container {
+    overflow-x: visible;
+  }
+
+  body:not(.mobile-table-as-table) #table-costi,
+  body:not(.mobile-table-as-table) #table-budget,
+  body:not(.mobile-table-as-table) #table-categories-summary,
+  body:not(.mobile-table-as-table) #table-savings-history,
+  body:not(.mobile-table-as-table) #table-mutuo-utenti,
+  body:not(.mobile-table-as-table) .liquidity-split-table {
+    display: block;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  body:not(.mobile-table-as-table) #table-costi thead,
+  body:not(.mobile-table-as-table) #table-budget thead,
+  body:not(.mobile-table-as-table) #table-categories-summary thead,
+  body:not(.mobile-table-as-table) #table-savings-history thead,
+  body:not(.mobile-table-as-table) #table-mutuo-utenti thead,
+  body:not(.mobile-table-as-table) .liquidity-split-table thead {
+    display: none;
+  }
+
+  body:not(.mobile-table-as-table) #table-costi tbody,
+  body:not(.mobile-table-as-table) #table-budget tbody,
+  body:not(.mobile-table-as-table) #table-categories-summary tbody,
+  body:not(.mobile-table-as-table) #table-savings-history tbody,
+  body:not(.mobile-table-as-table) #table-mutuo-utenti tbody,
+  body:not(.mobile-table-as-table) .liquidity-split-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  /* Card generica per ogni riga */
+  body:not(.mobile-table-as-table) #table-costi tbody tr,
+  body:not(.mobile-table-as-table) #table-budget tbody tr,
+  body:not(.mobile-table-as-table) #table-categories-summary tbody tr,
+  body:not(.mobile-table-as-table) #table-savings-history tbody tr,
+  body:not(.mobile-table-as-table) #table-mutuo-utenti tbody tr,
+  body:not(.mobile-table-as-table) .liquidity-split-table tbody tr {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px 10px;
+    position: relative;
+    padding: 14px;
+    background: var(--md-sys-color-surface-container-low, #f7f3ed);
+    border: 1px solid var(--md-sys-color-outline-variant, rgba(0, 0, 0, 0.08));
+    border-radius: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    box-sizing: border-box;
+    width: 100%;
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  body.dark-mode:not(.mobile-table-as-table) #table-costi tbody tr,
+  body.dark-mode:not(.mobile-table-as-table) #table-budget tbody tr,
+  body.dark-mode:not(.mobile-table-as-table) #table-categories-summary tbody tr,
+  body.dark-mode:not(.mobile-table-as-table) #table-savings-history tbody tr,
+  body.dark-mode:not(.mobile-table-as-table) #table-mutuo-utenti tbody tr,
+  body.dark-mode:not(.mobile-table-as-table) .liquidity-split-table tbody tr {
+    background: var(--md-sys-color-surface-container, #211f26);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  /* Reset padding e bordi celle nelle card */
+  body:not(.mobile-table-as-table) #table-costi tbody tr td,
+  body:not(.mobile-table-as-table) #table-budget tbody tr td,
+  body:not(.mobile-table-as-table) #table-categories-summary tbody tr td,
+  body:not(.mobile-table-as-table) #table-savings-history tbody tr td,
+  body:not(.mobile-table-as-table) #table-mutuo-utenti tbody tr td,
+  body:not(.mobile-table-as-table) .liquidity-split-table tbody tr td {
+    padding: 0;
+    border: none;
+  }
+
+  /* Handle drag nascosto su card mobile */
+  body:not(.mobile-table-as-table) .col-drag {
+    display: none !important;
+  }
+
+  /* Intestazione Card: Categoria */
+  body:not(.mobile-table-as-table) .col-cat {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 2px;
+  }
+
+  /* Intestazione Card: Descrizione */
+  body:not(.mobile-table-as-table) .col-desc {
+    grid-column: 1 / -1;
+    padding-right: 76px;
+    font-size: 15px;
+    line-height: 1.35;
+    word-break: break-word;
+    margin-bottom: 4px;
+  }
+  body:not(.mobile-table-as-table) .col-desc b {
+    color: var(--md-sys-color-on-surface);
+  }
+
+  /* Azioni fluttuanti in alto a destra nella card */
+  body:not(.mobile-table-as-table) .col-actions {
+    position: absolute !important;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    z-index: 2;
+  }
+
+  /* Blocchi metriche/dati con etichetta e valore */
+  body:not(.mobile-table-as-table) .col-metric-box,
+  body:not(.mobile-table-as-table) .col-prezzo,
+  body:not(.mobile-table-as-table) .col-user,
+  body:not(.mobile-table-as-table) .col-restante,
+  body:not(.mobile-table-as-table) .col-stato,
+  body:not(.mobile-table-as-table) .col-totale,
+  body:not(.mobile-table-as-table) .col-metric {
+    background: var(--md-sys-color-surface-container, #ece7e0);
+    border-radius: 10px;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start !important;
+    text-align: left !important;
+    min-height: 52px;
+    box-sizing: border-box;
+    white-space: nowrap;
+  }
+
+  body.dark-mode:not(.mobile-table-as-table) .col-metric-box,
+  body.dark-mode:not(.mobile-table-as-table) .col-prezzo,
+  body.dark-mode:not(.mobile-table-as-table) .col-user,
+  body.dark-mode:not(.mobile-table-as-table) .col-restante,
+  body.dark-mode:not(.mobile-table-as-table) .col-stato,
+  body.dark-mode:not(.mobile-table-as-table) .col-totale,
+  body.dark-mode:not(.mobile-table-as-table) .col-metric {
+    background: var(--md-sys-color-surface-container-high, #2b2930);
+  }
+
+  /* Mini etichetta sopra il valore generata da data-label */
+  body:not(.mobile-table-as-table) .col-prezzo::before,
+  body:not(.mobile-table-as-table) .col-user::before,
+  body:not(.mobile-table-as-table) .col-restante::before,
+  body:not(.mobile-table-as-table) .col-stato::before,
+  body:not(.mobile-table-as-table) .col-totale::before,
+  body:not(.mobile-table-as-table) .col-metric::before {
+    content: attr(data-label);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--md-sys-color-outline);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 2px;
+    display: block;
+    line-height: 1.2;
+    text-align: left !important;
+    width: 100%;
+  }
+
+  /* Allineamento a sinistra forzato per tutti i contenuti interni delle card */
+  body:not(.mobile-table-as-table) .liquidity-split-table td,
+  body:not(.mobile-table-as-table) #table-mutuo-utenti td,
+  body:not(.mobile-table-as-table) .col-metric,
+  body:not(.mobile-table-as-table) .col-metric * {
+    text-align: left !important;
+  }
+
+  /* Note a tutta larghezza in fondo alla card */
+  body:not(.mobile-table-as-table) .col-note {
+    grid-column: 1 / -1;
+    font-size: 12px;
+    color: var(--md-sys-color-outline);
+    padding-top: 6px;
+    line-height: 1.35;
+    border-top: 1px dashed var(--md-sys-color-outline-variant, rgba(0, 0, 0, 0.08));
+    margin-top: 2px;
+  }
+  body:not(.mobile-table-as-table) .col-note:empty,
+  body:not(.mobile-table-as-table) .col-note-empty {
+    display: none !important;
+  }
+
+  /* Tabella Storico Risparmi su Mobile */
+  body:not(.mobile-table-as-table) #table-savings-history tbody tr {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  body:not(.mobile-table-as-table) #table-savings-history .col-savings-date {
+    grid-column: 1 / -1;
+    font-size: 15px;
+    padding-right: 48px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Evidenziazione card riga totale per tabelle riassuntive in modalità schede */
+  body:not(.mobile-table-as-table) .liquidity-split-table tbody tr.total-row {
+    border: 2px solid var(--md-sys-color-primary) !important;
+    background: var(--md-sys-color-surface-container-low, #f7f3ed) !important;
+  }
+  body.dark-mode:not(.mobile-table-as-table) .liquidity-split-table tbody tr.total-row {
+    background: var(--md-sys-color-surface-container, #211f26) !important;
+    border-color: var(--md-sys-color-primary) !important;
+  }
+
+  /* ========================================================================
+     QUANDO L'UTENTE SELEZIONA "TABELLA" SU MOBILE:
+     Tabella identica al desktop con scorrimento orizzontale pulito
+     ======================================================================== */
+  body.mobile-table-as-table .table-container {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+
+  body.mobile-table-as-table #table-costi,
+  body.mobile-table-as-table #table-budget,
+  body.mobile-table-as-table #table-categories-summary,
+  body.mobile-table-as-table #table-savings-history,
+  body.mobile-table-as-table #table-mutuo-utenti,
+  body.mobile-table-as-table .liquidity-split-table {
+    display: table !important;
+    width: 100% !important;
+    min-width: 780px !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+  }
+
+  body.mobile-table-as-table thead {
+    display: table-header-group !important;
+  }
+
+  body.mobile-table-as-table tbody {
+    display: table-row-group !important;
+  }
+
+  body.mobile-table-as-table tr {
+    display: table-row !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+
+  body.mobile-table-as-table td,
+  body.mobile-table-as-table th {
+    display: table-cell !important;
+    padding: 12px 14px !important;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant, rgba(0, 0, 0, 0.08)) !important;
+  }
+
+  body.mobile-table-as-table .col-drag {
+    display: table-cell !important;
+    width: 30px !important;
+  }
+
+  body.mobile-table-as-table .col-cat,
+  body.mobile-table-as-table .col-desc,
+  body.mobile-table-as-table .col-note,
+  body.mobile-table-as-table .col-savings-date {
+    grid-column: auto !important;
+    padding-right: 14px !important;
+  }
+
+  body.mobile-table-as-table .col-actions {
+    position: static !important;
+    display: table-cell !important;
+  }
+
+  body.mobile-table-as-table .col-metric-box,
+  body.mobile-table-as-table .col-prezzo,
+  body.mobile-table-as-table .col-user,
+  body.mobile-table-as-table .col-restante,
+  body.mobile-table-as-table .col-stato,
+  body.mobile-table-as-table .col-totale,
+  body.mobile-table-as-table .col-metric {
+    background: transparent !important;
+    border-radius: 0 !important;
+    min-height: auto !important;
+    padding: 12px 14px !important;
+    display: table-cell !important;
+  }
+
+  body.mobile-table-as-table .col-prezzo::before,
+  body.mobile-table-as-table .col-user::before,
+  body.mobile-table-as-table .col-restante::before,
+  body.mobile-table-as-table .col-stato::before,
+  body.mobile-table-as-table .col-totale::before,
+  body.mobile-table-as-table .col-metric::before {
+    display: none !important;
+    content: none !important;
+  }
+
+  body.mobile-table-as-table .col-note {
+    border-top: none !important;
+    margin-top: 0 !important;
+    padding-top: 12px !important;
+  }
 }

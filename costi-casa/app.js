@@ -3263,6 +3263,7 @@ function renderAll() {
   buildDynamicForms();
   populateCategorySelects();
   renderHeaderAndSettings();
+  initTableViewMode();
   renderTables();
   renderCategoriesSection();
   renderQASection();
@@ -4381,16 +4382,16 @@ function calculateMortgage() {
 
     utentiRisultatiHTML += `
                     <tr>
-                        <td><b>${u.name}</b></td>
-                        <td>${formatCurrency(userFunds[u.id])}</td>
-                        <td style="color: var(--md-sys-color-outline);">${formatCurrency(userFondoSicurezza[u.id])}</td>
-                        <td>${formatCurrency(Math.max(0, userFunds[u.id] - userFondoSicurezza[u.id]))}</td>
-                        <td>${formatCurrency(userAnticipo[u.id])}</td>
-                        <td style="color: var(--md-sys-color-primary); font-weight: 500;">${formatCurrency(m)}</td>
-                        <td style="font-weight: 700;">${formatCurrency(rataU)} /m</td>
-                        <td style="font-weight: 500;">${formatCurrency(rataAnnualeU)} /a</td>
-                        <td style="color: var(--md-sys-color-error); font-weight: 500;">${formatCurrency(interessiU)}</td>
-                        <td style="font-weight: 600;">${formatCurrency(totaleRestituitoU)}</td>
+                        <td class="col-desc" data-label="Utente"><b>${u.name}</b></td>
+                        <td class="col-metric" data-label="Fondi Totali">${formatCurrency(userFunds[u.id])}</td>
+                        <td class="col-metric" data-label="Fondo Sicurezza" style="color: var(--md-sys-color-outline);">${formatCurrency(userFondoSicurezza[u.id])}</td>
+                        <td class="col-metric" data-label="Disponibile">${formatCurrency(Math.max(0, userFunds[u.id] - userFondoSicurezza[u.id]))}</td>
+                        <td class="col-metric" data-label="Anticipo">${formatCurrency(userAnticipo[u.id])}</td>
+                        <td class="col-metric" data-label="Mutuo Necessario" style="color: var(--md-sys-color-primary); font-weight: 500;">${formatCurrency(m)}</td>
+                        <td class="col-metric" data-label="Rata Mensile" style="font-weight: 700;"><span class="sensitive-value" style="white-space: nowrap;">${formatCurrency(rataU)}&nbsp;/m</span></td>
+                        <td class="col-metric" data-label="Rata Annuale" style="font-weight: 500;"><span class="sensitive-value" style="white-space: nowrap;">${formatCurrency(rataAnnualeU)}&nbsp;/a</span></td>
+                        <td class="col-metric" data-label="Interessi Totali" style="color: var(--md-sys-color-error); font-weight: 500;">${formatCurrency(interessiU)}</td>
+                        <td class="col-metric" data-label="Totale Restituito" style="font-weight: 600;">${formatCurrency(totaleRestituitoU)}</td>
                     </tr>
                 `;
   });
@@ -4480,6 +4481,7 @@ function calculateMortgage() {
   if (tableMutuoTbody) tableMutuoTbody.innerHTML = utentiRisultatiHTML;
   let mutuoDetailsCard = document.getElementById("mutuo-details-card");
   if (mutuoDetailsCard) mutuoDetailsCard.style.display = "block";
+  updateTableViewModeUI();
   renderLiquidityGuard();
 }
 
@@ -5044,19 +5046,19 @@ function renderLiquidityGuard() {
 
       rowsHTML += `
         <tr>
-          <td>
+          <td class="col-desc" data-label="Partecipante">
             <div style="font-weight: 600;">${escapeHTML(u.name)}</div>
             <div style="font-size: 11px; color: var(--md-sys-color-outline);">Riserva: <span class="sensitive-value">${formatCurrency(userSafetyFund[u.id] || 0)}</span></div>
           </td>
-          <td style="text-align: center; font-weight: 600;">${shareLabel}</td>
-          <td style="text-align: right;" class="sensitive-value">${formatCurrency(userQuotaImm)}</td>
-          <td style="text-align: right;" class="sensitive-value">${formatCurrency(userGiaSaldatoImm)}</td>
-          <td style="text-align: right; font-weight: 600;" class="sensitive-value">${formatCurrency(userResiduoImm)}</td>
-          <td style="text-align: right; color: var(--md-sys-color-primary);" class="sensitive-value">${formatCurrency(userMutuo)}</td>
-          <td style="text-align: right; font-weight: 600;" class="sensitive-value">${formatCurrency(userSaldoImmProprio)}</td>
-          <td style="text-align: right; color: #f59e0b; font-weight: 600;" class="sensitive-value">${formatCurrency(userExtraDaSaldare)}</td>
-          <td style="text-align: right; color: var(--md-sys-color-primary); font-weight: 700;" class="sensitive-value">${formatCurrency(userTotaleEsborso)}</td>
-          <td style="text-align: right; font-weight: 700; color: ${userLiquiditaResidua >= 0 ? "var(--md-sys-color-success)" : "var(--md-sys-color-error)"};" class="sensitive-value">${formatCurrency(userLiquiditaResidua)}</td>
+          <td class="col-metric" data-label="Quota (%)" style="font-weight: 600;">${shareLabel}</td>
+          <td class="col-metric" data-label="Quota Immobile"><span class="sensitive-value">${formatCurrency(userQuotaImm)}</span></td>
+          <td class="col-metric" data-label="Già Pagato"><span class="sensitive-value">${formatCurrency(userGiaSaldatoImm)}</span></td>
+          <td class="col-metric" data-label="Residuo Casa" style="font-weight: 600;"><span class="sensitive-value">${formatCurrency(userResiduoImm)}</span></td>
+          <td class="col-metric" data-label="Mutuo Banca" style="color: var(--md-sys-color-primary);"><span class="sensitive-value">${formatCurrency(userMutuo)}</span></td>
+          <td class="col-metric" data-label="Saldo Immobile" style="font-weight: 600;"><span class="sensitive-value">${formatCurrency(userSaldoImmProprio)}</span></td>
+          <td class="col-metric" data-label="Extra da Saldare" style="color: #f59e0b; font-weight: 600;"><span class="sensitive-value">${formatCurrency(userExtraDaSaldare)}</span></td>
+          <td class="col-metric" data-label="Totale da Versare" style="color: var(--md-sys-color-primary); font-weight: 700;"><span class="sensitive-value">${formatCurrency(userTotaleEsborso)}</span></td>
+          <td class="col-metric" data-label="Liquidità Residua" style="font-weight: 700; color: ${userLiquiditaResidua >= 0 ? "var(--md-sys-color-success)" : "var(--md-sys-color-error)"};"><span class="sensitive-value">${formatCurrency(userLiquiditaResidua)}</span></td>
         </tr>
       `;
     });
@@ -5072,14 +5074,26 @@ function renderLiquidityGuard() {
       : `<b>${mortgageUsers.map((u) => escapeHTML(u.name)).join(", ")}</b>`;
 
     splitEl.innerHTML = `
-      <div style="font-size: 15px; font-weight: 700; margin-bottom: 10px; color: var(--md-sys-color-on-surface); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+      <div class="table-card-header" style="font-size: 15px; font-weight: 700; margin-bottom: 10px; color: var(--md-sys-color-on-surface); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
         <div style="display: flex; align-items: center; gap: 6px;">
           <span class="material-symbols-outlined" style="color: var(--md-sys-color-primary); font-size: 20px;">account_balance_wallet</span>
           <span>Piano Esborso Saldo & Liquidità Residua ${isAllUsers ? "per Quota Configurazione" : `(Intestatario: ${mortgageUsers.map((u) => escapeHTML(u.name)).join(", ")})`}</span>
         </div>
-        <span style="font-size: 12px; font-weight: 500; color: var(--md-sys-color-outline);">
-          ${isAllUsers ? `Quote applicate: ${appData.settings.users.map((u) => `${escapeHTML(u.name)} ${u.share}%`).join(" • ")}` : `Richiesta mutuo: ${mortgageUsers.map((u) => `${escapeHTML(u.name)} (${modalita === "singolo" && intero ? 100 : u.share}%)`).join(" • ")}`}
-        </span>
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+          <span style="font-size: 12px; font-weight: 500; color: var(--md-sys-color-outline);">
+            ${isAllUsers ? `Quote applicate: ${appData.settings.users.map((u) => `${escapeHTML(u.name)} ${u.share}%`).join(" • ")}` : `Richiesta mutuo: ${mortgageUsers.map((u) => `${escapeHTML(u.name)} (${modalita === "singolo" && intero ? 100 : u.share}%)`).join(" • ")}`}
+          </span>
+          <div class="table-view-toggle" data-table="liquidity-split">
+            <button type="button" class="btn-toggle active" data-view="cards" onclick="setTableViewMode('cards')" title="Visualizza come Schede">
+              <span class="material-symbols-outlined">grid_view</span>
+              <span>Schede</span>
+            </button>
+            <button type="button" class="btn-toggle" data-view="table" onclick="setTableViewMode('table')" title="Visualizza come Tabella">
+              <span class="material-symbols-outlined">table_chart</span>
+              <span>Tabella</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       <div class="table-container" style="border-radius: var(--md-sys-shape-corner-medium); border: 1px solid var(--md-sys-color-surface-container-high);">
@@ -5101,16 +5115,16 @@ function renderLiquidityGuard() {
           <tbody>
             ${rowsHTML}
             <tr class="total-row">
-              <td>${isAllUsers ? "TOTALE PROGETTO" : "TOTALE INTESTATARIO"}</td>
-              <td style="text-align: center;">${totalShareLabel}</td>
-              <td style="text-align: right;" class="sensitive-value">${formatCurrency(sumQuotaImm)}</td>
-              <td style="text-align: right;" class="sensitive-value">${formatCurrency(sumGiaSaldatoImm)}</td>
-              <td style="text-align: right;" class="sensitive-value">${formatCurrency(sumResiduoImm)}</td>
-              <td style="text-align: right; color: var(--md-sys-color-primary);" class="sensitive-value">${formatCurrency(sumMutuo)}</td>
-              <td style="text-align: right;" class="sensitive-value">${formatCurrency(sumSaldoImmProprio)}</td>
-              <td style="text-align: right; color: #f59e0b;" class="sensitive-value">${formatCurrency(sumExtraDaSaldare)}</td>
-              <td style="text-align: right; color: var(--md-sys-color-primary);" class="sensitive-value">${formatCurrency(sumTotaleEsborso)}</td>
-              <td style="text-align: right; color: ${sumLiquiditaResidua >= 0 ? "var(--md-sys-color-success)" : "var(--md-sys-color-error)"};" class="sensitive-value">${formatCurrency(sumLiquiditaResidua)}</td>
+              <td class="col-desc" data-label="Partecipante"><b>${isAllUsers ? "TOTALE PROGETTO" : "TOTALE INTESTATARIO"}</b></td>
+              <td class="col-metric" data-label="Quota (%)" style="font-weight: 700;">${totalShareLabel}</td>
+              <td class="col-metric" data-label="Quota Immobile" style="font-weight: 700;"><span class="sensitive-value">${formatCurrency(sumQuotaImm)}</span></td>
+              <td class="col-metric" data-label="Già Pagato" style="font-weight: 700;"><span class="sensitive-value">${formatCurrency(sumGiaSaldatoImm)}</span></td>
+              <td class="col-metric" data-label="Residuo Casa" style="font-weight: 700;"><span class="sensitive-value">${formatCurrency(sumResiduoImm)}</span></td>
+              <td class="col-metric" data-label="Mutuo Banca" style="color: var(--md-sys-color-primary); font-weight: 700;"><span class="sensitive-value">${formatCurrency(sumMutuo)}</span></td>
+              <td class="col-metric" data-label="Saldo Immobile" style="font-weight: 700;"><span class="sensitive-value">${formatCurrency(sumSaldoImmProprio)}</span></td>
+              <td class="col-metric" data-label="Extra da Saldare" style="color: #f59e0b; font-weight: 700;"><span class="sensitive-value">${formatCurrency(sumExtraDaSaldare)}</span></td>
+              <td class="col-metric" data-label="Totale da Versare" style="color: var(--md-sys-color-primary); font-weight: 700;"><span class="sensitive-value">${formatCurrency(sumTotaleEsborso)}</span></td>
+              <td class="col-metric" data-label="Liquidità Residua" style="font-weight: 700; color: ${sumLiquiditaResidua >= 0 ? "var(--md-sys-color-success)" : "var(--md-sys-color-error)"};"><span class="sensitive-value">${formatCurrency(sumLiquiditaResidua)}</span></td>
             </tr>
           </tbody>
         </table>
@@ -5126,6 +5140,7 @@ function renderLiquidityGuard() {
         Sommando le spese extra selezionate non mutuabili (<b class="sensitive-value">${formatCurrency(scopeExtraDaSaldare)}</b>), l'esborso totale effettivo da versare per ${beneficiaryLabel} è di <b class="sensitive-value" style="color: var(--md-sys-color-primary);">${formatCurrency(scopeTotaleEsborso)}</b>.
       </div>
     `;
+    updateTableViewModeUI();
   }
 }
 
@@ -5788,11 +5803,11 @@ function renderCategoriesSection() {
     // Inserimento riga tabella riassuntiva
     let tr = document.createElement("tr");
     tr.innerHTML = `
-                    <td><span class="cat-badge" style="background-color: ${color}; color: ${textColor};">${cat}</span></td>
-                    <td><b>${formatCurrency(d.total)}</b></td>
-                    <td style="color: var(--md-sys-color-primary); font-weight: 500;">${formatCurrency(d.paid)}</td>
-                    <td>${formatRestanteCurrency(d.remaining)}</td>
-                    <td style="font-weight: 500;">${d.total > 0 ? `<span class="sensitive-value">${perc.toFixed(1)}%</span>` : "-"}</td>
+                    <td class="col-cat" data-label="Categoria"><span class="cat-badge" style="background-color: ${color}; color: ${textColor};">${cat}</span></td>
+                    <td class="col-prezzo" data-label="Costo Totale"><b>${formatCurrency(d.total)}</b></td>
+                    <td class="col-user" data-label="Pagato Finora" style="color: var(--md-sys-color-primary); font-weight: 500;">${formatCurrency(d.paid)}</td>
+                    <td class="col-restante" data-label="Restante">${formatRestanteCurrency(d.remaining)}</td>
+                    <td class="col-totale" data-label="% Completamento" style="font-weight: 500;">${d.total > 0 ? `<span class="sensitive-value">${perc.toFixed(1)}%</span>` : "-"}</td>
                 `;
     tbody.appendChild(tr);
   });
@@ -5802,11 +5817,11 @@ function renderCategoriesSection() {
   trTotal.style.backgroundColor = "var(--md-sys-color-surface-container-high)";
   trTotal.style.fontWeight = "bold";
   trTotal.innerHTML = `
-                <td><b>TOTALE COMPLESSIVO</b></td>
-                <td><b>${formatCurrency(grandTotal)}</b></td>
-                <td style="color: var(--md-sys-color-primary);"><b>${formatCurrency(grandPaid)}</b></td>
-                <td><b>${formatRestanteCurrency(grandRemaining)}</b></td>
-                <td><b><span class="sensitive-value">${grandPerc.toFixed(1)}%</span></b></td>
+                <td class="col-desc" data-label="Categoria"><b>TOTALE COMPLESSIVO</b></td>
+                <td class="col-prezzo" data-label="Costo Totale"><b>${formatCurrency(grandTotal)}</b></td>
+                <td class="col-user" data-label="Pagato Finora" style="color: var(--md-sys-color-primary);"><b>${formatCurrency(grandPaid)}</b></td>
+                <td class="col-restante" data-label="Restante"><b>${formatRestanteCurrency(grandRemaining)}</b></td>
+                <td class="col-totale" data-label="% Completamento"><b><span class="sensitive-value">${grandPerc.toFixed(1)}%</span></b></td>
             `;
   tbody.appendChild(trTotal);
 
@@ -6983,10 +6998,59 @@ function toggleCostoConfermato(id) {
 }
 
 /**
+ * Inizializza la modalità di visualizzazione tabelle (Schede vs Tabella).
+ */
+function initTableViewMode() {
+  updateTableViewModeUI();
+}
+
+/**
+ * Imposta la modalità di visualizzazione tabelle e la salva in localStorage.
+ * @param {'cards'|'table'} mode - 'cards' per Schede mobile senza scroll, 'table' per Tabella classica.
+ */
+function setTableViewMode(mode) {
+  try {
+    localStorage.setItem("table_view_mode", mode);
+  } catch (e) {
+    console.warn("Impossibile salvare preferenza vista:", e);
+  }
+  updateTableViewModeUI();
+  showNotification(
+    mode === "cards"
+      ? "Vista Schede attiva (ottimizzata mobile)"
+      : "Vista Tabella classica attiva",
+  );
+}
+
+/**
+ * Aggiorna le classi del body e i bottoni toggle per la vista tabelle.
+ */
+function updateTableViewModeUI() {
+  let mode = "cards";
+  try {
+    const saved = localStorage.getItem("table_view_mode");
+    if (saved === "table" || saved === "cards") mode = saved;
+  } catch (e) {}
+
+  if (mode === "cards") {
+    document.body.classList.add("mobile-table-as-cards");
+    document.body.classList.remove("mobile-table-as-table");
+  } else {
+    document.body.classList.remove("mobile-table-as-cards");
+    document.body.classList.add("mobile-table-as-table");
+  }
+
+  document.querySelectorAll(".table-view-toggle .btn-toggle").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.view === mode);
+  });
+}
+
+/**
  * Esegue il rendering delle tabelle Costi e Budget gestendo ordinamento, eventi Drag & Drop e badge.
  */
 function renderTables() {
   updateSortHeaders();
+  updateTableViewModeUI();
   const tCosti = document.querySelector("#table-costi tbody");
   if (tCosti) {
     tCosti.innerHTML = "";
@@ -7013,10 +7077,13 @@ function renderTables() {
       tr.addEventListener("dragover", handleDragOver);
       tr.addEventListener("dragend", handleDragEnd);
 
-      // Click sulla riga apre il dettaglio (ma non sulla colonna azioni)
+      // Click sulla riga apre il dettaglio (ma non sui pulsanti o status badge)
       tr.addEventListener("click", (e) => {
         if (
           e.target.closest("td:last-child") ||
+          e.target.closest(".col-actions") ||
+          e.target.closest(".status-badge") ||
+          e.target.closest("button") ||
           e.target.classList.contains("drag-handle")
         )
           return;
@@ -7051,12 +7118,18 @@ function renderTables() {
         ? `<span class="badge-pagato" title="Costo interamente saldato"><span class="material-symbols-outlined">check_circle</span> Pagato</span>`
         : formatRestanteCurrency(restante);
 
-      let rowHtml = `<td style="width: 30px; padding: 12px 4px;"><span class="material-symbols-outlined drag-handle" onmouseenter="this.closest('tr').setAttribute('draggable', 'true')" onmouseleave="this.closest('tr').setAttribute('draggable', 'false')">drag_indicator</span></td>
-                                   <td>${badgeHTML}</td><td style="white-space: pre-wrap;"><b>${c.desc}</b>${pagamentiBadge} ${immobileBadge}</td><td>${formatCurrency(c.prezzo)}</td>`;
+      const hasNote = c.note && c.note.trim().length > 0;
+      let rowHtml = `<td class="col-drag" style="width: 30px; padding: 12px 4px;"><span class="material-symbols-outlined drag-handle" onmouseenter="this.closest('tr').setAttribute('draggable', 'true')" onmouseleave="this.closest('tr').setAttribute('draggable', 'false')">drag_indicator</span></td>
+                     <td class="col-cat" data-label="Categoria">${badgeHTML}</td>
+                     <td class="col-desc" data-label="Descrizione" style="white-space: pre-wrap;"><b>${c.desc}</b>${pagamentiBadge} ${immobileBadge}</td>
+                     <td class="col-prezzo" data-label="Prezzo Totale">${formatCurrency(c.prezzo)}</td>`;
       appData.settings.users.forEach((u) => {
-        rowHtml += `<td style="color:var(--md-sys-color-primary);">${formatCurrency(c[u.id] || 0)}</td>`;
+        rowHtml += `<td class="col-user" data-user="${u.id}" data-label="Pagato (${u.name})" style="color:var(--md-sys-color-primary);">${formatCurrency(c[u.id] || 0)}</td>`;
       });
-      rowHtml += `<td style="font-weight: 500; white-space: nowrap;">${restanteHtml}</td><td>${statusBadge}</td><td style="white-space: pre-wrap;"><small>${c.note || ""}</small></td><td style="white-space: nowrap;"><div style="display: inline-flex; align-items: center; gap: 4px;">${warningIcon}<button class="btn-icon" title="Modifica voce" onclick="event.stopPropagation(); openEditModal('costo', ${c.id})"><span class="material-symbols-outlined">edit</span></button><button class="btn-icon" title="Elimina voce" onclick="event.stopPropagation(); deleteCostItem(${c.id})"><span class="material-symbols-outlined" style="color: var(--md-sys-color-error);">delete</span></button></div></td>`;
+      rowHtml += `<td class="col-restante" data-label="Restante" style="font-weight: 500; white-space: nowrap;">${restanteHtml}</td>
+                  <td class="col-stato" data-label="Stato">${statusBadge}</td>
+                  <td class="col-note ${hasNote ? "" : "col-note-empty"}" data-label="Note" style="white-space: pre-wrap;"><small>${c.note || ""}</small></td>
+                  <td class="col-actions" data-label="Azioni" style="white-space: nowrap;"><div style="display: inline-flex; align-items: center; gap: 4px;">${warningIcon}<button class="btn-icon" title="Modifica voce" onclick="event.stopPropagation(); openEditModal('costo', ${c.id})"><span class="material-symbols-outlined">edit</span></button><button class="btn-icon" title="Elimina voce" onclick="event.stopPropagation(); deleteCostItem(${c.id})"><span class="material-symbols-outlined" style="color: var(--md-sys-color-error);">delete</span></button></div></td>`;
       tr.innerHTML = rowHtml;
       tCosti.appendChild(tr);
     });
@@ -7079,12 +7152,15 @@ function renderTables() {
       tr.addEventListener("dragover", handleDragOver);
       tr.addEventListener("dragend", handleDragEnd);
 
-      let rowHtml = `<td style="width: 30px; padding: 12px 4px;"><span class="material-symbols-outlined drag-handle" onmouseenter="this.closest('tr').setAttribute('draggable', 'true')" onmouseleave="this.closest('tr').setAttribute('draggable', 'false')">drag_indicator</span></td>
-                                   <td style="white-space: pre-wrap;"><b>${b.desc}</b> ${b.isMutuo ? '<span style="font-size:11px; background:var(--md-sys-color-primary-container); color:var(--md-sys-color-on-primary-container); padding:2px 6px; border-radius:4px; margin-left:6px; font-weight:600;">Mutuo</span>' : (b.isDebito ? '<span style="font-size:11px; background:var(--md-sys-color-error-container); color:var(--md-sys-color-on-error-container); padding:2px 6px; border-radius:4px; margin-left:6px; font-weight:600;">Debito / Rata</span>' : "")}</td>`;
+      const hasNoteB = b.note && b.note.trim().length > 0;
+      let rowHtml = `<td class="col-drag" style="width: 30px; padding: 12px 4px;"><span class="material-symbols-outlined drag-handle" onmouseenter="this.closest('tr').setAttribute('draggable', 'true')" onmouseleave="this.closest('tr').setAttribute('draggable', 'false')">drag_indicator</span></td>
+                     <td class="col-desc" data-label="Descrizione" style="white-space: pre-wrap;"><b>${b.desc}</b> ${b.isMutuo ? '<span style="font-size:11px; background:var(--md-sys-color-primary-container); color:var(--md-sys-color-on-primary-container); padding:2px 6px; border-radius:4px; margin-left:6px; font-weight:600;">Mutuo</span>' : (b.isDebito ? '<span style="font-size:11px; background:var(--md-sys-color-error-container); color:var(--md-sys-color-on-error-container); padding:2px 6px; border-radius:4px; margin-left:6px; font-weight:600;">Debito / Rata</span>' : "")}</td>`;
       appData.settings.users.forEach((u) => {
-        rowHtml += `<td>${formatColoredCurrency(b[u.id] || 0)}</td>`;
+        rowHtml += `<td class="col-user" data-user="${u.id}" data-label="Quota ${u.name}">${formatColoredCurrency(b[u.id] || 0)}</td>`;
       });
-      rowHtml += `<td style="font-weight: 500;">${formatColoredCurrency(sumB)}</td><td style="white-space: pre-wrap;"><small>${b.note || ""}</small></td><td style="white-space: nowrap;"><div style="display: inline-flex; align-items: center; gap: 4px;">${b.isDebito ? `<button class="btn-icon" title="Modifica debito nella sezione Debiti" onclick="openEditDebitoModal(${b.debitoId})"><span class="material-symbols-outlined">edit</span></button><button class="btn-icon" title="Elimina debito" onclick="deleteDebito(${b.debitoId})"><span class="material-symbols-outlined" style="color: var(--md-sys-color-error);">delete</span></button>` : `<button class="btn-icon" title="Modifica voce" onclick="openEditModal('budget', ${b.id})"><span class="material-symbols-outlined">edit</span></button><button class="btn-icon" title="Elimina voce" onclick="deleteBudgetItem(${b.id})"><span class="material-symbols-outlined" style="color: var(--md-sys-color-error);">delete</span></button>`}</div></td>`;
+      rowHtml += `<td class="col-totale" data-label="Totale" style="font-weight: 500;">${formatColoredCurrency(sumB)}</td>
+                  <td class="col-note ${hasNoteB ? "" : "col-note-empty"}" data-label="Note" style="white-space: pre-wrap;"><small>${b.note || ""}</small></td>
+                  <td class="col-actions" data-label="Azioni" style="white-space: nowrap;"><div style="display: inline-flex; align-items: center; gap: 4px;">${b.isDebito ? `<button class="btn-icon" title="Modifica debito nella sezione Debiti" onclick="openEditDebitoModal(${b.debitoId})"><span class="material-symbols-outlined">edit</span></button><button class="btn-icon" title="Elimina debito" onclick="deleteDebito(${b.debitoId})"><span class="material-symbols-outlined" style="color: var(--md-sys-color-error);">delete</span></button>` : `<button class="btn-icon" title="Modifica voce" onclick="openEditModal('budget', ${b.id})"><span class="material-symbols-outlined">edit</span></button><button class="btn-icon" title="Elimina voce" onclick="deleteBudgetItem(${b.id})"><span class="material-symbols-outlined" style="color: var(--md-sys-color-error);">delete</span></button>`}</div></td>`;
       tr.innerHTML = rowHtml;
       tBudget.appendChild(tr);
     });
@@ -7103,16 +7179,16 @@ function renderTables() {
 
     if (totRisparmi !== 0) {
       let rRow = `<tr>
-        <td style="width: 30px; padding: 12px 4px; text-align: center;"><span class="material-symbols-outlined" style="color: var(--md-sys-color-outline); font-size: 18px; cursor: default;" title="Voce fissa bloccata">lock</span></td>
-        <td style="white-space: pre-wrap;"><b>Risparmi Netti Generati</b> <span style="font-size:11px; background:var(--md-sys-color-secondary-container); color:var(--md-sys-color-on-secondary-container); padding:2px 6px; border-radius:4px; margin-left:6px;">Risparmio</span></td>`;
+        <td class="col-drag" style="width: 30px; padding: 12px 4px; text-align: center;"><span class="material-symbols-outlined" style="color: var(--md-sys-color-outline); font-size: 18px; cursor: default;" title="Voce fissa bloccata">lock</span></td>
+        <td class="col-desc" data-label="Descrizione" style="white-space: pre-wrap;"><b>Risparmi Netti Generati</b> <span style="font-size:11px; background:var(--md-sys-color-secondary-container); color:var(--md-sys-color-on-secondary-container); padding:2px 6px; border-radius:4px; margin-left:6px;">Risparmio</span></td>`;
       appData.settings.users.forEach(u => {
         const rVal = userRisparmi[u.id] || 0;
-        rRow += `<td>${formatColoredCurrency(rVal)}</td>`;
+        rRow += `<td class="col-user" data-user="${u.id}" data-label="Quota ${u.name}">${formatColoredCurrency(rVal)}</td>`;
       });
       rRow += `
-        <td style="font-weight: 500;">${formatColoredCurrency(totRisparmi)}</td>
-        <td style="white-space: pre-wrap;"><small>Dal monitoraggio risparmio</small></td>
-        <td><button class="btn-icon" onclick="nav('savings')" title="Voce bloccata (gestita nel monitoraggio risparmi)"><span class="material-symbols-outlined" style="color: var(--md-sys-color-outline);">lock</span></button></td>
+        <td class="col-totale" data-label="Totale" style="font-weight: 500;">${formatColoredCurrency(totRisparmi)}</td>
+        <td class="col-note" data-label="Note" style="white-space: pre-wrap;"><small>Dal monitoraggio risparmio</small></td>
+        <td class="col-actions" data-label="Azioni"><button class="btn-icon" onclick="nav('savings')" title="Voce bloccata (gestita nel monitoraggio risparmi)"><span class="material-symbols-outlined" style="color: var(--md-sys-color-outline);">lock</span></button></td>
       </tr>`;
       tBudget.insertAdjacentHTML("beforeend", rRow);
     }
@@ -7976,19 +8052,20 @@ function renderSavingsHistoryTable(userId) {
 
     const isNettoPos = snap.risultati.risparmioNetto >= 0;
 
+    const hasNoteS = snap.note && snap.note.trim().length > 0;
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td><b>${new Date(snap.dataRilevazione).toLocaleDateString("it-IT")}</b></td>
-      <td>${formatCurrency(snap.saldoContoCorrente)}</td>
-      <td>${formatCurrency(snap.speseSostenute)}</td>
-      <td>${formatCurrency(snap.risultati.fondiPreesistenti)}</td>
-      <td>${formatCurrency(snap.risultati.risparmioLordo)}</td>
-      <td style="color: var(--md-sys-color-error);">${formatCurrency(snap.risultati.totalePassivita)}</td>
-      <td style="font-weight: 600; color: ${isNettoPos ? 'var(--md-sys-color-success)' : 'var(--md-sys-color-error)'};">${formatCurrency(snap.risultati.risparmioNetto)}</td>
-      <td>${deltaHtml}</td>
-      <td style="font-weight: 600;">${formatCurrency(snap.risultati.liquiditaNetta)}</td>
-      <td style="font-size: 12px; color: var(--md-sys-color-outline); max-width: 150px; white-space: pre-wrap;">${snap.note || ""}</td>
-      <td style="white-space: nowrap;">
+      <td class="col-savings-date" data-label="Data"><b>${new Date(snap.dataRilevazione).toLocaleDateString("it-IT")}</b></td>
+      <td class="col-metric" data-label="Saldo Conto">${formatCurrency(snap.saldoContoCorrente)}</td>
+      <td class="col-metric" data-label="Spese Sostenute">${formatCurrency(snap.speseSostenute)}</td>
+      <td class="col-metric" data-label="Fondi Preesistenti">${formatCurrency(snap.risultati.fondiPreesistenti)}</td>
+      <td class="col-metric" data-label="Risparmio Lordo">${formatCurrency(snap.risultati.risparmioLordo)}</td>
+      <td class="col-metric" data-label="Passività" style="color: var(--md-sys-color-error);">${formatCurrency(snap.risultati.totalePassivita)}</td>
+      <td class="col-metric" data-label="Risparmio Netto" style="font-weight: 600; color: ${isNettoPos ? 'var(--md-sys-color-success)' : 'var(--md-sys-color-error)'};">${formatCurrency(snap.risultati.risparmioNetto)}</td>
+      <td class="col-metric" data-label="Variazione (Δ)">${deltaHtml}</td>
+      <td class="col-metric" data-label="Liquidità Netta" style="font-weight: 600;">${formatCurrency(snap.risultati.liquiditaNetta)}</td>
+      <td class="col-note ${hasNoteS ? "" : "col-note-empty"}" data-label="Note" style="font-size: 12px; color: var(--md-sys-color-outline); white-space: pre-wrap;">${snap.note || ""}</td>
+      <td class="col-actions" data-label="Azioni" style="white-space: nowrap;">
         <button class="btn-icon" title="Modifica punto di storico" onclick="openEditSavingsSnapshot('${snap.id}')" style="margin-right: 4px;">
           <span class="material-symbols-outlined" style="font-size: 18px; color: var(--md-sys-color-primary);">edit</span>
         </button>
