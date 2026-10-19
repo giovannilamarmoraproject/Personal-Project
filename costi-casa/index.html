@@ -325,12 +325,31 @@
         </div>
 
         <div class="input-group">
-          <div class="input-field">
-            <label>Note / Stato</label
-            ><textarea
-              id="modal-note"
-              placeholder="Dettagli aggiuntivi, preventivi o stato..."
-            ></textarea>
+          <div class="input-field" style="width: 100%">
+            <label>Note / Stato</label>
+            <div class="rich-editor-wrapper">
+              <div class="rich-editor-toolbar" data-editor-id="modal-note">
+                <button type="button" class="rich-editor-btn" data-command="bold" title="Grassetto"><span class="material-symbols-outlined">format_bold</span></button>
+                <button type="button" class="rich-editor-btn" data-command="italic" title="Corsivo"><span class="material-symbols-outlined">format_italic</span></button>
+                <button type="button" class="rich-editor-btn" data-command="underline" title="Sottolineato"><span class="material-symbols-outlined">format_underlined</span></button>
+                <button type="button" class="rich-editor-btn" data-command="strikeThrough" title="Barrato"><span class="material-symbols-outlined">strikethrough_s</span></button>
+                <div class="rich-editor-divider"></div>
+                <button type="button" class="rich-editor-btn" data-command="heading" title="Testo Grande (Titolo)"><span class="material-symbols-outlined">format_size</span></button>
+                <button type="button" class="rich-editor-btn" data-command="normal" title="Testo Normale"><span class="material-symbols-outlined">match_case</span></button>
+                <button type="button" class="rich-editor-btn" data-command="small" title="Testo Piccolo"><span class="material-symbols-outlined">text_fields</span></button>
+                <div class="rich-editor-divider"></div>
+                <button type="button" class="rich-editor-btn" data-command="highlight" title="Evidenziatore"><span class="material-symbols-outlined">ink_highlighter</span></button>
+                <div class="rich-editor-divider"></div>
+                <button type="button" class="rich-editor-btn" data-command="insertUnorderedList" title="Elenco puntato"><span class="material-symbols-outlined">format_list_bulleted</span></button>
+                <button type="button" class="rich-editor-btn" data-command="insertOrderedList" title="Elenco numerato"><span class="material-symbols-outlined">format_list_numbered</span></button>
+                <button type="button" class="rich-editor-btn" data-command="checklist" title="Checklist"><span class="material-symbols-outlined">checklist</span></button>
+                <button type="button" class="rich-editor-btn" data-command="quote" title="Citazione"><span class="material-symbols-outlined">format_quote</span></button>
+                <button type="button" class="rich-editor-btn" data-command="createLink" title="Inserisci Link (URL)"><span class="material-symbols-outlined">link</span></button>
+                <div class="rich-editor-divider"></div>
+                <button type="button" class="rich-editor-btn" data-command="removeFormat" title="Rimuovi formattazione"><span class="material-symbols-outlined">format_clear</span></button>
+              </div>
+              <div id="modal-note" class="rich-editor-content" contenteditable="true" data-placeholder="Dettagli aggiuntivi, preventivi o stato..." style="min-height: 80px;"></div>
+            </div>
           </div>
         </div>
         <div
@@ -406,13 +425,31 @@
         </div>
 
         <div class="input-group">
-          <div class="input-field">
+          <div class="input-field" style="width: 100%">
             <label>Commento / Nota (opzionale)</label>
-            <textarea
-              id="pay-commento"
-              placeholder="Es: Acconto, saldo finale, rata mensile..."
-              style="min-height: 70px"
-            ></textarea>
+            <div class="rich-editor-wrapper">
+              <div class="rich-editor-toolbar" data-editor-id="pay-commento">
+                <button type="button" class="rich-editor-btn" data-command="bold" title="Grassetto"><span class="material-symbols-outlined">format_bold</span></button>
+                <button type="button" class="rich-editor-btn" data-command="italic" title="Corsivo"><span class="material-symbols-outlined">format_italic</span></button>
+                <button type="button" class="rich-editor-btn" data-command="underline" title="Sottolineato"><span class="material-symbols-outlined">format_underlined</span></button>
+                <button type="button" class="rich-editor-btn" data-command="strikeThrough" title="Barrato"><span class="material-symbols-outlined">strikethrough_s</span></button>
+                <div class="rich-editor-divider"></div>
+                <button type="button" class="rich-editor-btn" data-command="heading" title="Testo Grande (Titolo)"><span class="material-symbols-outlined">format_size</span></button>
+                <button type="button" class="rich-editor-btn" data-command="normal" title="Testo Normale"><span class="material-symbols-outlined">match_case</span></button>
+                <button type="button" class="rich-editor-btn" data-command="small" title="Testo Piccolo"><span class="material-symbols-outlined">text_fields</span></button>
+                <div class="rich-editor-divider"></div>
+                <button type="button" class="rich-editor-btn" data-command="highlight" title="Evidenziatore"><span class="material-symbols-outlined">ink_highlighter</span></button>
+                <div class="rich-editor-divider"></div>
+                <button type="button" class="rich-editor-btn" data-command="insertUnorderedList" title="Elenco puntato"><span class="material-symbols-outlined">format_list_bulleted</span></button>
+                <button type="button" class="rich-editor-btn" data-command="insertOrderedList" title="Elenco numerato"><span class="material-symbols-outlined">format_list_numbered</span></button>
+                <button type="button" class="rich-editor-btn" data-command="checklist" title="Checklist"><span class="material-symbols-outlined">checklist</span></button>
+                <button type="button" class="rich-editor-btn" data-command="quote" title="Citazione"><span class="material-symbols-outlined">format_quote</span></button>
+                <button type="button" class="rich-editor-btn" data-command="createLink" title="Inserisci Link (URL)"><span class="material-symbols-outlined">link</span></button>
+                <div class="rich-editor-divider"></div>
+                <button type="button" class="rich-editor-btn" data-command="removeFormat" title="Rimuovi formattazione"><span class="material-symbols-outlined">format_clear</span></button>
+              </div>
+              <div id="pay-commento" class="rich-editor-content" contenteditable="true" data-placeholder="Es: Acconto, saldo finale, rata mensile..." style="min-height: 70px;"></div>
+            </div>
           </div>
         </div>
 
@@ -601,6 +638,7 @@
                 <button type="button" class="rich-editor-btn" data-command="insertOrderedList" title="Elenco numerato"><span class="material-symbols-outlined">format_list_numbered</span></button>
                 <button type="button" class="rich-editor-btn" data-command="checklist" title="Checklist"><span class="material-symbols-outlined">checklist</span></button>
                 <button type="button" class="rich-editor-btn" data-command="quote" title="Citazione"><span class="material-symbols-outlined">format_quote</span></button>
+                <button type="button" class="rich-editor-btn" data-command="createLink" title="Inserisci Link (URL)"><span class="material-symbols-outlined">link</span></button>
                 <div class="rich-editor-divider"></div>
                 <button type="button" class="rich-editor-btn" data-command="removeFormat" title="Rimuovi formattazione"><span class="material-symbols-outlined">format_clear</span></button>
               </div>
@@ -628,6 +666,7 @@
                 <button type="button" class="rich-editor-btn" data-command="insertOrderedList" title="Elenco numerato"><span class="material-symbols-outlined">format_list_numbered</span></button>
                 <button type="button" class="rich-editor-btn" data-command="checklist" title="Checklist"><span class="material-symbols-outlined">checklist</span></button>
                 <button type="button" class="rich-editor-btn" data-command="quote" title="Citazione"><span class="material-symbols-outlined">format_quote</span></button>
+                <button type="button" class="rich-editor-btn" data-command="createLink" title="Inserisci Link (URL)"><span class="material-symbols-outlined">link</span></button>
                 <div class="rich-editor-divider"></div>
                 <button type="button" class="rich-editor-btn" data-command="removeFormat" title="Rimuovi formattazione"><span class="material-symbols-outlined">format_clear</span></button>
               </div>
@@ -811,6 +850,7 @@
                 <button type="button" class="rich-editor-btn" data-command="insertOrderedList" title="Elenco numerato"><span class="material-symbols-outlined">format_list_numbered</span></button>
                 <button type="button" class="rich-editor-btn" data-command="checklist" title="Checklist"><span class="material-symbols-outlined">checklist</span></button>
                 <button type="button" class="rich-editor-btn" data-command="quote" title="Citazione"><span class="material-symbols-outlined">format_quote</span></button>
+                <button type="button" class="rich-editor-btn" data-command="createLink" title="Inserisci Link (URL)"><span class="material-symbols-outlined">link</span></button>
                 <div class="rich-editor-divider"></div>
                 <button type="button" class="rich-editor-btn" data-command="removeFormat" title="Rimuovi formattazione"><span class="material-symbols-outlined">format_clear</span></button>
               </div>
@@ -990,6 +1030,7 @@
                 <button type="button" class="rich-editor-btn" data-command="insertOrderedList" title="Elenco numerato"><span class="material-symbols-outlined">format_list_numbered</span></button>
                 <button type="button" class="rich-editor-btn" data-command="checklist" title="Checklist"><span class="material-symbols-outlined">checklist</span></button>
                 <button type="button" class="rich-editor-btn" data-command="quote" title="Citazione"><span class="material-symbols-outlined">format_quote</span></button>
+                <button type="button" class="rich-editor-btn" data-command="createLink" title="Inserisci Link (URL)"><span class="material-symbols-outlined">link</span></button>
                 <div class="rich-editor-divider"></div>
                 <button type="button" class="rich-editor-btn" data-command="removeFormat" title="Rimuovi formattazione"><span class="material-symbols-outlined">format_clear</span></button>
               </div>
@@ -1164,7 +1205,7 @@
 
     <!-- Modale Dedicato: Imposta Capitale Iniziale (Setup di Partenza) -->
     <div id="savingsInitialModal" class="modal-overlay">
-      <div class="modal-content" style="max-width: 520px; max-height: 90vh; overflow-y: auto;">
+      <div class="modal-content" style="max-width: 520px;">
         <h2 style="margin-top: 0; color: var(--md-sys-color-primary); display: flex; align-items: center; gap: 8px;">
           <span class="material-symbols-outlined">account_balance</span> Imposta Capitale Iniziale
         </h2>
@@ -1225,7 +1266,7 @@
 
     <!-- Modale Registrazione Rilevazione Risparmio (Solo dati correnti / attuali) -->
     <div id="savingsModal" class="modal-overlay">
-      <div class="modal-content" style="max-width: 650px; max-height: 90vh; overflow-y: auto;">
+      <div class="modal-content" style="max-width: 650px;">
         <h2 style="margin-top: 0; color: var(--md-sys-color-primary); display: flex; align-items: center; gap: 8px;">
           <span class="material-symbols-outlined">trending_up</span> Registra Rilevazione Risparmio
         </h2>
@@ -1326,9 +1367,31 @@
         </div>
 
         <div class="input-group" style="margin-top: 16px;">
-          <div class="input-field">
+          <div class="input-field" style="width: 100%">
             <label>Note o Memo Rilevazione (opzionale)</label>
-            <input type="text" id="savings-modal-note" placeholder="Es. Dopo stipendio e conguaglio..." />
+            <div class="rich-editor-wrapper">
+              <div class="rich-editor-toolbar" data-editor-id="savings-modal-note">
+                <button type="button" class="rich-editor-btn" data-command="bold" title="Grassetto"><span class="material-symbols-outlined">format_bold</span></button>
+                <button type="button" class="rich-editor-btn" data-command="italic" title="Corsivo"><span class="material-symbols-outlined">format_italic</span></button>
+                <button type="button" class="rich-editor-btn" data-command="underline" title="Sottolineato"><span class="material-symbols-outlined">format_underlined</span></button>
+                <button type="button" class="rich-editor-btn" data-command="strikeThrough" title="Barrato"><span class="material-symbols-outlined">strikethrough_s</span></button>
+                <div class="rich-editor-divider"></div>
+                <button type="button" class="rich-editor-btn" data-command="heading" title="Testo Grande (Titolo)"><span class="material-symbols-outlined">format_size</span></button>
+                <button type="button" class="rich-editor-btn" data-command="normal" title="Testo Normale"><span class="material-symbols-outlined">match_case</span></button>
+                <button type="button" class="rich-editor-btn" data-command="small" title="Testo Piccolo"><span class="material-symbols-outlined">text_fields</span></button>
+                <div class="rich-editor-divider"></div>
+                <button type="button" class="rich-editor-btn" data-command="highlight" title="Evidenziatore"><span class="material-symbols-outlined">ink_highlighter</span></button>
+                <div class="rich-editor-divider"></div>
+                <button type="button" class="rich-editor-btn" data-command="insertUnorderedList" title="Elenco puntato"><span class="material-symbols-outlined">format_list_bulleted</span></button>
+                <button type="button" class="rich-editor-btn" data-command="insertOrderedList" title="Elenco numerato"><span class="material-symbols-outlined">format_list_numbered</span></button>
+                <button type="button" class="rich-editor-btn" data-command="checklist" title="Checklist"><span class="material-symbols-outlined">checklist</span></button>
+                <button type="button" class="rich-editor-btn" data-command="quote" title="Citazione"><span class="material-symbols-outlined">format_quote</span></button>
+                <button type="button" class="rich-editor-btn" data-command="createLink" title="Inserisci Link (URL)"><span class="material-symbols-outlined">link</span></button>
+                <div class="rich-editor-divider"></div>
+                <button type="button" class="rich-editor-btn" data-command="removeFormat" title="Rimuovi formattazione"><span class="material-symbols-outlined">format_clear</span></button>
+              </div>
+              <div id="savings-modal-note" class="rich-editor-content" contenteditable="true" data-placeholder="Es. Dopo stipendio e conguaglio..." style="min-height: 60px;"></div>
+            </div>
           </div>
         </div>
 
@@ -1359,7 +1422,7 @@
 
     <!-- Modale Aggiungi / Modifica Debito & Finanziamento -->
     <div id="debitoModal" class="modal-overlay">
-      <div class="modal-content" style="max-width: 680px; width: 100%; max-height: 90vh; overflow-y: auto;">
+      <div class="modal-content" style="max-width: 680px; width: 100%;">
         <h2 id="debito-modal-title" style="margin-top: 0; color: var(--md-sys-color-primary); display: flex; align-items: center; gap: 8px;">
           <span class="material-symbols-outlined">credit_card_off</span> Nuovo Finanziamento / Debito
         </h2>
@@ -1408,9 +1471,31 @@
         </div>
 
         <div class="input-group">
-          <div class="input-field">
+          <div class="input-field" style="width: 100%">
             <label>Note (Opzionale)</label>
-            <textarea id="debito-note" placeholder="es. Banca Findomestic, TAN 4.5%, scadenza fine 2026..."></textarea>
+            <div class="rich-editor-wrapper">
+              <div class="rich-editor-toolbar" data-editor-id="debito-note">
+                <button type="button" class="rich-editor-btn" data-command="bold" title="Grassetto"><span class="material-symbols-outlined">format_bold</span></button>
+                <button type="button" class="rich-editor-btn" data-command="italic" title="Corsivo"><span class="material-symbols-outlined">format_italic</span></button>
+                <button type="button" class="rich-editor-btn" data-command="underline" title="Sottolineato"><span class="material-symbols-outlined">format_underlined</span></button>
+                <button type="button" class="rich-editor-btn" data-command="strikeThrough" title="Barrato"><span class="material-symbols-outlined">strikethrough_s</span></button>
+                <div class="rich-editor-divider"></div>
+                <button type="button" class="rich-editor-btn" data-command="heading" title="Testo Grande (Titolo)"><span class="material-symbols-outlined">format_size</span></button>
+                <button type="button" class="rich-editor-btn" data-command="normal" title="Testo Normale"><span class="material-symbols-outlined">match_case</span></button>
+                <button type="button" class="rich-editor-btn" data-command="small" title="Testo Piccolo"><span class="material-symbols-outlined">text_fields</span></button>
+                <div class="rich-editor-divider"></div>
+                <button type="button" class="rich-editor-btn" data-command="highlight" title="Evidenziatore"><span class="material-symbols-outlined">ink_highlighter</span></button>
+                <div class="rich-editor-divider"></div>
+                <button type="button" class="rich-editor-btn" data-command="insertUnorderedList" title="Elenco puntato"><span class="material-symbols-outlined">format_list_bulleted</span></button>
+                <button type="button" class="rich-editor-btn" data-command="insertOrderedList" title="Elenco numerato"><span class="material-symbols-outlined">format_list_numbered</span></button>
+                <button type="button" class="rich-editor-btn" data-command="checklist" title="Checklist"><span class="material-symbols-outlined">checklist</span></button>
+                <button type="button" class="rich-editor-btn" data-command="quote" title="Citazione"><span class="material-symbols-outlined">format_quote</span></button>
+                <button type="button" class="rich-editor-btn" data-command="createLink" title="Inserisci Link (URL)"><span class="material-symbols-outlined">link</span></button>
+                <div class="rich-editor-divider"></div>
+                <button type="button" class="rich-editor-btn" data-command="removeFormat" title="Rimuovi formattazione"><span class="material-symbols-outlined">format_clear</span></button>
+              </div>
+              <div id="debito-note" class="rich-editor-content" contenteditable="true" data-placeholder="es. Banca Findomestic, TAN 4.5%, scadenza fine 2026..." style="min-height: 70px;"></div>
+            </div>
           </div>
         </div>
 
@@ -2071,12 +2156,31 @@
             <div id="add-costo-users-inputs" class="input-group"></div>
 
             <div class="input-group" style="margin-top: 12px">
-              <div class="input-field" style="flex: 1">
-                <label>Note / Stato</label
-                ><textarea
-                  id="add-costo-note"
-                  placeholder="Preventivo, Pagato, Da fare..."
-                ></textarea>
+              <div class="input-field" style="width: 100%; flex: 1">
+                <label>Note / Stato</label>
+                <div class="rich-editor-wrapper">
+                  <div class="rich-editor-toolbar" data-editor-id="add-costo-note">
+                    <button type="button" class="rich-editor-btn" data-command="bold" title="Grassetto"><span class="material-symbols-outlined">format_bold</span></button>
+                    <button type="button" class="rich-editor-btn" data-command="italic" title="Corsivo"><span class="material-symbols-outlined">format_italic</span></button>
+                    <button type="button" class="rich-editor-btn" data-command="underline" title="Sottolineato"><span class="material-symbols-outlined">format_underlined</span></button>
+                    <button type="button" class="rich-editor-btn" data-command="strikeThrough" title="Barrato"><span class="material-symbols-outlined">strikethrough_s</span></button>
+                    <div class="rich-editor-divider"></div>
+                    <button type="button" class="rich-editor-btn" data-command="heading" title="Testo Grande (Titolo)"><span class="material-symbols-outlined">format_size</span></button>
+                    <button type="button" class="rich-editor-btn" data-command="normal" title="Testo Normale"><span class="material-symbols-outlined">match_case</span></button>
+                    <button type="button" class="rich-editor-btn" data-command="small" title="Testo Piccolo"><span class="material-symbols-outlined">text_fields</span></button>
+                    <div class="rich-editor-divider"></div>
+                    <button type="button" class="rich-editor-btn" data-command="highlight" title="Evidenziatore"><span class="material-symbols-outlined">ink_highlighter</span></button>
+                    <div class="rich-editor-divider"></div>
+                    <button type="button" class="rich-editor-btn" data-command="insertUnorderedList" title="Elenco puntato"><span class="material-symbols-outlined">format_list_bulleted</span></button>
+                    <button type="button" class="rich-editor-btn" data-command="insertOrderedList" title="Elenco numerato"><span class="material-symbols-outlined">format_list_numbered</span></button>
+                    <button type="button" class="rich-editor-btn" data-command="checklist" title="Checklist"><span class="material-symbols-outlined">checklist</span></button>
+                    <button type="button" class="rich-editor-btn" data-command="quote" title="Citazione"><span class="material-symbols-outlined">format_quote</span></button>
+                    <button type="button" class="rich-editor-btn" data-command="createLink" title="Inserisci Link (URL)"><span class="material-symbols-outlined">link</span></button>
+                    <div class="rich-editor-divider"></div>
+                    <button type="button" class="rich-editor-btn" data-command="removeFormat" title="Rimuovi formattazione"><span class="material-symbols-outlined">format_clear</span></button>
+                  </div>
+                  <div id="add-costo-note" class="rich-editor-content" contenteditable="true" data-placeholder="Preventivo, Pagato, Da fare..." style="min-height: 70px;"></div>
+                </div>
               </div>
             </div>
             <div
@@ -2489,12 +2593,31 @@
             </div>
 
             <div class="input-group" style="margin-top: 12px">
-              <div class="input-field">
-                <label>Note</label
-                ><textarea
-                  id="add-budget-note"
-                  placeholder="Opzionale"
-                ></textarea>
+              <div class="input-field" style="width: 100%">
+                <label>Note</label>
+                <div class="rich-editor-wrapper">
+                  <div class="rich-editor-toolbar" data-editor-id="add-budget-note">
+                    <button type="button" class="rich-editor-btn" data-command="bold" title="Grassetto"><span class="material-symbols-outlined">format_bold</span></button>
+                    <button type="button" class="rich-editor-btn" data-command="italic" title="Corsivo"><span class="material-symbols-outlined">format_italic</span></button>
+                    <button type="button" class="rich-editor-btn" data-command="underline" title="Sottolineato"><span class="material-symbols-outlined">format_underlined</span></button>
+                    <button type="button" class="rich-editor-btn" data-command="strikeThrough" title="Barrato"><span class="material-symbols-outlined">strikethrough_s</span></button>
+                    <div class="rich-editor-divider"></div>
+                    <button type="button" class="rich-editor-btn" data-command="heading" title="Testo Grande (Titolo)"><span class="material-symbols-outlined">format_size</span></button>
+                    <button type="button" class="rich-editor-btn" data-command="normal" title="Testo Normale"><span class="material-symbols-outlined">match_case</span></button>
+                    <button type="button" class="rich-editor-btn" data-command="small" title="Testo Piccolo"><span class="material-symbols-outlined">text_fields</span></button>
+                    <div class="rich-editor-divider"></div>
+                    <button type="button" class="rich-editor-btn" data-command="highlight" title="Evidenziatore"><span class="material-symbols-outlined">ink_highlighter</span></button>
+                    <div class="rich-editor-divider"></div>
+                    <button type="button" class="rich-editor-btn" data-command="insertUnorderedList" title="Elenco puntato"><span class="material-symbols-outlined">format_list_bulleted</span></button>
+                    <button type="button" class="rich-editor-btn" data-command="insertOrderedList" title="Elenco numerato"><span class="material-symbols-outlined">format_list_numbered</span></button>
+                    <button type="button" class="rich-editor-btn" data-command="checklist" title="Checklist"><span class="material-symbols-outlined">checklist</span></button>
+                    <button type="button" class="rich-editor-btn" data-command="quote" title="Citazione"><span class="material-symbols-outlined">format_quote</span></button>
+                    <button type="button" class="rich-editor-btn" data-command="createLink" title="Inserisci Link (URL)"><span class="material-symbols-outlined">link</span></button>
+                    <div class="rich-editor-divider"></div>
+                    <button type="button" class="rich-editor-btn" data-command="removeFormat" title="Rimuovi formattazione"><span class="material-symbols-outlined">format_clear</span></button>
+                  </div>
+                  <div id="add-budget-note" class="rich-editor-content" contenteditable="true" data-placeholder="Opzionale" style="min-height: 70px;"></div>
+                </div>
               </div>
             </div>
             <div
@@ -3573,13 +3696,13 @@
             <a href="https://giovannilamarmora.github.io/" target="_blank"
               >Giovanni Lamarmora</a
             >
-            <span class="version-number">v1.9.11</span>
+            <span class="version-number">v1.9.15</span>
           </h4>
         </div>
       </div>
     </div>
 
-    <!-- Script modulari dell'applicazione (v1.9.11) -->
+    <!-- Script modulari dell'applicazione (v1.9.15) -->
     <script src="./js/config.js"></script>
     <script src="./js/ui.js"></script>
     <script src="./js/storage.js"></script>

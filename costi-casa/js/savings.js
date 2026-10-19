@@ -852,7 +852,7 @@ function renderSavingsHistoryTable(userId) {
 
     const isNettoPos = snap.risultati.risparmioNetto >= 0;
 
-    const hasNoteS = snap.note && snap.note.trim().length > 0;
+    const hasNoteS = snap.note && String(snap.note).trim().length > 0;
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td class="col-savings-date" data-label="Data"><b>${new Date(snap.dataRilevazione).toLocaleDateString("it-IT")}</b></td>
@@ -864,7 +864,7 @@ function renderSavingsHistoryTable(userId) {
       <td class="col-metric" data-label="Risparmio Netto" style="font-weight: 600; color: ${isNettoPos ? 'var(--md-sys-color-success)' : 'var(--md-sys-color-error)'};">${formatCurrency(snap.risultati.risparmioNetto)}</td>
       <td class="col-metric" data-label="Variazione (Δ)">${deltaHtml}</td>
       <td class="col-metric" data-label="Liquidità Netta" style="font-weight: 600;">${formatCurrency(snap.risultati.liquiditaNetta)}</td>
-      <td class="col-note ${hasNoteS ? "" : "col-note-empty"}" data-label="Note" style="font-size: 12px; color: var(--md-sys-color-outline); white-space: pre-wrap;">${snap.note || ""}</td>
+      <td class="col-note ${hasNoteS ? "" : "col-note-empty"}" data-label="Note" style="font-size: 12px; color: var(--md-sys-color-outline); white-space: pre-wrap;">${renderRichContent(snap.note, "savings", snap.id, "note")}</td>
       <td class="col-actions" data-label="Azioni" style="white-space: nowrap;">
         <button class="btn-icon" title="Modifica punto di storico" onclick="openEditSavingsSnapshot('${snap.id}')" style="margin-right: 4px;">
           <span class="material-symbols-outlined" style="font-size: 18px; color: var(--md-sys-color-primary);">edit</span>
@@ -1038,12 +1038,12 @@ function openSavingsInitialModal(userId = null) {
   updateSavingsInitialBudgetTriggerDisplay(null, currentUserId);
   renderSavingsInitialBudgetMenu(currentUserId);
 
-  document.getElementById("savingsInitialModal").classList.add("active");
+  openModalOverlay("savingsInitialModal");
 }
 
 function closeSavingsInitialModal() {
   closeSavingsInitialBudgetPickerMenu();
-  document.getElementById("savingsInitialModal").classList.remove("active");
+  closeModalOverlay("savingsInitialModal");
 }
 
 function onSavingsInitialUserChange() {
@@ -1259,7 +1259,7 @@ function openSavingsModal() {
   updateSavingsModalBaselineSummary(currentUserId);
 
   document.getElementById("savings-modal-saldo-conto").value = (uConfig.ultimoSaldoConto !== null && uConfig.ultimoSaldoConto !== undefined) ? uConfig.ultimoSaldoConto : "";
-  document.getElementById("savings-modal-note").value = "";
+  setRichEditorHTML("savings-modal-note", "");
 
   // Calcola spese sostenute attuali da Costi Casa
   recalcSavingsExpensesFromCosti();
@@ -1281,7 +1281,7 @@ function openSavingsModal() {
     submitBtn.innerHTML = `<span class="material-symbols-outlined">check_circle</span> Salva e Archivia`;
   }
 
-  document.getElementById("savingsModal").classList.add("active");
+  openModalOverlay("savingsModal");
 }
 
 /**
@@ -1316,7 +1316,7 @@ function openEditSavingsSnapshot(snapId) {
   updateSavingsModalBaselineSummary(currentUserId);
 
   document.getElementById("savings-modal-saldo-conto").value = (snapshot.saldoContoCorrente !== null && snapshot.saldoContoCorrente !== undefined) ? snapshot.saldoContoCorrente : "";
-  document.getElementById("savings-modal-note").value = snapshot.note || "";
+  setRichEditorHTML("savings-modal-note", snapshot.note || "");
 
   recalcSavingsExpensesFromCosti();
 
@@ -1331,16 +1331,16 @@ function openEditSavingsSnapshot(snapId) {
   if (titleEl) {
     titleEl.innerHTML = `<span class="material-symbols-outlined">edit_calendar</span> Modifica Rilevazione Risparmio`;
   }
-  const submitBtn = document.querySelector("#savingsModal .modal-actions .btn-filled");
-  if (submitBtn) {
-    submitBtn.innerHTML = `<span class="material-symbols-outlined">save</span> Aggiorna Rilevazione`;
+  const submitBtnEdit = document.querySelector("#savingsModal .modal-actions .btn-filled");
+  if (submitBtnEdit) {
+    submitBtnEdit.innerHTML = `<span class="material-symbols-outlined">save</span> Aggiorna Rilevazione`;
   }
 
-  document.getElementById("savingsModal").classList.add("active");
+  openModalOverlay("savingsModal");
 }
 
 function closeSavingsModal() {
-  document.getElementById("savingsModal").classList.remove("active");
+  closeModalOverlay("savingsModal");
 }
 
 function onSavingsUserChange() {
@@ -1537,7 +1537,7 @@ function saveSavingsSnapshot() {
   const saldoConto = saldoVal !== "" ? parseFloat(saldoVal) : 0;
   // Spese sostenute sempre calcolate direttamente dai costi effettivi registrati per l'utente
   const speseSostenute = appData.costi.reduce((acc, curr) => acc + (parseFloat(curr[userId]) || 0), 0);
-  const note = document.getElementById("savings-modal-note").value.trim();
+  const note = getRichEditorHTML("savings-modal-note");
   const modalTargetDate = document.getElementById("savings-modal-target-date")?.value;
 
   if (modalTargetDate) {

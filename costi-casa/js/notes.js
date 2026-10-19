@@ -193,7 +193,7 @@ function createQACardElement(item, isInsideDetailView = false) {
       ${item.topic ? `<div style="font-size: 16px; font-weight: 700; color: var(--md-sys-color-on-surface); margin-bottom: 8px;">${escapeHTML(item.topic)}</div>` : ""}
       <div style="font-size: 15px; color: var(--md-sys-color-on-surface); display: flex; gap: 8px; align-items: flex-start;">
           <span class="material-symbols-outlined" style="color: var(--md-sys-color-primary); font-size: 20px; flex-shrink: 0; margin-top: 2px;">help</span>
-          <div style="flex: 1; min-width: 0;">${renderRichContent(item.question, "qa", item.id, "question")}</div>
+          <div style="flex: 1; min-width: 0; white-space: pre-wrap;">${renderRichContent(item.question, "qa", item.id, "question")}</div>
       </div>
   `;
   card.appendChild(bodyDiv);
@@ -265,7 +265,7 @@ function createQACardElement(item, isInsideDetailView = false) {
         <div style="font-size: 12px; font-weight: 600; color: var(--md-sys-color-success); margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
             <span class="material-symbols-outlined" style="font-size: 16px;">check_circle</span> Risposta:
         </div>
-        <div style="font-size: 14px; line-height: 1.5;">${renderRichContent(item.answer, "qa", item.id, "answer")}</div>
+        <div style="font-size: 14px; line-height: 1.5; white-space: pre-wrap;">${renderRichContent(item.answer, "qa", item.id, "answer")}</div>
     `;
   } else {
     answerDiv.style.cssText =
@@ -493,7 +493,7 @@ function openAddQAModal(preselectedCostId = null) {
   renderQAModalImagesPreview();
   currentQALinkedCostIds = preselectedCostId ? [Number(preselectedCostId)] : [];
   renderQALinkedCostsPreview();
-  document.getElementById("qaModal").classList.add("active");
+  openModalOverlay("qaModal");
 }
 
 /**
@@ -518,14 +518,14 @@ function openEditQAModal(id) {
     ? [...item.linkedCostIds]
     : [];
   renderQALinkedCostsPreview();
-  document.getElementById("qaModal").classList.add("active");
+  openModalOverlay("qaModal");
 }
 
 /**
  * Chiude la modale di modifica o creazione Q&A.
  */
 function closeQAModal() {
-  document.getElementById("qaModal").classList.remove("active");
+  closeModalOverlay("qaModal");
   currentQAImages = [];
   currentQALinkedCostIds = [];
   const preview = document.getElementById("qa-modal-images-preview");
@@ -762,7 +762,7 @@ function createTaskCardElement(item, isInsideDetailView = false) {
       "font-size: 15px; color: var(--md-sys-color-on-surface); display: flex; gap: 8px; align-items: flex-start; margin-top: 6px;";
     descDiv.innerHTML = `
         <span class="material-symbols-outlined" style="color: var(--md-sys-color-outline); font-size: 20px; flex-shrink: 0; margin-top: 2px;">notes</span>
-        <div style="flex: 1; min-width: 0;">${renderRichContent(item.desc, "tasks", item.id, "desc")}</div>
+        <div style="flex: 1; min-width: 0; white-space: pre-wrap;">${renderRichContent(item.desc, "tasks", item.id, "desc")}</div>
     `;
     card.appendChild(descDiv);
   }
@@ -1058,7 +1058,7 @@ function openAddTaskModal(preselectedCostId = null) {
     ? [Number(preselectedCostId)]
     : [];
   renderTaskLinkedCostsPreview();
-  document.getElementById("taskModal").classList.add("active");
+  openModalOverlay("taskModal");
 }
 
 function openEditTaskModal(id) {
@@ -1079,11 +1079,11 @@ function openEditTaskModal(id) {
     ? [...item.linkedCostIds]
     : [];
   renderTaskLinkedCostsPreview();
-  document.getElementById("taskModal").classList.add("active");
+  openModalOverlay("taskModal");
 }
 
 function closeTaskModal() {
-  document.getElementById("taskModal").classList.remove("active");
+  closeModalOverlay("taskModal");
   currentTaskImages = [];
   currentTaskLinkedCostIds = [];
   const preview = document.getElementById("task-modal-images-preview");
@@ -1450,7 +1450,7 @@ function createNoteCardElement(item, isInsideDetailView = false) {
   if (item.content) {
     const contentDiv = document.createElement("div");
     contentDiv.style.cssText =
-      "font-size: 15px; color: var(--md-sys-color-on-surface); margin-top: 6px; line-height: 1.5;";
+      "font-size: 15px; color: var(--md-sys-color-on-surface); margin-top: 6px; line-height: 1.5; white-space: pre-wrap;";
     contentDiv.innerHTML = renderRichContent(item.content, "notes", item.id, "content");
     card.appendChild(contentDiv);
   }
@@ -1579,7 +1579,7 @@ function openAddNoteModal(preselectedCostId = null) {
     ? [Number(preselectedCostId)]
     : [];
   renderNoteLinkedCostsPreview();
-  document.getElementById("noteModal").classList.add("active");
+  openModalOverlay("noteModal");
 }
 
 function openEditNoteModal(id) {
@@ -1617,11 +1617,11 @@ function openEditNoteModal(id) {
     ? [...item.linkedCostIds]
     : [];
   renderNoteLinkedCostsPreview();
-  document.getElementById("noteModal").classList.add("active");
+  openModalOverlay("noteModal");
 }
 
 function closeNoteModal() {
-  document.getElementById("noteModal").classList.remove("active");
+  closeModalOverlay("noteModal");
   currentNoteImages = [];
   currentNoteLinkedCostIds = [];
   const preview = document.getElementById("note-modal-images-preview");

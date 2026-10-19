@@ -403,8 +403,8 @@ function renderDebitiSection() {
         <!-- Note se presenti -->
         ${
           d.note
-            ? `<div style="font-size: 12px; color: var(--md-sys-color-outline); background: var(--md-sys-color-surface-container-lowest); padding: 8px 10px; border-radius: 6px; border-left: 3px solid var(--md-sys-color-primary);">
-                ${d.note}
+            ? `<div style="font-size: 12px; color: var(--md-sys-color-outline); background: var(--md-sys-color-surface-container-lowest); padding: 8px 10px; border-radius: 6px; border-left: 3px solid var(--md-sys-color-primary); white-space: pre-wrap;">
+                ${renderRichContent(d.note, "debiti", d.id, "note")}
               </div>`
             : ""
         }
@@ -462,13 +462,12 @@ function openAddDebitoModal() {
   document.getElementById("debito-rata").value = "";
   document.getElementById("debito-mesi").value = "";
   document.getElementById("debito-giorno").value = "15";
-  document.getElementById("debito-note").value = "";
+  setRichEditorHTML("debito-note", "");
 
   populateDebitoUserSelect();
   updateDebitoModalPreview();
 
-  const modal = document.getElementById("debitoModal");
-  if (modal) modal.classList.add("active");
+  openModalOverlay("debitoModal");
 }
 
 /**
@@ -487,21 +486,19 @@ function openEditDebitoModal(id) {
   document.getElementById("debito-rata").value = debito.rata || "";
   document.getElementById("debito-mesi").value = debito.mesiRimanenti !== undefined ? debito.mesiRimanenti : "";
   document.getElementById("debito-giorno").value = debito.giornoPagamento || 15;
-  document.getElementById("debito-note").value = debito.note || "";
+  setRichEditorHTML("debito-note", debito.note || "");
 
   populateDebitoUserSelect(debito.userId);
   updateDebitoModalPreview();
 
-  const modal = document.getElementById("debitoModal");
-  if (modal) modal.classList.add("active");
+  openModalOverlay("debitoModal");
 }
 
 /**
  * Chiude la modale del debito.
  */
 function closeDebitoModal() {
-  const modal = document.getElementById("debitoModal");
-  if (modal) modal.classList.remove("active");
+  closeModalOverlay("debitoModal");
 }
 
 /**
@@ -563,7 +560,7 @@ function saveDebitoModal() {
   const rata = parseFloat(document.getElementById("debito-rata").value);
   const mesi = parseInt(document.getElementById("debito-mesi").value, 10);
   const giorno = parseInt(document.getElementById("debito-giorno").value, 10);
-  const note = document.getElementById("debito-note").value.trim();
+  const note = getRichEditorHTML("debito-note");
 
   if (!desc) {
     showNotification("Attenzione", "Inserisci la descrizione o nome del debito.", "warning");

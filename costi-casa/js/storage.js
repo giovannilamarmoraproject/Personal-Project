@@ -30,7 +30,7 @@ function importDataJSON(event) {
         appData = importedData;
         sanitizeData();
         localStorage.setItem("casaData", JSON.stringify(appData));
-        document.getElementById("wizardModal").classList.remove("active");
+        closeModalOverlay("wizardModal");
         renderAll();
         showNotification("Dati importati con successo!");
         // Try to sync to gist if enabled
@@ -89,7 +89,7 @@ async function wizardSyncFromGist() {
         saveGithubConfig();
         localStorage.setItem("casaData", JSON.stringify(appData));
 
-        document.getElementById("wizardModal").classList.remove("active");
+        closeModalOverlay("wizardModal");
         renderAll();
         showNotification("Dati ripristinati da GitHub!");
       } else {
@@ -387,7 +387,7 @@ function checkWizard() {
         ? [...appData.settings.users]
         : [{ id: "u1", name: "Utente", share: 100, safetyFund: 5000 }];
     renderWizardUsers();
-    document.getElementById("wizardModal").classList.add("active");
+    openModalOverlay("wizardModal");
   }
 }
 
@@ -399,7 +399,7 @@ function finishWizard() {
     appData.settings = JSON.parse(JSON.stringify(defaultData.settings));
   appData.settings.users = [...wizardUsers];
   appData.settings.configured = true;
-  document.getElementById("wizardModal").classList.remove("active");
+  closeModalOverlay("wizardModal");
   saveDataLocally();
   showNotification("Dashboard creata con successo!");
 }

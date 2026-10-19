@@ -293,8 +293,7 @@ function openDriveModal() {
   let val = appData.settings.driveLink || "";
   if (driveInput) driveInput.value = val;
   if (settingsDriveInput) settingsDriveInput.value = val;
-  let driveModal = document.getElementById("driveModal");
-  if (driveModal) driveModal.classList.add("active");
+  openModalOverlay("driveModal");
 }
 
 /**
@@ -311,8 +310,7 @@ function saveDriveLink() {
         : "";
 
   appData.settings.driveLink = url;
-  let driveModal = document.getElementById("driveModal");
-  if (driveModal) driveModal.classList.remove("active");
+  closeModalOverlay("driveModal");
 
   saveDataLocally();
   showNotification("Link Drive salvato!");
@@ -995,7 +993,7 @@ function updateTableViewModeUI() {
 
 /**
  * ============================================================================== 
- * EDITOR DI TESTO FORMATTATO (RICH TEXT) - v1.9.11
+ * EDITOR DI TESTO FORMATTATO (RICH TEXT) - v1.9.15
  * ============================================================================== 
  */
 
@@ -1060,6 +1058,16 @@ function getRichEditorHTML(editorId) {
 }
 
 /**
+ * Verifica se una stringa contiene tag HTML di formattazione rich text supportati.
+ * @param {string} str - Stringa da analizzare.
+ * @returns {boolean} True se contiene tag di formattazione.
+ */
+function isRichHTML(str) {
+  if (!str) return false;
+  return /<(\/)?(p|div|br|b|strong|i|em|u|s|strike|del|h[1-6]|small|mark|ul|ol|li|blockquote|font|span|a)\b/i.test(String(str));
+}
+
+/**
  * Popola un editor contenteditable con HTML o testo piano.
  * @param {string} editorId - ID dell'elemento contenteditable.
  * @param {string} htmlOrText - Contenuto da inserire.
@@ -1067,45 +1075,59 @@ function getRichEditorHTML(editorId) {
 function setRichEditorHTML(editorId, htmlOrText) {
   const el = document.getElementById(editorId);
   if (!el) return;
-  if (!htmlOrText) {
+  if (htmlOrText === null || htmlOrText === undefined) {
     el.innerHTML = "";
+    updateRichToolbarActiveStates(el);
     return;
   }
-  const str = String(htmlOrText).trim();
-  const isHtml = /<[a-z][\s\S]*>/i.test(str);
-  if (isHtml) {
+  const str = String(htmlOrText);
+  if (!str.trim()) {
+    el.innerHTML = "";
+    updateRichToolbarActiveStates(el);
+    return;
+  }
+  if (isRichHTML(str)) {
     el.innerHTML = sanitizeRichHTML(str);
     el.querySelectorAll('.rich-checklist input[type="checkbox"]').forEach((cb) => {
       cb.disabled = true;
     });
   } else {
-    el.innerHTML = escapeHTML(str).replace(/\n/g, "<br>");
+    el.innerHTML = escapeHTML(str).replace(/\r\n/g, "<br>").replace(/\n/g, "<br>");
   }
+  updateRichToolbarActiveStates(el);
 }
 
 /**
  * Renderizza il testo formattato (o legacy) in una card con checklist interattive.
  * @param {string} content - Contenuto HTML o testo piano.
- * @param {string} [itemType=''] - Tipo di elemento ('qa', 'tasks', 'notes').
+ * @param {string} [itemType=''] - Tipo di elemento ('qa', 'tasks', 'notes', 'costi', 'budget', 'debiti', 'savings').
  * @param {number} [itemId=0] - ID dell'elemento genitore.
- * @param {string} [fieldName=''] - Nome del campo ('question', 'answer', 'desc', 'content').
+ * @param {string} [fieldName=''] - Nome del campo ('question', 'answer', 'desc', 'content', 'note', 'payment').
  * @returns {string} Stringa HTML renderizzata.
  */
 function renderRichContent(content, itemType = "", itemId = 0, fieldName = "") {
-  if (!content) return "";
-  const str = String(content).trim();
-  const isHtml = /<[a-z][\s\S]*>/i.test(str);
+  if (content === null || content === undefined) return "";
+  const str = String(content);
+  if (!str.trim()) return "";
 
+  const isHtml = isRichHTML(str);
   let cleanHTML = "";
   if (isHtml) {
     cleanHTML = sanitizeRichHTML(str);
   } else {
-    cleanHTML = escapeHTML(str).replace(/\n/g, "<br>");
+    cleanHTML = escapeHTML(str).replace(/\r\n/g, "<br>").replace(/\n/g, "<br>");
   }
 
   const container = document.createElement("div");
-  container.className = "rich-text-rendered";
+  container.className = "rich-text-rendered" + (isHtml ? "" : " rich-text-plain");
   container.innerHTML = cleanHTML;
+
+  // I link aprono una nuova scheda e prevengono il click sulla riga tabella
+  container.querySelectorAll("a").forEach((a) => {
+    a.setAttribute("target", "_blank");
+    a.setAttribute("rel", "noopener noreferrer");
+    a.setAttribute("onclick", "event.stopPropagation();");
+  });
 
   const checkboxes = container.querySelectorAll('.rich-checklist input[type="checkbox"]');
   checkboxes.forEach((cb, idx) => {
@@ -1130,11 +1152,41 @@ function renderRichContent(content, itemType = "", itemId = 0, fieldName = "") {
  */
 function toggleRichChecklist(itemType, itemId, fieldName, checkboxEl, event) {
   if (event) event.stopPropagation();
-  if (!appData[itemType]) return;
-  const item = appData[itemType].find((x) => x.id === Number(itemId));
+  const cbIndex = parseInt(checkboxEl.getAttribute("data-cb-index"), 10);
+
+  if (fieldName === "payment") {
+    const costItem = (appData.costi || []).find((c) => String(c.id) === String(itemId));
+    if (costItem && costItem.pagamenti) {
+      for (const p of costItem.pagamenti) {
+        if (p.commento && p.commento.includes("rich-checklist")) {
+          const temp = document.createElement("div");
+          temp.innerHTML = p.commento;
+          const cbs = temp.querySelectorAll('.rich-checklist input[type="checkbox"]');
+          if (cbs && cbs[cbIndex]) {
+            if (checkboxEl.checked) {
+              cbs[cbIndex].setAttribute("checked", "checked");
+            } else {
+              cbs[cbIndex].removeAttribute("checked");
+            }
+            p.commento = temp.innerHTML;
+            saveDataLocally();
+            showNotification(checkboxEl.checked ? "Elemento completato" : "Elemento riaperto");
+            return;
+          }
+        }
+      }
+    }
+    return;
+  }
+
+  let list = appData[itemType];
+  if (!list && itemType === "savings" && appData.savingsMonitor) {
+    list = appData.savingsMonitor.storico;
+  }
+  if (!list) return;
+  const item = list.find((x) => String(x.id) === String(itemId));
   if (!item || !item[fieldName]) return;
 
-  const cbIndex = parseInt(checkboxEl.getAttribute("data-cb-index"), 10);
   const temp = document.createElement("div");
   temp.innerHTML = item[fieldName];
   const cbs = temp.querySelectorAll('.rich-checklist input[type="checkbox"]');
@@ -1153,34 +1205,326 @@ function toggleRichChecklist(itemType, itemId, fieldName, checkboxEl, event) {
 }
 
 /**
- * Inserisce un blocco checklist nell'editor attivo.
+ * Verifica se un nodo DOM è contenuto all'interno di uno dei tag specificati.
+ */
+function isInsideTag(node, root, tagNames) {
+  let curr = node;
+  while (curr && curr !== root) {
+    if (curr.nodeType === 1 && tagNames.includes(curr.nodeName.toUpperCase())) {
+      return true;
+    }
+    curr = curr.parentNode;
+  }
+  return false;
+}
+
+/**
+ * Restituisce l'antenato DOM che corrisponde a uno dei tag specificati.
+ */
+function getAncestorTag(node, root, tagNames) {
+  let curr = node;
+  while (curr && curr !== root) {
+    if (curr.nodeType === 1 && tagNames.includes(curr.nodeName.toUpperCase())) {
+      return curr;
+    }
+    curr = curr.parentNode;
+  }
+  return null;
+}
+
+/**
+ * Verifica se un nodo è all'interno di una checklist con caselle.
+ */
+function isInsideChecklist(node, root) {
+  let curr = node;
+  while (curr && curr !== root) {
+    if (curr.nodeType === 1 && curr.nodeName === "UL" && curr.classList.contains("rich-checklist")) {
+      return true;
+    }
+    curr = curr.parentNode;
+  }
+  return false;
+}
+
+/**
+ * Verifica se un nodo è all'interno di un tag font con dimensione ridotta.
+ */
+function isInsideSmallFont(node, root) {
+  let curr = node;
+  while (curr && curr !== root) {
+    if (curr.nodeType === 1 && curr.nodeName === "FONT" && curr.getAttribute("size") === "1") {
+      return true;
+    }
+    curr = curr.parentNode;
+  }
+  return false;
+}
+
+/**
+ * Verifica se un nodo ha evidenziazione di testo attiva.
+ */
+function isHighlighted(node, root) {
+  let curr = node;
+  while (curr && curr !== root) {
+    if (curr.nodeType === 1) {
+      if (curr.nodeName === "MARK") return true;
+      const bg = curr.style && curr.style.backgroundColor;
+      if (bg && bg !== "transparent" && bg !== "rgba(0, 0, 0, 0)" && bg !== "inherit") {
+        return true;
+      }
+    }
+    curr = curr.parentNode;
+  }
+  return false;
+}
+
+/**
+ * Aggiorna lo stato visivo (.active) di tutti i pulsanti della toolbar associata all'editor.
+ * @param {HTMLElement} editor - Elemento contenteditable attivo.
+ */
+function updateRichToolbarActiveStates(editor) {
+  if (!editor || !editor.id) return;
+  const toolbar = document.querySelector(`.rich-editor-toolbar[data-editor-id="${editor.id}"]`);
+  if (!toolbar) return;
+
+  const sel = window.getSelection();
+  let anchorNode = null;
+  if (sel && sel.rangeCount > 0) {
+    anchorNode = sel.anchorNode;
+  }
+
+  // Se l'editor non contiene il cursore o la selezione, mantieni o pulisci se non ha focus
+  if (anchorNode && !editor.contains(anchorNode) && anchorNode !== editor) {
+    return;
+  }
+
+  const buttons = toolbar.querySelectorAll(".rich-editor-btn[data-command]");
+  buttons.forEach((btn) => {
+    const cmd = btn.getAttribute("data-command");
+    let isActive = false;
+
+    try {
+      switch (cmd) {
+        case "bold":
+          isActive = document.queryCommandState("bold");
+          break;
+        case "italic":
+          isActive = document.queryCommandState("italic");
+          break;
+        case "underline":
+          isActive = document.queryCommandState("underline");
+          break;
+        case "strikeThrough":
+          isActive = document.queryCommandState("strikeThrough");
+          break;
+        case "insertUnorderedList":
+          isActive = document.queryCommandState("insertUnorderedList") && !isInsideChecklist(anchorNode, editor);
+          break;
+        case "insertOrderedList":
+          isActive = document.queryCommandState("insertOrderedList");
+          break;
+        case "checklist":
+          isActive = isInsideChecklist(anchorNode, editor);
+          break;
+        case "heading":
+          isActive = isInsideTag(anchorNode, editor, ["H1", "H2", "H3", "H4", "H5", "H6"]);
+          break;
+        case "normal": {
+          const inHeading = isInsideTag(anchorNode, editor, ["H1", "H2", "H3", "H4", "H5", "H6"]);
+          const inQuote = isInsideTag(anchorNode, editor, ["BLOCKQUOTE"]);
+          const inList = document.queryCommandState("insertUnorderedList") || document.queryCommandState("insertOrderedList");
+          const inChecklist = isInsideChecklist(anchorNode, editor);
+          isActive = !inHeading && !inQuote && !inList && !inChecklist;
+          break;
+        }
+        case "small":
+          isActive = isInsideTag(anchorNode, editor, ["SMALL"]) || isInsideSmallFont(anchorNode, editor);
+          break;
+        case "highlight":
+          isActive = isInsideTag(anchorNode, editor, ["MARK"]) || isHighlighted(anchorNode, editor);
+          break;
+        case "quote":
+          isActive = isInsideTag(anchorNode, editor, ["BLOCKQUOTE"]);
+          break;
+        case "createLink":
+          isActive = isInsideTag(anchorNode, editor, ["A"]);
+          break;
+        default:
+          isActive = false;
+          break;
+      }
+    } catch (e) {
+      isActive = false;
+    }
+
+    if (isActive) {
+      btn.classList.add("active");
+    } else {
+      btn.classList.remove("active");
+    }
+  });
+}
+
+/**
+ * Mostra un modale Material Design 3 per inserire o modificare un link cliccabile con testo personalizzato.
  * @param {HTMLElement} editor - Elemento contenteditable.
  */
-function insertRichChecklist(editor) {
+async function promptRichLink(editor) {
+  editor.focus();
+  const sel = window.getSelection();
+  let range = null;
+  if (sel && sel.rangeCount > 0) {
+    range = sel.getRangeAt(0);
+  }
+
+  const existingLink = getAncestorTag(sel ? sel.anchorNode : null, editor, ["A"]);
+  const currentText = existingLink ? existingLink.textContent : (range ? range.toString().trim() : "");
+  const currentHref = existingLink ? existingLink.getAttribute("href") : "";
+
+  const htmlContent = `
+    <div style="text-align: left; display: flex; flex-direction: column; gap: 14px; margin-top: 10px;">
+      <div>
+        <label style="font-size: 12px; font-weight: 600; color: var(--md-sys-color-primary); display: block; margin-bottom: 4px;">Testo visualizzato</label>
+        <input id="swal-link-text" class="swal2-input" style="margin: 0; width: 100%; box-sizing: border-box; font-size: 14px; height: 42px;" placeholder="Es. Apri Link, Scheda Catasto..." value="${escapeHTML(currentText || 'Apri Link')}">
+      </div>
+      <div>
+        <label style="font-size: 12px; font-weight: 600; color: var(--md-sys-color-primary); display: block; margin-bottom: 4px;">Indirizzo Web (URL)</label>
+        <input id="swal-link-url" class="swal2-input" style="margin: 0; width: 100%; box-sizing: border-box; font-size: 14px; height: 42px;" placeholder="https://..." value="${escapeHTML(currentHref || 'https://')}">
+      </div>
+    </div>
+  `;
+
+  const result = await M3Swal.fire({
+    title: existingLink ? "Modifica Link" : "Inserisci Link",
+    html: htmlContent,
+    showCancelButton: true,
+    showDenyButton: !!existingLink,
+    confirmButtonText: existingLink ? "Aggiorna" : "Inserisci",
+    cancelButtonText: "Annulla",
+    denyButtonText: "Rimuovi Link",
+    reverseButtons: true,
+    customClass: {
+      popup: "m3-swal-popup",
+      title: "m3-swal-title",
+      htmlContainer: "m3-swal-html",
+      actions: "m3-swal-actions",
+      confirmButton: "btn btn-filled",
+      cancelButton: "btn btn-tonal",
+      denyButton: "btn btn-error",
+    },
+    preConfirm: () => {
+      const textVal = document.getElementById("swal-link-text").value.trim();
+      const urlVal = document.getElementById("swal-link-url").value.trim();
+      if (!urlVal || urlVal === "https://" || urlVal === "http://") {
+        Swal.showValidationMessage("Inserisci un indirizzo URL valido");
+        return false;
+      }
+      return { text: textVal || urlVal, url: urlVal };
+    },
+  });
+
+  if (result.isDenied && existingLink) {
+    const textNode = document.createTextNode(existingLink.textContent);
+    existingLink.replaceWith(textNode);
+    updateRichToolbarActiveStates(editor);
+    return;
+  }
+
+  if (!result.isConfirmed || !result.value) return;
+
+  let finalUrl = result.value.url;
+  if (!/^https?:\/\//i.test(finalUrl) && !/^mailto:/i.test(finalUrl) && !/^tel:/i.test(finalUrl)) {
+    finalUrl = "https://" + finalUrl;
+  }
+  const displayText = result.value.text || finalUrl;
+
+  editor.focus();
+
+  if (existingLink) {
+    existingLink.href = finalUrl;
+    existingLink.textContent = displayText;
+    existingLink.target = "_blank";
+    existingLink.rel = "noopener noreferrer";
+  } else if (range) {
+    const a = document.createElement("a");
+    a.href = finalUrl;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.textContent = displayText;
+
+    range.deleteContents();
+    range.insertNode(a);
+
+    const newRange = document.createRange();
+    newRange.setStartAfter(a);
+    newRange.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(newRange);
+  }
+
+  updateRichToolbarActiveStates(editor);
+}
+
+/**
+ * Inserisce o rimuove (toggle) un blocco checklist nell'editor attivo, preservando eventuale testo selezionato.
+ * @param {HTMLElement} editor - Elemento contenteditable.
+ */
+function toggleOrInsertRichChecklist(editor) {
   editor.focus();
   const sel = window.getSelection();
   if (!sel || !sel.rangeCount) return;
   const range = sel.getRangeAt(0);
 
-  const ul = document.createElement("ul");
-  ul.className = "rich-checklist";
+  // Se è già dentro una checklist, disattivala (converti in paragrafo normale)
+  const ul = getAncestorTag(sel.anchorNode, editor, ["UL"]);
+  if (ul && ul.classList.contains("rich-checklist")) {
+    const lis = Array.from(ul.querySelectorAll("li"));
+    const frag = document.createDocumentFragment();
+    lis.forEach((li) => {
+      const p = document.createElement("p");
+      Array.from(li.childNodes).forEach((child) => {
+        if (child.nodeType === 1 && child.nodeName === "INPUT" && child.type === "checkbox") {
+          return;
+        }
+        p.appendChild(child.cloneNode(true));
+      });
+      if (!p.textContent.trim()) {
+        p.innerHTML = "<br>";
+      }
+      frag.appendChild(p);
+    });
+    ul.replaceWith(frag);
+    updateRichToolbarActiveStates(editor);
+    return;
+  }
+
+  // Altrimenti inserisci una nuova checklist preservando l'eventuale testo selezionato
+  const newUl = document.createElement("ul");
+  newUl.className = "rich-checklist";
   const li = document.createElement("li");
   const cb = document.createElement("input");
   cb.type = "checkbox";
   cb.disabled = true;
   li.appendChild(cb);
-  const textNode = document.createTextNode("\u00A0Elemento");
-  li.appendChild(textNode);
-  ul.appendChild(li);
+
+  if (!range.collapsed) {
+    const contents = range.extractContents();
+    li.appendChild(document.createTextNode("\u00A0"));
+    li.appendChild(contents);
+  } else {
+    li.appendChild(document.createTextNode("\u00A0Elemento"));
+  }
+  newUl.appendChild(li);
 
   range.deleteContents();
-  range.insertNode(ul);
+  range.insertNode(newUl);
 
   const newRange = document.createRange();
   newRange.selectNodeContents(li);
   newRange.collapse(false);
   sel.removeAllRanges();
   sel.addRange(newRange);
+  updateRichToolbarActiveStates(editor);
 }
 
 /**
@@ -1191,10 +1535,12 @@ function initRichTextEditors() {
     if (btn._richInitDone) return;
     btn._richInitDone = true;
 
-    // Impedisce la perdita del focus e della selezione quando si clicca sulla toolbar
-    btn.addEventListener("mousedown", (e) => {
+    // Impedisce la perdita del focus e della selezione quando si clicca o tocca la toolbar
+    const preventLoss = (e) => {
       e.preventDefault();
-    });
+    };
+    btn.addEventListener("mousedown", preventLoss);
+    btn.addEventListener("touchstart", preventLoss, { passive: false });
 
     btn.addEventListener("click", (e) => {
       e.preventDefault();
@@ -1206,6 +1552,7 @@ function initRichTextEditors() {
 
       editor.focus();
       const cmd = btn.getAttribute("data-command");
+      const sel = window.getSelection();
 
       switch (cmd) {
         case "bold":
@@ -1220,15 +1567,27 @@ function initRichTextEditors() {
         case "strikeThrough":
           document.execCommand("strikeThrough", false, null);
           break;
-        case "heading":
-          document.execCommand("formatBlock", false, "<h3>");
+        case "heading": {
+          const inH = isInsideTag(sel ? sel.anchorNode : null, editor, ["H1", "H2", "H3", "H4", "H5", "H6"]);
+          if (inH) {
+            document.execCommand("formatBlock", false, "<p>");
+          } else {
+            document.execCommand("formatBlock", false, "<h3>");
+          }
           break;
+        }
         case "normal":
           document.execCommand("formatBlock", false, "<p>");
           break;
         case "small": {
-          const sel = window.getSelection();
-          if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
+          const smallAncestor = getAncestorTag(sel ? sel.anchorNode : null, editor, ["SMALL"]);
+          if (smallAncestor) {
+            const parent = smallAncestor.parentNode;
+            while (smallAncestor.firstChild) {
+              parent.insertBefore(smallAncestor.firstChild, smallAncestor);
+            }
+            smallAncestor.remove();
+          } else if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
             const range = sel.getRangeAt(0);
             const smallEl = document.createElement("small");
             smallEl.appendChild(range.extractContents());
@@ -1239,8 +1598,14 @@ function initRichTextEditors() {
           break;
         }
         case "highlight": {
-          const sel = window.getSelection();
-          if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
+          const markAncestor = getAncestorTag(sel ? sel.anchorNode : null, editor, ["MARK"]);
+          if (markAncestor) {
+            const parent = markAncestor.parentNode;
+            while (markAncestor.firstChild) {
+              parent.insertBefore(markAncestor.firstChild, markAncestor);
+            }
+            markAncestor.remove();
+          } else if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
             const range = sel.getRangeAt(0);
             const markEl = document.createElement("mark");
             markEl.appendChild(range.extractContents());
@@ -1257,22 +1622,46 @@ function initRichTextEditors() {
           document.execCommand("insertOrderedList", false, null);
           break;
         case "checklist":
-          insertRichChecklist(editor);
+          toggleOrInsertRichChecklist(editor);
           break;
-        case "quote":
-          document.execCommand("formatBlock", false, "<blockquote>");
+        case "quote": {
+          const inQuote = isInsideTag(sel ? sel.anchorNode : null, editor, ["BLOCKQUOTE"]);
+          if (inQuote) {
+            document.execCommand("formatBlock", false, "<p>");
+          } else {
+            document.execCommand("formatBlock", false, "<blockquote>");
+          }
+          break;
+        }
+        case "createLink":
+          promptRichLink(editor);
           break;
         case "removeFormat":
           document.execCommand("removeFormat", false, null);
+          document.execCommand("formatBlock", false, "<p>");
           break;
       }
+
+      // Aggiorna immediatamente lo stato attivo dei pulsanti dopo l'azione
+      updateRichToolbarActiveStates(editor);
     });
   });
 
-  // Gestione tasto Invio nelle checklist all'interno dei div contenteditable
+  // Listener live per la selezione e la digitazione all'interno degli editor
   document.querySelectorAll(".rich-editor-content").forEach((editor) => {
     if (editor._richKeyInitDone) return;
     editor._richKeyInitDone = true;
+
+    const onStateChange = () => {
+      updateRichToolbarActiveStates(editor);
+    };
+
+    editor.addEventListener("keyup", onStateChange);
+    editor.addEventListener("mouseup", onStateChange);
+    editor.addEventListener("touchend", onStateChange);
+    editor.addEventListener("input", onStateChange);
+    editor.addEventListener("focus", onStateChange);
+    editor.addEventListener("click", onStateChange);
 
     editor.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
@@ -1327,9 +1716,92 @@ function initRichTextEditors() {
               sel.removeAllRanges();
               sel.addRange(range);
             }
+            updateRichToolbarActiveStates(editor);
           }
         }
       }
     });
   });
+
+  // Listener globale selectionchange per aggiornare istantaneamente la toolbar al cambio cursore
+  if (!window._richSelectionInitDone) {
+    window._richSelectionInitDone = true;
+    document.addEventListener("selectionchange", () => {
+      const sel = window.getSelection();
+      if (!sel || !sel.rangeCount) return;
+      let node = sel.anchorNode;
+      while (node) {
+        if (node.nodeType === 1 && node.classList && node.classList.contains("rich-editor-content")) {
+          updateRichToolbarActiveStates(node);
+          break;
+        }
+        node = node.parentNode;
+      }
+    });
+  }
 }
+
+/**
+ * Apre un overlay modale assicurando che sia l'overlay che il contenitore interno
+ * partano sempre resettati dall'alto (scrollTop = 0).
+ * @param {string|HTMLElement} modalInput - ID della modale o elemento DOM.
+ */
+function openModalOverlay(modalInput) {
+  const modal = typeof modalInput === "string" ? document.getElementById(modalInput) : modalInput;
+  if (!modal) return;
+  modal.scrollTop = 0;
+  const content = modal.querySelector(".modal-content");
+  if (content) content.scrollTop = 0;
+  modal.classList.add("active");
+  // Reset immediato e su frame successivo per garantire il layout
+  requestAnimationFrame(() => {
+    modal.scrollTop = 0;
+    if (content) content.scrollTop = 0;
+  });
+}
+
+/**
+ * Chiude un overlay modale resettando lo scroll.
+ * @param {string|HTMLElement} modalInput - ID della modale o elemento DOM.
+ */
+function closeModalOverlay(modalInput) {
+  const modal = typeof modalInput === "string" ? document.getElementById(modalInput) : modalInput;
+  if (!modal) return;
+  modal.classList.remove("active");
+  modal.scrollTop = 0;
+  const content = modal.querySelector(".modal-content");
+  if (content) content.scrollTop = 0;
+}
+
+// Observer globale: se qualsiasi classe 'active' viene aggiunta a un .modal-overlay, garantisce scrollTop = 0
+if (typeof MutationObserver !== "undefined") {
+  const modalScrollObserver = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.type === "attributes" && mutation.attributeName === "class") {
+        const target = mutation.target;
+        if (target && target.classList && target.classList.contains("modal-overlay") && target.classList.contains("active")) {
+          target.scrollTop = 0;
+          const content = target.querySelector(".modal-content");
+          if (content) content.scrollTop = 0;
+          requestAnimationFrame(() => {
+            target.scrollTop = 0;
+            if (content) content.scrollTop = 0;
+          });
+        }
+      }
+    });
+  });
+
+  const initModalObservers = () => {
+    document.querySelectorAll(".modal-overlay").forEach((el) => {
+      modalScrollObserver.observe(el, { attributes: true, attributeFilter: ["class"] });
+    });
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initModalObservers);
+  } else {
+    initModalObservers();
+  }
+}
+

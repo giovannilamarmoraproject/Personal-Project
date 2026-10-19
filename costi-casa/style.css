@@ -1023,12 +1023,14 @@ input[type="color"] {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.65);
-  z-index: 100;
+  z-index: 1000;
   display: none;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   backdrop-filter: blur(3px);
-  padding: 16px;
+  padding: 32px 16px;
   box-sizing: border-box;
 }
 .modal-overlay.active {
@@ -1041,9 +1043,10 @@ input[type="color"] {
   width: 100%;
   max-width: 700px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  max-height: 90vh;
+  max-height: calc(100vh - 64px);
   overflow-y: auto;
   position: relative;
+  margin: 0 auto;
   border: 1px solid var(--md-sys-color-surface-container-high);
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE / Edge */
@@ -1385,12 +1388,14 @@ input[type="color"] {
 
   .modal-overlay {
     padding: 16px 12px;
+    align-items: flex-start;
   }
 
   .modal-content {
     padding: 20px 16px;
     width: 100% !important;
     max-width: calc(100vw - 24px) !important;
+    max-height: calc(100vh - 32px) !important;
     margin: 0 auto;
     box-sizing: border-box;
     border-radius: var(--md-sys-shape-corner-large);
@@ -3816,7 +3821,7 @@ body.dark-mode .table-view-toggle .btn-toggle:hover {
 }
 
 /* ==============================================================================
-   RICH TEXT EDITOR & RENDERED CONTENT (v1.9.11)
+   RICH TEXT EDITOR & RENDERED CONTENT (v1.9.15)
    ============================================================================== */
 
 .rich-editor-wrapper {
@@ -3860,17 +3865,18 @@ body.dark-mode .rich-editor-toolbar {
 
 .rich-editor-btn {
   background: transparent;
-  border: none;
+  border: 1.5px solid transparent;
   border-radius: 6px;
-  padding: 4px 6px;
-  min-width: 28px;
+  padding: 0;
+  width: 28px;
   height: 28px;
+  min-width: 28px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   color: var(--md-sys-color-on-surface);
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
   user-select: none;
 }
@@ -3883,14 +3889,38 @@ body.dark-mode .rich-editor-btn:hover {
   background: rgba(255, 255, 255, 0.1);
 }
 
-.rich-editor-btn:active,
+.rich-editor-btn:active {
+  transform: scale(0.92);
+}
+
 .rich-editor-btn.active {
-  background: var(--md-sys-color-primary-container);
-  color: var(--md-sys-color-on-primary-container);
+  background-color: var(--md-sys-color-primary-container) !important;
+  color: var(--md-sys-color-on-primary-container) !important;
+  border-color: var(--md-sys-color-primary) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.rich-editor-btn.active .material-symbols-outlined {
+  color: var(--md-sys-color-on-primary-container) !important;
+  font-weight: normal !important;
+  -webkit-font-smoothing: antialiased;
+}
+
+body.dark-mode .rich-editor-btn.active {
+  background-color: var(--md-sys-color-primary-container) !important;
+  color: var(--md-sys-color-on-primary-container) !important;
+  border-color: var(--md-sys-color-primary) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .rich-editor-btn.active .material-symbols-outlined {
+  color: var(--md-sys-color-on-primary-container) !important;
+  font-weight: normal !important;
 }
 
 .rich-editor-btn .material-symbols-outlined {
-  font-size: 18px;
+  font-size: 16px;
+  line-height: 1;
 }
 
 .rich-editor-divider {
@@ -3923,20 +3953,26 @@ body.dark-mode .rich-editor-divider {
   pointer-events: none;
 }
 
+.rich-editor-content::selection,
+.rich-editor-content *::selection {
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+
 /* Stili del contenuto formattato (dentro editor e dentro le card renderizzate) */
 .rich-editor-content h3,
 .rich-text-rendered h3 {
-  font-size: 18px;
-  font-weight: 700;
-  margin: 8px 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 6px 0 3px 0;
   color: var(--md-sys-color-on-surface);
 }
 
 .rich-editor-content h4,
 .rich-text-rendered h4 {
-  font-size: 16px;
+  font-size: 14.5px;
   font-weight: 600;
-  margin: 6px 0 3px 0;
+  margin: 5px 0 2px 0;
   color: var(--md-sys-color-primary);
 }
 
@@ -4016,7 +4052,90 @@ body.dark-mode .rich-text-rendered mark {
 .rich-text-rendered small,
 .rich-editor-content font[size="1"],
 .rich-text-rendered font[size="1"] {
+  font-size: 12.5px;
+  opacity: 1;
+  color: inherit;
+}
+
+/* Link cliccabili nel rich text */
+.rich-editor-content a,
+.rich-text-rendered a {
+  color: var(--md-sys-color-primary) !important;
+  text-decoration: underline !important;
+  text-underline-offset: 2.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+  word-break: break-all;
+}
+
+.rich-editor-content a:hover,
+.rich-text-rendered a:hover {
+  opacity: 0.75;
+}
+
+.rich-text-rendered {
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.rich-text-rendered.rich-text-plain,
+.rich-text-plain {
+  white-space: pre-wrap;
+}
+
+/* Stili compatti per note ricche all'interno di celle tabella e schede debito/storico */
+.col-note .rich-text-rendered {
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--md-sys-color-on-surface);
+  text-align: left;
+  white-space: pre-wrap;
+}
+
+.col-note .rich-text-rendered h3,
+.col-note .rich-text-rendered h4 {
+  font-size: 13.5px !important;
+  margin: 3px 0 2px 0 !important;
+  font-weight: 700;
+}
+
+.col-note .rich-text-rendered p {
+  margin: 2px 0;
+}
+
+.col-note .rich-text-rendered ul,
+.col-note .rich-text-rendered ol {
+  padding-left: 18px !important;
+  margin: 2px 0 !important;
+}
+
+.col-note .rich-text-rendered li {
+  margin-bottom: 2px !important;
+}
+
+.col-note .rich-checklist {
+  margin: 2px 0 !important;
+}
+
+.col-note .rich-checklist li {
   font-size: 12px;
-  opacity: 0.85;
+  margin-bottom: 2px !important;
+}
+
+.col-note .rich-checklist li input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  margin-top: 2px;
+}
+
+.payment-item-comment .rich-text-rendered {
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.detail-note-box .rich-text-rendered {
+  font-size: 14px;
+  line-height: 1.5;
 }
 

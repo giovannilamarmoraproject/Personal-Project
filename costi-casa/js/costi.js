@@ -10,7 +10,7 @@ function addEntry(type) {
     const desc = document.getElementById("add-costo-desc").value.trim();
     const prezzo =
       parseFloat(document.getElementById("add-costo-prezzo").value) || 0;
-    const note = document.getElementById("add-costo-note").value;
+    const note = getRichEditorHTML("add-costo-note");
 
     if (!desc)
       return M3Swal.fire({
@@ -32,7 +32,7 @@ function addEntry(type) {
     appData.costi.push(item);
     document.getElementById("add-costo-desc").value = "";
     document.getElementById("add-costo-prezzo").value = "";
-    document.getElementById("add-costo-note").value = "";
+    setRichEditorHTML("add-costo-note", "");
     if (confermatoEl) confermatoEl.value = "false";
     appData.settings.users.forEach((u) => {
       let inp = document.getElementById(`add-costo-${u.id}`);
@@ -42,7 +42,7 @@ function addEntry(type) {
     toggleAddForm("costo", false);
   } else {
     const desc = document.getElementById("add-budget-desc").value.trim();
-    const note = document.getElementById("add-budget-note").value;
+    const note = getRichEditorHTML("add-budget-note");
     const isMutuo = document.getElementById("add-budget-is-mutuo").checked;
 
     if (!desc)
@@ -61,7 +61,7 @@ function addEntry(type) {
 
     appData.budget.push(item);
     document.getElementById("add-budget-desc").value = "";
-    document.getElementById("add-budget-note").value = "";
+    setRichEditorHTML("add-budget-note", "");
     document.getElementById("add-budget-is-mutuo").checked = false;
     appData.settings.users.forEach((u) => {
       let inp = document.getElementById(`add-budget-${u.id}`);
@@ -109,14 +109,14 @@ function cancelAddForm(type) {
   if (type === "costo") {
     document.getElementById("add-costo-desc").value = "";
     document.getElementById("add-costo-prezzo").value = "";
-    document.getElementById("add-costo-note").value = "";
+    setRichEditorHTML("add-costo-note", "");
     appData.settings.users.forEach((u) => {
       let inp = document.getElementById(`add-costo-${u.id}`);
       if (inp) inp.value = "";
     });
   } else {
     document.getElementById("add-budget-desc").value = "";
-    document.getElementById("add-budget-note").value = "";
+    setRichEditorHTML("add-budget-note", "");
     const isMutuoEl = document.getElementById("add-budget-is-mutuo");
     if (isMutuoEl) isMutuoEl.checked = false;
     appData.settings.users.forEach((u) => {
@@ -176,7 +176,7 @@ function openEditModal(type, id) {
     document.getElementById("modal-add-payment-btn").style.display = "none";
   }
   document.getElementById("modal-desc").value = item.desc || "";
-  document.getElementById("modal-note").value = item.note || "";
+  setRichEditorHTML("modal-note", item.note || "");
 
   // Se il costo ha pagamenti registrati, disabilita i campi quota utente
   // (i totali vengono calcolati automaticamente dalla somma dei pagamenti)
@@ -208,14 +208,14 @@ function openEditModal(type, id) {
     }
   });
 
-  modal.classList.add("active");
+  openModalOverlay(modal);
 }
 
 /**
  * Chiude la modale di modifica voce.
  */
 function closeModal() {
-  document.getElementById("editModal").classList.remove("active");
+  closeModalOverlay("editModal");
 }
 
 /**
@@ -230,7 +230,7 @@ function saveModalChanges() {
     item.desc = document.getElementById("modal-desc").value;
     item.prezzo =
       parseFloat(document.getElementById("modal-prezzo").value) || 0;
-    item.note = document.getElementById("modal-note").value;
+    item.note = getRichEditorHTML("modal-note");
     const confEl = document.getElementById("modal-confermato");
     if (confEl) {
       item.confermato = confEl.value === "true";
@@ -256,7 +256,7 @@ function saveModalChanges() {
   } else {
     let item = appData.budget.find((b) => b.id === id);
     item.desc = document.getElementById("modal-desc").value;
-    item.note = document.getElementById("modal-note").value;
+    item.note = getRichEditorHTML("modal-note");
     item.isMutuo = document.getElementById("modal-is-mutuo").checked;
     appData.settings.users.forEach((u) => {
       let inp = document.getElementById(`modal-${u.id}`);
@@ -716,7 +716,7 @@ function openEditCatModal(name) {
   document.getElementById("cat-modal-name").value = name;
   document.getElementById("cat-modal-color").value = color || "#6750A4";
   document.getElementById("cat-modal-is-immobile").checked = isImmobile;
-  document.getElementById("catModal").classList.add("active");
+  openModalOverlay("catModal");
 }
 
 /**
@@ -784,7 +784,7 @@ async function deleteCategory() {
       }
     }
     delete appData.settings.categories[name];
-    document.getElementById("catModal").classList.remove("active");
+    closeModalOverlay("catModal");
     saveDataLocally();
     showNotification("Categoria eliminata");
   }
@@ -1490,8 +1490,10 @@ function renderDetailView(item) {
 
   // Note
   const noteSection = document.getElementById("detail-note-section");
-  if (item.note && item.note.trim()) {
-    document.getElementById("detail-note").innerText = item.note;
+  if (item.note && String(item.note).trim()) {
+    const detailNoteEl = document.getElementById("detail-note");
+    detailNoteEl.style.whiteSpace = "pre-wrap";
+    detailNoteEl.innerHTML = renderRichContent(item.note, "costi", item.id, "note");
     noteSection.style.display = "block";
   } else {
     noteSection.style.display = "none";
@@ -1710,7 +1712,7 @@ function renderPaymentList(item) {
                 <span class="payment-total-responsive">${formatCurrency(totPagamento)}</span>
               </div>
               <div class="payment-item-amounts">${amountChips}</div>
-              ${p.commento ? `<div class="payment-item-comment">${p.commento}</div>` : ""}
+              ${p.commento ? `<div class="payment-item-comment">${renderRichContent(p.commento, "costi", item.id, "payment")}</div>` : ""}
               ${fattureHTML}
             </div>
             <div class="payment-item-actions">
@@ -1840,7 +1842,7 @@ function openPaymentModal(costoId, payId = null) {
       item && item.pagamenti ? item.pagamenti.find((p) => p.id == payId) : null;
     if (payment) {
       document.getElementById("pay-data").value = payment.data || today;
-      document.getElementById("pay-commento").value = payment.commento || "";
+      setRichEditorHTML("pay-commento", payment.commento || "");
       appData.settings.users.forEach((u) => {
         const inp = document.getElementById(`pay-quota-${u.id}`);
         if (inp)
@@ -1854,10 +1856,10 @@ function openPaymentModal(costoId, payId = null) {
     }
   } else {
     document.getElementById("pay-data").value = today;
-    document.getElementById("pay-commento").value = "";
+    setRichEditorHTML("pay-commento", "");
   }
 
-  document.getElementById("paymentModal").classList.add("active");
+  openModalOverlay("paymentModal");
 }
 
 /**
@@ -1943,7 +1945,7 @@ async function handleFatturaPhotoUpload(event, inputElement) {
  * Chiude il modale pagamento.
  */
 function closePaymentModal() {
-  document.getElementById("paymentModal").classList.remove("active");
+  closeModalOverlay("paymentModal");
 }
 
 /**
@@ -1953,7 +1955,7 @@ function savePayment() {
   const costoId = parseInt(document.getElementById("pay-costo-id").value);
   const payId = document.getElementById("pay-edit-id").value;
   const data = document.getElementById("pay-data").value;
-  const commento = document.getElementById("pay-commento").value.trim();
+  const commento = getRichEditorHTML("pay-commento");
 
   const quote = {};
   let hasSomething = false;
@@ -2169,7 +2171,7 @@ function renderTables() {
         ? `<span class="badge-pagato" title="Costo interamente saldato"><span class="material-symbols-outlined">check_circle</span> Pagato</span>`
         : formatRestanteCurrency(restante);
 
-      const hasNote = c.note && c.note.trim().length > 0;
+      const hasNote = c.note && String(c.note).trim().length > 0;
       let rowHtml = `<td class="col-drag" style="width: 30px; padding: 12px 4px;"><span class="material-symbols-outlined drag-handle" onmouseenter="this.closest('tr').setAttribute('draggable', 'true')" onmouseleave="this.closest('tr').setAttribute('draggable', 'false')">drag_indicator</span></td>
                      <td class="col-cat" data-label="Categoria">${badgeHTML}</td>
                      <td class="col-desc" data-label="Descrizione" style="white-space: pre-wrap;"><b>${c.desc}</b>${pagamentiBadge} ${immobileBadge}</td>
@@ -2179,7 +2181,7 @@ function renderTables() {
       });
       rowHtml += `<td class="col-restante" data-label="Restante" style="font-weight: 500; white-space: nowrap;">${restanteHtml}</td>
                   <td class="col-stato" data-label="Stato">${statusBadge}</td>
-                  <td class="col-note ${hasNote ? "" : "col-note-empty"}" data-label="Note" style="white-space: pre-wrap;"><small>${c.note || ""}</small></td>
+                  <td class="col-note ${hasNote ? "" : "col-note-empty"}" data-label="Note" style="white-space: pre-wrap;">${renderRichContent(c.note, "costi", c.id, "note")}</td>
                   <td class="col-actions" data-label="Azioni" style="white-space: nowrap;"><div style="display: inline-flex; align-items: center; gap: 4px;">${warningIcon}<button class="btn-icon" title="Modifica voce" onclick="event.stopPropagation(); openEditModal('costo', ${c.id})"><span class="material-symbols-outlined">edit</span></button><button class="btn-icon" title="Elimina voce" onclick="event.stopPropagation(); deleteCostItem(${c.id})"><span class="material-symbols-outlined" style="color: var(--md-sys-color-error);">delete</span></button></div></td>`;
       tr.innerHTML = rowHtml;
       tCosti.appendChild(tr);
@@ -2203,14 +2205,14 @@ function renderTables() {
       tr.addEventListener("dragover", handleDragOver);
       tr.addEventListener("dragend", handleDragEnd);
 
-      const hasNoteB = b.note && b.note.trim().length > 0;
+      const hasNoteB = b.note && String(b.note).trim().length > 0;
       let rowHtml = `<td class="col-drag" style="width: 30px; padding: 12px 4px;"><span class="material-symbols-outlined drag-handle" onmouseenter="this.closest('tr').setAttribute('draggable', 'true')" onmouseleave="this.closest('tr').setAttribute('draggable', 'false')">drag_indicator</span></td>
                      <td class="col-desc" data-label="Descrizione" style="white-space: pre-wrap;"><b>${b.desc}</b> ${b.isMutuo ? '<span style="font-size:11px; background:var(--md-sys-color-primary-container); color:var(--md-sys-color-on-primary-container); padding:2px 6px; border-radius:4px; margin-left:6px; font-weight:600;">Mutuo</span>' : (b.isDebito ? '<span style="font-size:11px; background:var(--md-sys-color-error-container); color:var(--md-sys-color-on-error-container); padding:2px 6px; border-radius:4px; margin-left:6px; font-weight:600;">Debito / Rata</span>' : "")}</td>`;
       appData.settings.users.forEach((u) => {
         rowHtml += `<td class="col-user" data-user="${u.id}" data-label="Quota ${u.name}">${formatColoredCurrency(b[u.id] || 0)}</td>`;
       });
       rowHtml += `<td class="col-totale" data-label="Totale" style="font-weight: 500;">${formatColoredCurrency(sumB)}</td>
-                  <td class="col-note ${hasNoteB ? "" : "col-note-empty"}" data-label="Note" style="white-space: pre-wrap;"><small>${b.note || ""}</small></td>
+                  <td class="col-note ${hasNoteB ? "" : "col-note-empty"}" data-label="Note" style="white-space: pre-wrap;">${renderRichContent(b.note, "budget", b.id, "note")}</td>
                   <td class="col-actions" data-label="Azioni" style="white-space: nowrap;"><div style="display: inline-flex; align-items: center; gap: 4px;">${b.isDebito ? `<button class="btn-icon" title="Modifica debito nella sezione Debiti" onclick="openEditDebitoModal(${b.debitoId})"><span class="material-symbols-outlined">edit</span></button><button class="btn-icon" title="Elimina debito" onclick="deleteDebito(${b.debitoId})"><span class="material-symbols-outlined" style="color: var(--md-sys-color-error);">delete</span></button>` : `<button class="btn-icon" title="Modifica voce" onclick="openEditModal('budget', ${b.id})"><span class="material-symbols-outlined">edit</span></button><button class="btn-icon" title="Elimina voce" onclick="deleteBudgetItem(${b.id})"><span class="material-symbols-outlined" style="color: var(--md-sys-color-error);">delete</span></button>`}</div></td>`;
       tr.innerHTML = rowHtml;
       tBudget.appendChild(tr);

@@ -1,10 +1,10 @@
 /**
  * ============================================================================== 
- * CONFIGURAZIONI & STATO GLOBALE APPLICAZIONE (v1.9.11)
+ * CONFIGURAZIONI & STATO GLOBALE APPLICAZIONE (v1.9.15)
  * ============================================================================== 
  */
 
-const APP_VERSION = "1.9.11";
+const APP_VERSION = "1.9.15";
 
 // Formattatore di valuta per la lingua italiana (€)
 const formatter = new Intl.NumberFormat("it-IT", {
@@ -23,6 +23,8 @@ const formatter = new Intl.NumberFormat("it-IT", {
  * Applica le classi CSS definite per modali, titoli, pulsanti e contenitori.
  */
 const M3Swal = Swal.mixin({
+  heightAuto: false,
+  scrollbarPadding: false,
   customClass: {
     popup: "m3-swal-popup",
     title: "m3-swal-title",
