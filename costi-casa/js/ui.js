@@ -992,6 +992,344 @@ function updateTableViewModeUI() {
   });
 }
 
+
 /**
- * Esegue il rendering delle tabelle Costi e Budget gestendo ordinamento, eventi Drag & Drop e badge.
+ * ============================================================================== 
+ * EDITOR DI TESTO FORMATTATO (RICH TEXT) - v1.9.11
+ * ============================================================================== 
  */
+
+/**
+ * Pulisce il codice HTML per evitare vulnerabilità XSS mantenendo la formattazione sicura.
+ * @param {string} html - Stringa HTML da ripulire.
+ * @returns {string} HTML sanificato.
+ */
+function sanitizeRichHTML(html) {
+  if (!html) return "";
+  const temp = document.createElement("div");
+  temp.innerHTML = html;
+
+  // Rimozione tag non ammessi / potenzialmente pericolosi
+  const dangerous = temp.querySelectorAll(
+    "script, iframe, object, embed, style, link, meta, form, input:not([type='checkbox']), button"
+  );
+  dangerous.forEach((n) => n.remove());
+
+  // Pulizia attributi non sicuri (es. on*)
+  const allElements = temp.querySelectorAll("*");
+  allElements.forEach((el) => {
+    const attrs = Array.from(el.attributes);
+    for (const attr of attrs) {
+      const name = attr.name.toLowerCase();
+      if (name.startsWith("on")) {
+        el.removeAttribute(attr.name);
+      } else if (name === "href" || name === "src") {
+        if (/^\s*javascript:/i.test(attr.value)) {
+          el.removeAttribute(attr.name);
+        }
+      }
+    }
+  });
+
+  return temp.innerHTML;
+}
+
+/**
+ * Restituisce il contenuto formattato HTML da un editor contenteditable.
+ * @param {string} editorId - ID dell'elemento contenteditable.
+ * @returns {string} Stringa HTML o vuota.
+ */
+function getRichEditorHTML(editorId) {
+  const el = document.getElementById(editorId);
+  if (!el) return "";
+  const textOnly = el.textContent.trim();
+  if (!textOnly && !el.querySelector("img, hr, input")) {
+    return "";
+  }
+  const temp = document.createElement("div");
+  temp.innerHTML = el.innerHTML.trim();
+  temp.querySelectorAll('.rich-checklist input[type="checkbox"]').forEach((cb) => {
+    if (cb.checked) {
+      cb.setAttribute("checked", "checked");
+    } else {
+      cb.removeAttribute("checked");
+    }
+    cb.removeAttribute("disabled");
+  });
+  return sanitizeRichHTML(temp.innerHTML);
+}
+
+/**
+ * Popola un editor contenteditable con HTML o testo piano.
+ * @param {string} editorId - ID dell'elemento contenteditable.
+ * @param {string} htmlOrText - Contenuto da inserire.
+ */
+function setRichEditorHTML(editorId, htmlOrText) {
+  const el = document.getElementById(editorId);
+  if (!el) return;
+  if (!htmlOrText) {
+    el.innerHTML = "";
+    return;
+  }
+  const str = String(htmlOrText).trim();
+  const isHtml = /<[a-z][\s\S]*>/i.test(str);
+  if (isHtml) {
+    el.innerHTML = sanitizeRichHTML(str);
+    el.querySelectorAll('.rich-checklist input[type="checkbox"]').forEach((cb) => {
+      cb.disabled = true;
+    });
+  } else {
+    el.innerHTML = escapeHTML(str).replace(/\n/g, "<br>");
+  }
+}
+
+/**
+ * Renderizza il testo formattato (o legacy) in una card con checklist interattive.
+ * @param {string} content - Contenuto HTML o testo piano.
+ * @param {string} [itemType=''] - Tipo di elemento ('qa', 'tasks', 'notes').
+ * @param {number} [itemId=0] - ID dell'elemento genitore.
+ * @param {string} [fieldName=''] - Nome del campo ('question', 'answer', 'desc', 'content').
+ * @returns {string} Stringa HTML renderizzata.
+ */
+function renderRichContent(content, itemType = "", itemId = 0, fieldName = "") {
+  if (!content) return "";
+  const str = String(content).trim();
+  const isHtml = /<[a-z][\s\S]*>/i.test(str);
+
+  let cleanHTML = "";
+  if (isHtml) {
+    cleanHTML = sanitizeRichHTML(str);
+  } else {
+    cleanHTML = escapeHTML(str).replace(/\n/g, "<br>");
+  }
+
+  const container = document.createElement("div");
+  container.className = "rich-text-rendered";
+  container.innerHTML = cleanHTML;
+
+  const checkboxes = container.querySelectorAll('.rich-checklist input[type="checkbox"]');
+  checkboxes.forEach((cb, idx) => {
+    cb.removeAttribute("disabled");
+    if (itemType && itemId && fieldName) {
+      cb.setAttribute("data-item-type", itemType);
+      cb.setAttribute("data-item-id", itemId);
+      cb.setAttribute("data-field-name", fieldName);
+      cb.setAttribute("data-cb-index", idx);
+      cb.setAttribute(
+        "onchange",
+        `toggleRichChecklist('${itemType}', ${itemId}, '${fieldName}', this, event)`
+      );
+    }
+  });
+
+  return container.outerHTML;
+}
+
+/**
+ * Gestisce il cambio di stato di una checkbox di una checklist interattiva sulla card.
+ */
+function toggleRichChecklist(itemType, itemId, fieldName, checkboxEl, event) {
+  if (event) event.stopPropagation();
+  if (!appData[itemType]) return;
+  const item = appData[itemType].find((x) => x.id === Number(itemId));
+  if (!item || !item[fieldName]) return;
+
+  const cbIndex = parseInt(checkboxEl.getAttribute("data-cb-index"), 10);
+  const temp = document.createElement("div");
+  temp.innerHTML = item[fieldName];
+  const cbs = temp.querySelectorAll('.rich-checklist input[type="checkbox"]');
+  if (cbs && cbs[cbIndex]) {
+    if (checkboxEl.checked) {
+      cbs[cbIndex].setAttribute("checked", "checked");
+    } else {
+      cbs[cbIndex].removeAttribute("checked");
+    }
+    item[fieldName] = temp.innerHTML;
+    saveDataLocally();
+    showNotification(
+      checkboxEl.checked ? "Elemento completato" : "Elemento riaperto"
+    );
+  }
+}
+
+/**
+ * Inserisce un blocco checklist nell'editor attivo.
+ * @param {HTMLElement} editor - Elemento contenteditable.
+ */
+function insertRichChecklist(editor) {
+  editor.focus();
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount) return;
+  const range = sel.getRangeAt(0);
+
+  const ul = document.createElement("ul");
+  ul.className = "rich-checklist";
+  const li = document.createElement("li");
+  const cb = document.createElement("input");
+  cb.type = "checkbox";
+  cb.disabled = true;
+  li.appendChild(cb);
+  const textNode = document.createTextNode("\u00A0Elemento");
+  li.appendChild(textNode);
+  ul.appendChild(li);
+
+  range.deleteContents();
+  range.insertNode(ul);
+
+  const newRange = document.createRange();
+  newRange.selectNodeContents(li);
+  newRange.collapse(false);
+  sel.removeAllRanges();
+  sel.addRange(newRange);
+}
+
+/**
+ * Inizializza le toolbar e i listener per tutti gli editor rich text dell'applicazione.
+ */
+function initRichTextEditors() {
+  document.querySelectorAll(".rich-editor-toolbar .rich-editor-btn").forEach((btn) => {
+    if (btn._richInitDone) return;
+    btn._richInitDone = true;
+
+    // Impedisce la perdita del focus e della selezione quando si clicca sulla toolbar
+    btn.addEventListener("mousedown", (e) => {
+      e.preventDefault();
+    });
+
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const toolbar = btn.closest(".rich-editor-toolbar");
+      if (!toolbar) return;
+      const editorId = toolbar.getAttribute("data-editor-id");
+      const editor = document.getElementById(editorId);
+      if (!editor) return;
+
+      editor.focus();
+      const cmd = btn.getAttribute("data-command");
+
+      switch (cmd) {
+        case "bold":
+          document.execCommand("bold", false, null);
+          break;
+        case "italic":
+          document.execCommand("italic", false, null);
+          break;
+        case "underline":
+          document.execCommand("underline", false, null);
+          break;
+        case "strikeThrough":
+          document.execCommand("strikeThrough", false, null);
+          break;
+        case "heading":
+          document.execCommand("formatBlock", false, "<h3>");
+          break;
+        case "normal":
+          document.execCommand("formatBlock", false, "<p>");
+          break;
+        case "small": {
+          const sel = window.getSelection();
+          if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
+            const range = sel.getRangeAt(0);
+            const smallEl = document.createElement("small");
+            smallEl.appendChild(range.extractContents());
+            range.insertNode(smallEl);
+          } else {
+            document.execCommand("fontSize", false, "1");
+          }
+          break;
+        }
+        case "highlight": {
+          const sel = window.getSelection();
+          if (sel && sel.rangeCount > 0 && !sel.isCollapsed) {
+            const range = sel.getRangeAt(0);
+            const markEl = document.createElement("mark");
+            markEl.appendChild(range.extractContents());
+            range.insertNode(markEl);
+          } else {
+            document.execCommand("hiliteColor", false, "#fef08a");
+          }
+          break;
+        }
+        case "insertUnorderedList":
+          document.execCommand("insertUnorderedList", false, null);
+          break;
+        case "insertOrderedList":
+          document.execCommand("insertOrderedList", false, null);
+          break;
+        case "checklist":
+          insertRichChecklist(editor);
+          break;
+        case "quote":
+          document.execCommand("formatBlock", false, "<blockquote>");
+          break;
+        case "removeFormat":
+          document.execCommand("removeFormat", false, null);
+          break;
+      }
+    });
+  });
+
+  // Gestione tasto Invio nelle checklist all'interno dei div contenteditable
+  document.querySelectorAll(".rich-editor-content").forEach((editor) => {
+    if (editor._richKeyInitDone) return;
+    editor._richKeyInitDone = true;
+
+    editor.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        const sel = window.getSelection();
+        if (sel && sel.rangeCount > 0) {
+          let node = sel.anchorNode;
+          let li = null;
+          while (node && node !== editor) {
+            if (
+              node.nodeName === "LI" &&
+              node.parentElement &&
+              node.parentElement.classList.contains("rich-checklist")
+            ) {
+              li = node;
+              break;
+            }
+            node = node.parentNode;
+          }
+          if (li) {
+            e.preventDefault();
+            const text = li.textContent.trim();
+            if (!text) {
+              // Voce vuota: esce dalla checklist e crea un paragrafo normale
+              const p = document.createElement("p");
+              p.innerHTML = "<br>";
+              if (li.parentElement.children.length === 1) {
+                li.parentElement.replaceWith(p);
+              } else {
+                li.parentElement.after(p);
+                li.remove();
+              }
+              const range = document.createRange();
+              range.setStart(p, 0);
+              range.collapse(true);
+              sel.removeAllRanges();
+              sel.addRange(range);
+            } else {
+              // Voce valorizzata: crea un nuovo elemento checklist
+              const newLi = document.createElement("li");
+              const cb = document.createElement("input");
+              cb.type = "checkbox";
+              cb.disabled = true;
+              newLi.appendChild(cb);
+              const span = document.createElement("span");
+              span.innerHTML = "&nbsp;";
+              newLi.appendChild(span);
+              li.after(newLi);
+
+              const range = document.createRange();
+              range.selectNodeContents(span);
+              range.collapse(false);
+              sel.removeAllRanges();
+              sel.addRange(range);
+            }
+          }
+        }
+      }
+    });
+  });
+}

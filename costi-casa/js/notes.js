@@ -192,8 +192,8 @@ function createQACardElement(item, isInsideDetailView = false) {
   bodyDiv.innerHTML = `
       ${item.topic ? `<div style="font-size: 16px; font-weight: 700; color: var(--md-sys-color-on-surface); margin-bottom: 8px;">${escapeHTML(item.topic)}</div>` : ""}
       <div style="font-size: 15px; color: var(--md-sys-color-on-surface); display: flex; gap: 8px; align-items: flex-start;">
-          <span class="material-symbols-outlined" style="color: var(--md-sys-color-primary); font-size: 20px;">help</span>
-          <span style="white-space: pre-wrap;">${escapeHTML(item.question)}</span>
+          <span class="material-symbols-outlined" style="color: var(--md-sys-color-primary); font-size: 20px; flex-shrink: 0; margin-top: 2px;">help</span>
+          <div style="flex: 1; min-width: 0;">${renderRichContent(item.question, "qa", item.id, "question")}</div>
       </div>
   `;
   card.appendChild(bodyDiv);
@@ -265,7 +265,7 @@ function createQACardElement(item, isInsideDetailView = false) {
         <div style="font-size: 12px; font-weight: 600; color: var(--md-sys-color-success); margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
             <span class="material-symbols-outlined" style="font-size: 16px;">check_circle</span> Risposta:
         </div>
-        <div style="font-size: 14px; line-height: 1.5; white-space: pre-wrap;">${escapeHTML(item.answer)}</div>
+        <div style="font-size: 14px; line-height: 1.5;">${renderRichContent(item.answer, "qa", item.id, "answer")}</div>
     `;
   } else {
     answerDiv.style.cssText =
@@ -486,8 +486,8 @@ function openAddQAModal(preselectedCostId = null) {
   document.getElementById("qa-modal-title").innerText = "Nuova Domanda";
   document.getElementById("qa-modal-category").value = "Generale";
   document.getElementById("qa-modal-topic").value = "";
-  document.getElementById("qa-modal-question").value = "";
-  document.getElementById("qa-modal-answer").value = "";
+  setRichEditorHTML("qa-modal-question", "");
+  setRichEditorHTML("qa-modal-answer", "");
   document.getElementById("qa-btn-delete").style.display = "none";
   currentQAImages = [];
   renderQAModalImagesPreview();
@@ -509,8 +509,8 @@ function openEditQAModal(id) {
   document.getElementById("qa-modal-category").value =
     item.category || "Generale";
   document.getElementById("qa-modal-topic").value = item.topic || "";
-  document.getElementById("qa-modal-question").value = item.question || "";
-  document.getElementById("qa-modal-answer").value = item.answer || "";
+  setRichEditorHTML("qa-modal-question", item.question || "");
+  setRichEditorHTML("qa-modal-answer", item.answer || "");
   document.getElementById("qa-btn-delete").style.display = "inline-flex";
   currentQAImages = Array.isArray(item.images) ? [...item.images] : [];
   renderQAModalImagesPreview();
@@ -542,8 +542,8 @@ function saveQAModalChanges() {
   const category =
     document.getElementById("qa-modal-category").value || "Generale";
   const topic = document.getElementById("qa-modal-topic").value.trim();
-  const question = document.getElementById("qa-modal-question").value.trim();
-  const answer = document.getElementById("qa-modal-answer").value.trim();
+  const question = getRichEditorHTML("qa-modal-question");
+  const answer = getRichEditorHTML("qa-modal-answer");
 
   if (!question)
     return M3Swal.fire({
@@ -759,10 +759,10 @@ function createTaskCardElement(item, isInsideDetailView = false) {
   if (item.desc) {
     const descDiv = document.createElement("div");
     descDiv.style.cssText =
-      "font-size: 15px; color: var(--md-sys-color-on-surface); display: flex; gap: 8px; align-items: flex-start; white-space: pre-wrap; margin-top: 6px;";
+      "font-size: 15px; color: var(--md-sys-color-on-surface); display: flex; gap: 8px; align-items: flex-start; margin-top: 6px;";
     descDiv.innerHTML = `
-        <span class="material-symbols-outlined" style="color: var(--md-sys-color-outline); font-size: 20px;">notes</span>
-        <span>${escapeHTML(item.desc)}</span>
+        <span class="material-symbols-outlined" style="color: var(--md-sys-color-outline); font-size: 20px; flex-shrink: 0; margin-top: 2px;">notes</span>
+        <div style="flex: 1; min-width: 0;">${renderRichContent(item.desc, "tasks", item.id, "desc")}</div>
     `;
     card.appendChild(descDiv);
   }
@@ -1050,7 +1050,7 @@ function openAddTaskModal(preselectedCostId = null) {
   document.getElementById("task-modal-category").value = "Generale";
   document.getElementById("task-modal-title").value = "";
   document.getElementById("task-modal-dueDate").value = "";
-  document.getElementById("task-modal-desc").value = "";
+  setRichEditorHTML("task-modal-desc", "");
   document.getElementById("task-btn-delete").style.display = "none";
   currentTaskImages = [];
   renderTaskModalImagesPreview();
@@ -1071,7 +1071,7 @@ function openEditTaskModal(id) {
     item.category || "Generale";
   document.getElementById("task-modal-title").value = item.title || "";
   document.getElementById("task-modal-dueDate").value = item.dueDate || "";
-  document.getElementById("task-modal-desc").value = item.desc || "";
+  setRichEditorHTML("task-modal-desc", item.desc || "");
   document.getElementById("task-btn-delete").style.display = "inline-flex";
   currentTaskImages = Array.isArray(item.images) ? [...item.images] : [];
   renderTaskModalImagesPreview();
@@ -1098,7 +1098,7 @@ function saveTaskModalChanges() {
     document.getElementById("task-modal-category").value || "Generale";
   const title = document.getElementById("task-modal-title").value.trim();
   const dueDate = document.getElementById("task-modal-dueDate").value;
-  const desc = document.getElementById("task-modal-desc").value.trim();
+  const desc = getRichEditorHTML("task-modal-desc");
 
   if (!title)
     return M3Swal.fire({
@@ -1450,8 +1450,8 @@ function createNoteCardElement(item, isInsideDetailView = false) {
   if (item.content) {
     const contentDiv = document.createElement("div");
     contentDiv.style.cssText =
-      "font-size: 15px; color: var(--md-sys-color-on-surface); margin-top: 6px; white-space: pre-wrap; line-height: 1.5;";
-    contentDiv.innerText = item.content;
+      "font-size: 15px; color: var(--md-sys-color-on-surface); margin-top: 6px; line-height: 1.5;";
+    contentDiv.innerHTML = renderRichContent(item.content, "notes", item.id, "content");
     card.appendChild(contentDiv);
   }
 
@@ -1571,7 +1571,7 @@ function openAddNoteModal(preselectedCostId = null) {
   }
 
   document.getElementById("note-modal-title").value = "";
-  document.getElementById("note-modal-content").value = "";
+  setRichEditorHTML("note-modal-content", "");
   document.getElementById("note-btn-delete").style.display = "none";
   currentNoteImages = [];
   renderNoteModalImagesPreview();
@@ -1609,7 +1609,7 @@ function openEditNoteModal(id) {
   if (!sel.value && sortedCats.length > 0) sel.value = sortedCats[0];
 
   document.getElementById("note-modal-title").value = item.title || "";
-  document.getElementById("note-modal-content").value = item.content || "";
+  setRichEditorHTML("note-modal-content", item.content || "");
   document.getElementById("note-btn-delete").style.display = "flex";
   currentNoteImages = Array.isArray(item.images) ? [...item.images] : [];
   renderNoteModalImagesPreview();
@@ -1634,7 +1634,7 @@ function saveNoteModalChanges() {
   const idVal = document.getElementById("note-modal-id").value;
   const cat = document.getElementById("note-modal-category").value;
   const title = document.getElementById("note-modal-title").value.trim();
-  const content = document.getElementById("note-modal-content").value.trim();
+  const content = getRichEditorHTML("note-modal-content");
 
   if (!title) {
     showNotification("Inserisci un titolo per l'appunto", "", "error");

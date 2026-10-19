@@ -1,6 +1,6 @@
 /**
  * ============================================================================== 
- * APPLICATION ENTRY POINT, AGGREGATORE VISTE & AVVIO PWA (v1.9.10)
+ * APPLICATION ENTRY POINT, AGGREGATORE VISTE & AVVIO PWA (v1.9.11)
  * ============================================================================== 
  */
 
@@ -34,6 +34,7 @@ function renderAll() {
   }
 
   buildDynamicForms();
+  initRichTextEditors();
   populateCategorySelects();
   renderHeaderAndSettings();
   initTableViewMode();

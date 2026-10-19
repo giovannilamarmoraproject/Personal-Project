@@ -1,10 +1,10 @@
 /**
  * ============================================================================== 
- * CONFIGURAZIONI & STATO GLOBALE APPLICAZIONE (v1.9.10)
+ * CONFIGURAZIONI & STATO GLOBALE APPLICAZIONE (v1.9.11)
  * ============================================================================== 
  */
 
-const APP_VERSION = "1.9.10";
+const APP_VERSION = "1.9.11";
 
 // Formattatore di valuta per la lingua italiana (€)
 const formatter = new Intl.NumberFormat("it-IT", {
