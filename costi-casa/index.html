@@ -260,9 +260,16 @@
         <input type="hidden" id="modal-type" />
 
         <div class="input-group" id="modal-cat-group" style="display: none">
-          <div class="input-field">
+          <div class="input-field" style="flex: 1.2;">
             <label>Categoria</label>
             <select id="modal-cat"></select>
+          </div>
+          <div class="input-field" style="flex: 1;">
+            <label>Stato Costo</label>
+            <select id="modal-confermato">
+              <option value="true">Confermato</option>
+              <option value="false">Non confermato</option>
+            </select>
           </div>
         </div>
         <div class="input-group">
@@ -1948,6 +1955,13 @@
                 <label>Categoria</label>
                 <select id="add-costo-cat"></select>
               </div>
+              <div class="input-field" style="flex: 1">
+                <label>Stato</label>
+                <select id="add-costo-confermato">
+                  <option value="true" selected>Confermato</option>
+                  <option value="false">Non confermato</option>
+                </select>
+              </div>
               <div class="input-field" style="flex: 2">
                 <label>Descrizione</label
                 ><input
@@ -3117,15 +3131,31 @@
           <div class="card">
             <h2 class="card-title">Gestione Media, Render & Documenti</h2>
             <div class="input-group" style="align-items: flex-end">
-              <div class="input-field" style="flex: 1">
-                <label>Immagine di Copertina Home (URL o Drive)</label
-                ><input
+              <div class="input-field" style="flex: 1; min-width: 220px;">
+                <label>Immagine di Copertina Home (URL, Drive o Foto)</label>
+                <input
                   type="url"
                   id="hero-image-url"
-                  placeholder="https://..."
+                  placeholder="https://... oppure carica foto da PC/mobile"
                 />
               </div>
-              <button class="btn btn-tonal" onclick="saveHeroImage()">
+              <input
+                type="file"
+                id="hero-image-file-input"
+                accept="image/*"
+                style="display: none;"
+                onchange="handleHeroPhotoUpload(event)"
+              />
+              <button
+                type="button"
+                class="btn btn-tonal"
+                onclick="document.getElementById('hero-image-file-input').click()"
+                title="Carica foto da PC o scatta da smartphone"
+              >
+                <span class="material-symbols-outlined">add_a_photo</span>
+                Carica Foto
+              </button>
+              <button class="btn btn-filled" onclick="saveHeroImage()">
                 Salva Copertina
               </button>
             </div>
@@ -3152,26 +3182,46 @@
               </div>
               <div class="input-field" style="flex: 1">
                 <label>Tipo File</label>
-                <select id="new-render-type">
+                <select id="new-render-type" onchange="onRenderTypeChange()">
                   <option value="image">Render / Foto</option>
                   <option value="plan">Piantina / Schema Tecnico</option>
-                  <option value="pdf">Documento PDF</option>
+                  <option value="pdf">Documento PDF (solo link Drive)</option>
                 </select>
               </div>
             </div>
-            <div class="input-group" style="align-items: flex-end">
-              <div class="input-field" style="flex: 1">
-                <label>Link File (URL o Google Drive)</label
-                ><input
+            <div class="input-group" style="align-items: flex-end; gap: 8px; flex-wrap: wrap;">
+              <div class="input-field" style="flex: 1; min-width: 220px;">
+                <label id="new-render-url-label">Link File (URL, Drive o Foto)</label>
+                <input
                   type="url"
                   id="new-render-url"
-                  placeholder="https://..."
+                  placeholder="https://... oppure carica foto da PC/mobile"
                 />
               </div>
+              <input
+                type="file"
+                id="new-render-file-input"
+                accept="image/*"
+                style="display: none;"
+                onchange="handleRenderPhotoUpload(event)"
+              />
+              <button
+                type="button"
+                class="btn btn-tonal"
+                id="btn-render-photo-upload"
+                onclick="document.getElementById('new-render-file-input').click()"
+                title="Scegli foto o scatta da smartphone (per Render o Piantine)"
+              >
+                <span class="material-symbols-outlined">add_a_photo</span>
+                Carica Foto
+              </button>
               <button class="btn btn-filled" onclick="addRenderItem()">
                 <span class="material-symbols-outlined">add_to_photos</span>
-                Aggiungi File
+                Aggiungi Elemento
               </button>
+            </div>
+            <div id="render-file-hint" style="font-size: 12px; color: var(--md-sys-color-outline); margin-top: -6px; margin-bottom: 12px;">
+              💡 <b>Foto e Piantine:</b> puoi caricarle direttamente da PC/mobile o inserire un link. <b>Documenti PDF:</b> inserisci il link Google Drive / URL.
             </div>
 
             <div id="settings-gallery-edit" class="gallery-grid-settings"></div>
@@ -3350,7 +3400,7 @@
             <a href="https://giovannilamarmora.github.io/" target="_blank"
               >Giovanni Lamarmora</a
             >
-            <span class="version-number">v1.9.5</span>
+            <span class="version-number">v1.9.7</span>
           </h4>
         </div>
       </div>

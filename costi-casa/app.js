@@ -230,6 +230,13 @@ function formatFileUrl(urlInput) {
   if (!url || typeof url !== "string")
     return { type: "unknown", url: "", rawUrl: "", viewUrl: "" };
 
+  if (url.startsWith("data:image/")) {
+    return { type: "image", url: url, rawUrl: url, viewUrl: url };
+  }
+  if (url.startsWith("data:application/pdf")) {
+    return { type: "pdf", url: url, rawUrl: url, viewUrl: url };
+  }
+
   let fileId = null;
   // Estrazione dell'ID file di Google Drive da pattern classici
   let match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
@@ -629,7 +636,86 @@ function saveHeroImage() {
     formatFileUrl(url).url || formatFileUrl(url).rawUrl;
   urlInput.value = appData.settings.heroImage;
   saveDataLocally();
+  renderHeroImage();
   showNotification("Immagine copertina salvata!");
+}
+
+/**
+ * Gestisce l'upload diretto di una foto per la copertina della Home da PC o smartphone.
+ * @param {Event} event - Evento change dell'input file.
+ */
+async function handleHeroPhotoUpload(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  try {
+    const compressedUrl = await compressImageFile(file, 1920, 1080, 0.82);
+    appData.settings.heroImage = compressedUrl;
+    const urlInput = document.getElementById("hero-image-url");
+    if (urlInput) urlInput.value = compressedUrl;
+    saveDataLocally();
+    renderHeroImage();
+    showNotification("Foto di copertina salvata con successo!");
+  } catch (err) {
+    console.error("Errore caricamento copertina:", err);
+    showNotification("Errore caricamento", "Impossibile elaborare l'immagine", "error");
+  } finally {
+    event.target.value = "";
+  }
+}
+
+/**
+ * Gestisce l'upload di una foto per render o piantine da PC o smartphone.
+ * @param {Event} event - Evento change dell'input file.
+ */
+async function handleRenderPhotoUpload(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  const urlInput = document.getElementById("new-render-url");
+  const titleInput = document.getElementById("new-render-title");
+  const typeSelect = document.getElementById("new-render-type");
+
+  try {
+    const compressedUrl = await compressImageFile(file, 1920, 1920, 0.8);
+    if (urlInput) urlInput.value = compressedUrl;
+    if (titleInput && !titleInput.value.trim()) {
+      const cleanName = file.name.replace(/\.[^/.]+$/, "").replace(/[_-]/g, " ");
+      titleInput.value = cleanName.charAt(0).toUpperCase() + cleanName.slice(1);
+    }
+    if (typeSelect && typeSelect.value === "pdf") {
+      typeSelect.value = "image";
+      onRenderTypeChange();
+    }
+    showNotification("Foto caricata! Clicca 'Aggiungi Elemento' per salvare");
+  } catch (err) {
+    console.error("Errore caricamento render:", err);
+    showNotification("Errore caricamento", "Impossibile elaborare l'immagine", "error");
+  } finally {
+    event.target.value = "";
+  }
+}
+
+/**
+ * Aggiorna i controlli di inserimento quando l'utente cambia il tipo di file (Immagine vs PDF).
+ * I PDF sono abilitati esclusivamente tramite Google Drive / URL per non appesantire il backup.
+ */
+function onRenderTypeChange() {
+  const typeSelect = document.getElementById("new-render-type");
+  const uploadBtn = document.getElementById("btn-render-photo-upload");
+  const label = document.getElementById("new-render-url-label");
+  const urlInput = document.getElementById("new-render-url");
+  if (!typeSelect) return;
+
+  if (typeSelect.value === "pdf") {
+    if (uploadBtn) uploadBtn.style.display = "none";
+    if (label) label.textContent = "Link Documento PDF (Google Drive o URL)";
+    if (urlInput) urlInput.placeholder = "https://drive.google.com/file/d/...";
+  } else {
+    if (uploadBtn) uploadBtn.style.display = "inline-flex";
+    if (label) label.textContent = "Link File (URL, Drive o Foto)";
+    if (urlInput) urlInput.placeholder = "https://... oppure carica foto da PC/mobile";
+  }
 }
 
 /**
@@ -739,7 +825,10 @@ function addEntry(type) {
         icon: "warning",
       });
 
-    let item = { id: Date.now(), cat, desc, prezzo, note };
+    const confermatoEl = document.getElementById("add-costo-confermato");
+    const confermato = confermatoEl ? confermatoEl.value === "true" : true;
+
+    let item = { id: Date.now(), cat, desc, prezzo, note, confermato };
     appData.settings.users.forEach((u) => {
       let val =
         parseFloat(document.getElementById(`add-costo-${u.id}`)?.value) || 0;
@@ -750,6 +839,7 @@ function addEntry(type) {
     document.getElementById("add-costo-desc").value = "";
     document.getElementById("add-costo-prezzo").value = "";
     document.getElementById("add-costo-note").value = "";
+    if (confermatoEl) confermatoEl.value = "true";
     appData.settings.users.forEach((u) => {
       let inp = document.getElementById(`add-costo-${u.id}`);
       if (inp) inp.value = "";
@@ -863,6 +953,10 @@ function openEditModal(type, id) {
     document.getElementById("modal-prezzo").value = (item.prezzo || 0).toFixed(
       2,
     );
+    const confEl = document.getElementById("modal-confermato");
+    if (confEl) {
+      confEl.value = item.confermato === false ? "false" : "true";
+    }
     const sumPaid = appData.settings.users.reduce(
       (acc, u) => acc + (item[u.id] || 0),
       0,
@@ -942,6 +1036,10 @@ function saveModalChanges() {
     item.prezzo =
       parseFloat(document.getElementById("modal-prezzo").value) || 0;
     item.note = document.getElementById("modal-note").value;
+    const confEl = document.getElementById("modal-confermato");
+    if (confEl) {
+      item.confermato = confEl.value === "true";
+    }
     // Aggiorna le quote utente solo se i campi non sono disabilitati
     // (se ci sono pagamenti registrati, i totali vengono da recalcUserTotals)
     const hasPagamenti = item.pagamenti && item.pagamenti.length > 0;
@@ -2796,6 +2894,9 @@ function getSortedData(type) {
           (acc, u) => acc + (b[u.id] || 0),
           0,
         );
+      } else if (currentSort.column === "confermato") {
+        valA = a.confermato !== false ? 1 : 0;
+        valB = b.confermato !== false ? 1 : 0;
       }
       if (typeof valA === "string")
         return currentSort.asc
@@ -3766,6 +3867,7 @@ function buildDynamicForms() {
   });
   costiHead += `
                 <th class="sortable" onclick="sortTable('costi', 'restante')">Restante <span class="material-symbols-outlined sort-icon">sort</span></th>
+                <th class="sortable" onclick="sortTable('costi', 'confermato')">Stato <span class="material-symbols-outlined sort-icon">sort</span></th>
                 <th>Note</th>
                 <th style="width: 80px; text-align: center;">Azioni</th>
             `;
@@ -6214,9 +6316,6 @@ function renderDetailView(item) {
   const catObj = appData.settings.categories[item.cat];
   const catColor =
     typeof catObj === "string" ? catObj : catObj ? catObj.color : "#9E9E9E";
-  document.getElementById("detail-badge").innerHTML =
-    `<span class="cat-badge" style="background-color: ${catColor}; color: white;">${item.cat || ""}</span>`;
-
   // Titolo descrizione
   document.getElementById("detail-desc").innerText = item.desc || "";
 
@@ -6226,6 +6325,14 @@ function renderDetailView(item) {
     0,
   );
   const restante = (item.prezzo || 0) - sumPaid;
+
+  const isConfermato = item.confermato !== false;
+  const statusBadgeHTML = `<span class="status-badge ${isConfermato ? "confermato" : "non-confermato"}" style="cursor: pointer; margin-left: 8px;" title="Clicca per invertire lo stato" onclick="toggleCostoConfermato(${item.id})"><span class="material-symbols-outlined">${isConfermato ? "check_circle" : "cancel"}</span> ${isConfermato ? "Confermato" : "Non confermato"}</span>`;
+  const isPagato = restante <= 0.005 && ((item.prezzo || 0) > 0 || sumPaid > 0);
+  const pagatoBadgeHTML = isPagato ? `<span class="badge-pagato" style="margin-left: 8px;"><span class="material-symbols-outlined">check_circle</span> Pagato</span>` : "";
+
+  document.getElementById("detail-badge").innerHTML =
+    `<span class="cat-badge" style="background-color: ${catColor}; color: white;">${item.cat || ""}</span>${statusBadgeHTML}${pagatoBadgeHTML}`;
   let gridHTML = `
           <div class="detail-info-chip">
             <span class="chip-label">Prezzo Totale</span>
@@ -6237,7 +6344,7 @@ function renderDetailView(item) {
           </div>
           <div class="detail-info-chip">
             <span class="chip-label">Restante</span>
-            <span class="chip-value sensitive-value">${formatRestanteCurrency(restante)}</span>
+            <span class="chip-value sensitive-value">${isPagato ? '<span class="badge-pagato"><span class="material-symbols-outlined">check_circle</span> Pagato</span>' : formatRestanteCurrency(restante)}</span>
           </div>`;
   appData.settings.users.forEach((u) => {
     const sharePercent =
@@ -6463,10 +6570,18 @@ function renderPaymentList(item) {
                 }
               }
               if (!label) label = `Doc ${i + 1}`;
-              const hrefAttr = url
-                ? `href="${url}" target="_blank" rel="noopener"`
-                : `href="javascript:void(0)"`;
-              return `<a ${hrefAttr} class="fattura-link-chip" onclick="event.stopPropagation()" title="${url || label}"><span class="material-symbols-outlined">receipt_long</span>${label}</a>`;
+              const isLocalImage =
+                url.startsWith("data:image/") ||
+                url.match(/\.(jpeg|jpg|gif|png|webp)($|\?)/i);
+              const icon = isLocalImage ? "image" : "receipt_long";
+              const clickAction = isLocalImage
+                ? `onclick="event.stopPropagation(); openLightbox('${url.replace(/'/g, "\\'")}'); return false;"`
+                : `onclick="event.stopPropagation()"`;
+              const hrefAttr =
+                !isLocalImage && url
+                  ? `href="${url}" target="_blank" rel="noopener"`
+                  : `href="javascript:void(0)"`;
+              return `<a ${hrefAttr} ${clickAction} class="fattura-link-chip" title="${url.startsWith("data:") ? "Foto scontrino allegata (clicca per ingrandire)" : (url || label)}"><span class="material-symbols-outlined">${icon}</span>${label}</a>`;
             })
             .join("")}</div>`
         : "";
@@ -6644,13 +6759,21 @@ function addFatturaRow(data = {}) {
   const container = document.getElementById("pay-fatture-inputs");
   const row = document.createElement("div");
   row.className = "fattura-row";
+  const isImage =
+    url.startsWith("data:image/") ||
+    url.match(/\.(jpeg|jpg|gif|png|webp)($|\?)/i);
+
   row.innerHTML = `
           <div class="fattura-inputs">
             <div class="input-field fattura-nome-field">
-              <input type="text" class="fattura-nome" placeholder="Nome doc (es: Acconto)" value="${nome.replace(/"/g, "&quot;")}" style="font-size: 13px;">
+              <input type="text" class="fattura-nome" placeholder="Nome doc (es: Acconto, Scontrino)" value="${nome.replace(/"/g, "&quot;")}" style="font-size: 13px;">
             </div>
-            <div class="input-field fattura-url-field">
-              <input type="url" class="fattura-url" placeholder="https://..." value="${url.replace(/"/g, "&quot;")}" style="font-size: 13px;">
+            <div class="input-field fattura-url-field" style="position: relative;">
+              <input type="url" class="fattura-url" placeholder="Link Drive o carica foto..." value="${url.replace(/"/g, "&quot;")}" style="font-size: 13px; padding-right: 38px;">
+              <label class="btn-icon fattura-upload-btn" title="Carica foto/scontrino da PC o scatta da smartphone" style="position: absolute; right: 2px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; color: ${isImage ? "var(--md-sys-color-success)" : "var(--md-sys-color-primary)"}; margin: 0;">
+                <input type="file" accept="image/*" style="display: none;" onchange="handleFatturaPhotoUpload(event, this)">
+                <span class="material-symbols-outlined" style="font-size: 19px;">${isImage ? "image" : "add_a_photo"}</span>
+              </label>
             </div>
           </div>
           <button type="button" class="btn-icon fattura-del-btn" title="Rimuovi documento" onclick="this.closest('.fattura-row').remove()">
@@ -6660,6 +6783,46 @@ function addFatturaRow(data = {}) {
   if (!url && !nome) {
     const firstInp = row.querySelector(".fattura-nome");
     if (firstInp) firstInp.focus();
+  }
+}
+
+/**
+ * Gestisce il caricamento e compressione di una foto scontrino/ricevuta da PC o smartphone.
+ * @param {Event} event - Evento change dell'input file.
+ * @param {HTMLElement} inputElement - Riferimento all'input file scatenante.
+ */
+async function handleFatturaPhotoUpload(event, inputElement) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  const row = inputElement.closest(".fattura-row");
+  if (!row) return;
+
+  const urlInput = row.querySelector(".fattura-url");
+  const nameInput = row.querySelector(".fattura-nome");
+  const iconSpan = inputElement.parentElement.querySelector(".material-symbols-outlined");
+
+  try {
+    const compressedUrl = await compressImageFile(file, 1600, 1600, 0.8);
+    if (urlInput) {
+      urlInput.value = compressedUrl;
+    }
+    if (nameInput && !nameInput.value.trim()) {
+      const cleanName = file.name.replace(/\.[^/.]+$/, "").replace(/[_-]/g, " ");
+      nameInput.value = cleanName
+        ? cleanName.charAt(0).toUpperCase() + cleanName.slice(1)
+        : "Scontrino / Ricevuta";
+    }
+    if (iconSpan) {
+      iconSpan.textContent = "image";
+      inputElement.parentElement.style.color = "var(--md-sys-color-success)";
+    }
+    showNotification("Foto scontrino caricata con successo!");
+  } catch (err) {
+    console.error("Errore compressione foto:", err);
+    showNotification("Errore caricamento", "Impossibile elaborare l'immagine", "error");
+  } finally {
+    event.target.value = "";
   }
 }
 
@@ -6803,6 +6966,23 @@ function deletePayment(costoId, payId) {
 }
 
 /**
+ * Inverte lo stato di conferma di una voce di costo (Confermato / Non confermato).
+ * @param {number} id - ID univoco della voce costo.
+ */
+function toggleCostoConfermato(id) {
+  const item = appData.costi.find((c) => c.id === id);
+  if (!item) return;
+  const nuovoStato = item.confermato === false ? true : false;
+  item.confermato = nuovoStato;
+  saveDataLocally();
+  renderTables();
+  if (currentDetailId === id) renderDetailView(item);
+  showNotification(
+    nuovoStato ? "Stato costo: Confermato" : "Stato costo: Non confermato",
+  );
+}
+
+/**
  * Esegue il rendering delle tabelle Costi e Budget gestendo ordinamento, eventi Drag & Drop e badge.
  */
 function renderTables() {
@@ -6861,12 +7041,22 @@ function renderTables() {
           ? `<span class="material-symbols-outlined" style="color: #f59e0b; font-size: 20px; vertical-align: middle; cursor: pointer;" title="Pagamenti non ancora registrati a rate" onclick="event.stopPropagation(); openDetailView(${c.id})">warning</span>`
           : "";
 
+      // Stato Confermato / Non Confermato
+      const isConfermato = c.confermato !== false;
+      const statusBadge = `<span class="status-badge ${isConfermato ? "confermato" : "non-confermato"}" title="Clicca per invertire lo stato" onclick="event.stopPropagation(); toggleCostoConfermato(${c.id})"><span class="material-symbols-outlined">${isConfermato ? "check_circle" : "cancel"}</span> ${isConfermato ? "Confermato" : "Non confermato"}</span>`;
+
+      // Badge Pagato nella colonna Restante: se saldato mostra direttamente il badge Pagato
+      const isPagato = restante <= 0.005 && ((c.prezzo || 0) > 0 || sumPaid > 0);
+      const restanteHtml = isPagato
+        ? `<span class="badge-pagato" title="Costo interamente saldato"><span class="material-symbols-outlined">check_circle</span> Pagato</span>`
+        : formatRestanteCurrency(restante);
+
       let rowHtml = `<td style="width: 30px; padding: 12px 4px;"><span class="material-symbols-outlined drag-handle" onmouseenter="this.closest('tr').setAttribute('draggable', 'true')" onmouseleave="this.closest('tr').setAttribute('draggable', 'false')">drag_indicator</span></td>
                                    <td>${badgeHTML}</td><td style="white-space: pre-wrap;"><b>${c.desc}</b>${pagamentiBadge} ${immobileBadge}</td><td>${formatCurrency(c.prezzo)}</td>`;
       appData.settings.users.forEach((u) => {
         rowHtml += `<td style="color:var(--md-sys-color-primary);">${formatCurrency(c[u.id] || 0)}</td>`;
       });
-      rowHtml += `<td style="font-weight: 500;">${formatRestanteCurrency(restante)}</td><td style="white-space: pre-wrap;"><small>${c.note || ""}</small></td><td style="white-space: nowrap;"><div style="display: inline-flex; align-items: center; gap: 4px;">${warningIcon}<button class="btn-icon" title="Modifica voce" onclick="event.stopPropagation(); openEditModal('costo', ${c.id})"><span class="material-symbols-outlined">edit</span></button><button class="btn-icon" title="Elimina voce" onclick="event.stopPropagation(); deleteCostItem(${c.id})"><span class="material-symbols-outlined" style="color: var(--md-sys-color-error);">delete</span></button></div></td>`;
+      rowHtml += `<td style="font-weight: 500; white-space: nowrap;">${restanteHtml}</td><td>${statusBadge}</td><td style="white-space: pre-wrap;"><small>${c.note || ""}</small></td><td style="white-space: nowrap;"><div style="display: inline-flex; align-items: center; gap: 4px;">${warningIcon}<button class="btn-icon" title="Modifica voce" onclick="event.stopPropagation(); openEditModal('costo', ${c.id})"><span class="material-symbols-outlined">edit</span></button><button class="btn-icon" title="Elimina voce" onclick="event.stopPropagation(); deleteCostItem(${c.id})"><span class="material-symbols-outlined" style="color: var(--md-sys-color-error);">delete</span></button></div></td>`;
       tr.innerHTML = rowHtml;
       tCosti.appendChild(tr);
     });
