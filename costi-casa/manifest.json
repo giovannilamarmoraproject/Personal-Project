@@ -1,7 +1,7 @@
 {
   "name": "Costi Casa",
   "short_name": "Costi Casa",
-  "version": "1.8.0",
+  "version": "1.9.15",
   "description": "Gestione Casa & Budget Personale",
   "start_url": "./index.html",
   "display": "standalone",
