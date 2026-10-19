@@ -1,11 +1,20 @@
-const CACHE_NAME = "casa-app-v1.9.8"; // Incrementa ad ogni rilascio di codice
+const CACHE_NAME = "casa-app-v1.9.10"; // Incrementa ad ogni rilascio di codice
 const MEDIA_CACHE = "casa-media-v1"; // Does not get deleted on version bumps
 
 const urlsToCache = [
   "./",
   "./index.html",
   "./style.css",
-  "./app.js",
+  "./js/config.js",
+  "./js/ui.js",
+  "./js/storage.js",
+  "./js/costi.js",
+  "./js/budget.js",
+  "./js/mutuo.js",
+  "./js/savings.js",
+  "./js/debiti.js",
+  "./js/notes.js",
+  "./js/app.js",
   "./icon.jpg?v=1",
   "./manifest.json",
   "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0",
