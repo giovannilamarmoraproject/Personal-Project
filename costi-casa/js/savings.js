@@ -912,83 +912,124 @@ function renderBudgetSavingsCard(userId, user, metrics, targetDateLabel = null) 
   }
   callout.style.display = "flex";
 
-  // 1. Quota acquisto immobile per questo utente
-  const costoCasaImmobile = appData.costi
+  // 1. Quota di TUTTI i costi della casa a carico di questo utente (scapitato di tutti i costi)
+  const costoTotaleComplessivo = (appData.costi || []).reduce((acc, curr) => acc + (parseFloat(curr.prezzo) || 0), 0);
+  const sharePercent = typeof user.share === "number" ? user.share : (100 / (appData.settings.users || []).length);
+  const quotaCostiTotaleUtente = (costoTotaleComplessivo || 0) * (sharePercent / 100);
+
+  // Dettaglio costi: solo immobile vs altri costi (notaio, tasse, agenzia, ristrutturazione, arredo...)
+  const costoCasaImmobile = (appData.costi || [])
     .filter((c) => {
-      const catObj = appData.settings.categories[c.cat];
+      const catObj = appData.settings.categories?.[c.cat];
       return typeof catObj === "object" ? !!catObj.isImmobile : c.cat === "Immobili";
     })
-    .reduce((acc, curr) => acc + (curr.prezzo || 0), 0);
+    .reduce((acc, curr) => acc + (parseFloat(curr.prezzo) || 0), 0);
+  const quotaImmobileUtente = (costoCasaImmobile || 0) * (sharePercent / 100);
+  const quotaAltriCostiUtente = Math.max(0, quotaCostiTotaleUtente - quotaImmobileUtente);
 
-  const sharePercent = typeof user.share === "number" ? user.share : (100 / appData.settings.users.length);
-  const quotaAcquistoUtente = (costoCasaImmobile || 0) * (sharePercent / 100);
-
-  // 2. Mutuo stimato per questo utente
-  let mutuoRow = appData.budget.find((b) => b.isMutuo);
+  // 2. Budget dell'utente (pianificato + risparmi netti accumulati ad oggi)
+  const mutuoRow = (appData.budget || []).find((b) => b.isMutuo);
   const mutuoUtente = mutuoRow ? (parseFloat(mutuoRow[userId]) || 0) : 0;
 
-  // 3. Identifica la voce di Capitale Iniziale già convertita nel monitoraggio cassa
-  const uConfig = appData.savingsMonitor?.userConfig[userId] || {};
-  const capInizialeVal = parseFloat(metrics.capitaleIniziale) || 0;
-  let capInizialeBudgetId = uConfig.budgetId || null;
-  if (!capInizialeBudgetId) {
-    const matchedBudget = (appData.budget || []).find(b => !b.isMutuo && parseFloat(b[userId]) === capInizialeVal);
-    if (matchedBudget) capInizialeBudgetId = matchedBudget.id;
-  }
+  const budgetPianificatoUtente = (appData.budget || []).reduce(
+    (acc, curr) => acc + (parseFloat(curr[userId]) || 0),
+    0
+  );
+  const altreRisorseBudget = budgetPianificatoUtente - mutuoUtente;
 
-  // 4. Somma delle ALTRE risorse pianificate nel Budget per questo utente (es. Investimenti, Regali)
-  const altreRisorseBudget = (appData.budget || [])
-    .filter(b => !b.isMutuo && b.id != capInizialeBudgetId)
-    .reduce((acc, curr) => acc + (parseFloat(curr[userId]) || 0), 0);
+  // Risparmio netto generato ad oggi
+  const risparmioNettoAttuale = metrics.risparmioNetto || 0;
 
-  // 5. Quota contanti netta residua da coprire con la cassa/risparmi
-  const quotaResiduaContanti = Math.max(0, quotaAcquistoUtente - mutuoUtente - altreRisorseBudget);
+  // Budget totale attuale (esattamente coincidente con la Dashboard)
+  const budgetTotaleAttualeUtente = budgetPianificatoUtente + risparmioNettoAttuale;
 
-  // 6. Margine di liquidità stimato a saldo rogito
-  const margineRogito = metrics.proiezioneLiquiditaRogito - quotaResiduaContanti;
-  const isCoperto = margineRogito >= 0;
+  // 3. Liquidità Residua Reale (budget al netto di TUTTI i costi della casa, identico alla Panoramica)
+  const liquiditaResiduaRealeUtente = budgetTotaleAttualeUtente - quotaCostiTotaleUtente;
+
+  // 4. Margine di risparmio futuro atteso da oggi al rogito
+  const risparmioFuturoStimato = metrics.risparmioFuturoStimato || 0;
+
+  // 5. Risultato finale effettivo: scapitato di tutti i costi con l'aggiunta del margine di risparmio futuro
+  const margineFinaleRogito = liquiditaResiduaRealeUtente + risparmioFuturoStimato;
+  const isCoperto = margineFinaleRogito >= 0;
 
   grid.innerHTML = `
     <div style="padding: 12px; border-radius: 8px; background: var(--md-sys-color-surface-container); border: 1px solid var(--md-sys-color-surface-container-high);">
-      <div style="font-size: 12px; color: var(--md-sys-color-outline);">${metrics.risparmioNetto >= 0 ? `Risparmio Netto ${user.name}` : `Disavanzo Netto ${user.name}`}</div>
-      <div style="font-size: 18px; font-weight: 700; color: ${metrics.risparmioNetto >= 0 ? 'var(--md-sys-color-success)' : 'var(--md-sys-color-error)'}; margin-top: 4px;">${formatCurrency(metrics.risparmioNetto)}</div>
+      <div style="font-size: 12px; color: var(--md-sys-color-outline);">${risparmioNettoAttuale >= 0 ? `Risparmio Netto ${user.name}` : `Disavanzo Netto ${user.name}`}</div>
+      <div style="font-size: 18px; font-weight: 700; color: ${risparmioNettoAttuale >= 0 ? 'var(--md-sys-color-success)' : 'var(--md-sys-color-error)'}; margin-top: 4px;">${formatCurrency(risparmioNettoAttuale)}</div>
       <div style="font-size: 11px; color: var(--md-sys-color-outline); margin-top: 2px;">${metrics.tassoMedioMensile >= 0 ? '+' : ''}${formatCurrency(metrics.tassoMedioMensile)} / mese</div>
     </div>
 
     <div style="padding: 12px; border-radius: 8px; background: var(--md-sys-color-surface-container); border: 1px solid var(--md-sys-color-surface-container-high);">
-      <div style="font-size: 12px; color: var(--md-sys-color-outline);">Liquidità Netta Attuale</div>
-      <div style="font-size: 18px; font-weight: 700; margin-top: 4px;">${formatCurrency(metrics.liquiditaNetta)}</div>
-      <div style="font-size: 11px; color: var(--md-sys-color-outline); margin-top: 2px;">Saldo reale disponibile</div>
+      <div style="font-size: 12px; color: var(--md-sys-color-outline);">Liquidità Residua Reale</div>
+      <div style="font-size: 18px; font-weight: 700; color: ${liquiditaResiduaRealeUtente >= 0 ? 'var(--md-sys-color-success)' : 'var(--md-sys-color-error)'}; margin-top: 4px;">
+        ${liquiditaResiduaRealeUtente >= 0 ? '+' : ''}${formatCurrency(liquiditaResiduaRealeUtente)}
+      </div>
+      <div style="font-size: 11px; color: var(--md-sys-color-outline); margin-top: 2px;">Netto di tutti i costi casa ad oggi</div>
     </div>
 
     <div style="padding: 12px; border-radius: 8px; background: var(--md-sys-color-surface-container); border: 1px solid var(--md-sys-color-surface-container-high);">
-      <div style="font-size: 12px; color: var(--md-sys-color-outline);">Stima Cassa al Rogito</div>
-      <div style="font-size: 18px; font-weight: 700; color: var(--md-sys-color-primary); margin-top: 4px;">${formatCurrency(metrics.proiezioneLiquiditaRogito)}</div>
+      <div style="font-size: 12px; color: var(--md-sys-color-outline);">Risparmio Futuro al Rogito</div>
+      <div style="font-size: 18px; font-weight: 700; color: var(--md-sys-color-primary); margin-top: 4px;">
+        ${risparmioFuturoStimato >= 0 ? '+' : ''}${formatCurrency(risparmioFuturoStimato)}
+      </div>
       <div style="font-size: 11px; color: var(--md-sys-color-outline); margin-top: 2px;">${dateLabel} (tra ${metrics.tempoRimanente.label})</div>
     </div>
 
     <div style="padding: 12px; border-radius: 8px; background: var(--md-sys-color-surface-container); border: 1px solid var(--md-sys-color-surface-container-high);">
-      <div style="font-size: 12px; color: var(--md-sys-color-outline);">Margine Copertura Rogito</div>
+      <div style="font-size: 12px; color: var(--md-sys-color-outline);">Margine Finale al Rogito</div>
       <div style="font-size: 18px; font-weight: 700; color: ${isCoperto ? 'var(--md-sys-color-success)' : 'var(--md-sys-color-error)'}; margin-top: 4px;">
-        ${isCoperto ? '+' : ''}${formatCurrency(margineRogito)}
+        ${isCoperto ? '+' : ''}${formatCurrency(margineFinaleRogito)}
       </div>
       <div style="font-size: 11px; color: var(--md-sys-color-outline); margin-top: 2px;">
-        ${isCoperto 
-          ? `Pienamente coperto (residuo contanti: ${formatCurrency(quotaResiduaContanti)})` 
-          : `Capitale mancante (residuo contanti: ${formatCurrency(quotaResiduaContanti)})`}
+        Residuo costi (${formatCurrency(liquiditaResiduaRealeUtente)}) + Risparmi attesi (${formatCurrency(risparmioFuturoStimato)})
       </div>
     </div>
   `;
 
   callout.innerHTML = `
-    <span class="material-symbols-outlined" style="color: ${isCoperto ? 'var(--md-sys-color-success)' : 'var(--md-sys-color-error)'}">
+    <span class="material-symbols-outlined" style="color: ${isCoperto ? 'var(--md-sys-color-success)' : 'var(--md-sys-color-error)'}; font-size: 26px; flex-shrink: 0; margin-top: 2px;">
       ${isCoperto ? 'verified' : 'warning'}
     </span>
-    <div>
-      ${isCoperto 
-        ? `In base alla stima al <b>${dateLabel}</b>, la tua cassa accumulata sarà di <b>${formatCurrency(metrics.proiezioneLiquiditaRogito)}</b>. Con la tua quota casa di <b>${formatCurrency(quotaAcquistoUtente)}</b> coperta da <b>${formatCurrency(mutuoUtente)}</b> di mutuo e <b>${formatCurrency(altreRisorseBudget)}</b> di altre risorse budget (investimenti/regali), la quota residua da coprire in contanti è di soli <b>${formatCurrency(quotaResiduaContanti)}</b>: avrai un <b>margine di sicurezza positivo di +${formatCurrency(margineRogito)}</b>!`
-        : `Alla data del <b>${dateLabel}</b> la tua cassa stimata sarà di <b>${formatCurrency(metrics.proiezioneLiquiditaRogito)}</b> a fronte di una quota residua in contanti di <b>${formatCurrency(quotaResiduaContanti)}</b> (dopo aver scalato ${formatCurrency(mutuoUtente)} di mutuo e ${formatCurrency(altreRisorseBudget)} di altre risorse a budget): mancano <b>${formatCurrency(Math.abs(margineRogito))}</b> per coprire interamente la tua quota.`
-      }
+    <div style="flex: 1; line-height: 1.6; font-size: 13.5px;">
+      <div style="font-weight: 700; font-size: 14px; color: ${isCoperto ? 'var(--md-sys-color-success)' : 'var(--md-sys-color-error)'}; margin-bottom: 6px;">
+        ${isCoperto ? 'Copertura Totale Garantita con Margine Finale Positivo' : 'Attenzione: Fabbisogno Finale Scoperto al Rogito'}
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 5px; color: var(--md-sys-color-on-surface);">
+        <div>
+          • <b>Quota totale costi previsti (100% spese casa):</b> ${formatCurrency(quotaCostiTotaleUtente)}
+          ${quotaImmobileUtente > 0 && quotaAltriCostiUtente > 0
+            ? `<span style="color: var(--md-sys-color-outline); font-size: 12px;">(${formatCurrency(quotaImmobileUtente)} immobile + ${formatCurrency(quotaAltriCostiUtente)} notaio, tasse, agenzia, arredi, ecc.)</span>`
+            : ''}
+        </div>
+        <div>
+          • <b>Budget totale disponibile ad oggi:</b> ${formatCurrency(budgetTotaleAttualeUtente)}
+          <span style="color: var(--md-sys-color-outline); font-size: 12px;">(${formatCurrency(mutuoUtente)} mutuo + ${formatCurrency(altreRisorseBudget)} altre risorse ${risparmioNettoAttuale !== 0 ? `+ ${formatCurrency(risparmioNettoAttuale)} risparmi netti ad oggi` : ''})</span>
+        </div>
+        <div>
+          • <b>Liquidità Residua Reale (scapitata di TUTTI i costi):</b> <b style="color: ${liquiditaResiduaRealeUtente >= 0 ? 'var(--md-sys-color-success)' : 'var(--md-sys-color-error)'};">${liquiditaResiduaRealeUtente >= 0 ? '+' : ''}${formatCurrency(liquiditaResiduaRealeUtente)}</b>
+          <div style="font-size: 12px; color: var(--md-sys-color-outline); margin-left: 14px; margin-top: 1px;">↳ Coincide esattamente con la voce "Liquidità Residua Reale" della Panoramica.</div>
+        </div>
+        <div>
+          • <b>Margine di risparmio futuro stimato (${dateLabel}):</b> <b style="color: var(--md-sys-color-primary);">${risparmioFuturoStimato >= 0 ? '+' : ''}${formatCurrency(risparmioFuturoStimato)}</b>
+          <div style="font-size: 12px; color: var(--md-sys-color-outline); margin-left: 14px; margin-top: 1px;">↳ Al ritmo medio di ${formatCurrency(metrics.tassoMedioMensile)}/mese nei ${metrics.tempoRimanente.label} rimanenti.</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--md-sys-color-surface-container-highest);">
+        ${isCoperto
+          ? `🛡️ <b>Margine Finale Effettivo al Rogito:</b> <b style="color: var(--md-sys-color-success); font-size: 15px;">+${formatCurrency(margineFinaleRogito)}</b>
+             <div style="color: var(--md-sys-color-outline); font-size: 12px; margin-top: 2px;">
+               Dato dalla <b>Liquidità Residua Reale (+${formatCurrency(liquiditaResiduaRealeUtente)})</b> scalati tutti i costi casa + <b>+${formatCurrency(risparmioFuturoStimato)}</b> di nuovi risparmi attesi.
+               <br><small>Cassa totale stimata sul conto al rogito: <b>${formatCurrency(metrics.proiezioneLiquiditaRogito)}</b>.</small>
+             </div>`
+          : `⚠️ <b>Disavanzo Finale Stimato:</b> <b style="color: var(--md-sys-color-error); font-size: 15px;">${formatCurrency(margineFinaleRogito)}</b>
+             <div style="color: var(--md-sys-color-outline); font-size: 12px; margin-top: 2px;">
+               Anche sommando i risparmi futuri stimati di ${formatCurrency(risparmioFuturoStimato)}, mancheranno <b>${formatCurrency(Math.abs(margineFinaleRogito))}</b> per coprire tutti i costi della casa.
+             </div>`
+        }
+      </div>
     </div>
   `;
 }
