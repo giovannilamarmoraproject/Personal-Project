@@ -1276,14 +1276,28 @@ function renderLiquidityGuard() {
         </table>
       </div>
 
-      <div style="margin-top: 14px; padding: 12px 16px; border-radius: 8px; background: var(--md-sys-color-surface-container); border-left: 4px solid var(--md-sys-color-primary); font-size: 12.5px; line-height: 1.5; color: var(--md-sys-color-on-surface);">
-        <div style="font-weight: 700; margin-bottom: 2px; color: var(--md-sys-color-primary); display: flex; align-items: center; gap: 6px;">
-          <span class="material-symbols-outlined" style="font-size: 18px;">lightbulb</span>
+      <div style="margin-top: 14px; padding: 14px 16px; border-radius: 8px; background: var(--md-sys-color-surface-container); border-left: 4px solid var(--md-sys-color-primary); font-size: 13px; line-height: 1.6; color: var(--md-sys-color-on-surface);">
+        <div style="font-weight: 700; font-size: 14px; margin-bottom: 8px; color: var(--md-sys-color-primary); display: flex; align-items: center; gap: 6px;">
+          <span class="material-symbols-outlined" style="font-size: 20px;">lightbulb</span>
           Riepilogo Esborso Reale di Tasca Propria
         </div>
-        Per chiudere l'acquisto dell'immobile, la quota residua da saldare è di <b class="sensitive-value">${formatCurrency(scopeImmobileDaSaldare)}</b>. 
-        Con il mutuo deliberato di <b class="sensitive-value">${formatCurrency(scopeMutuo)}</b>, la quota da versare di tasca propria per l'immobile è di soli <b class="sensitive-value">${formatCurrency(scopeSaldoImmobileProprio)}</b>. 
-        Sommando le spese extra selezionate non mutuabili (<b class="sensitive-value">${formatCurrency(scopeExtraDaSaldare)}</b>), l'esborso totale effettivo da versare per ${beneficiaryLabel} è di <b class="sensitive-value" style="color: var(--md-sys-color-primary);">${formatCurrency(scopeTotaleEsborso)}</b>.
+        <div style="display: flex; flex-direction: column; gap: 5px;">
+          <div>
+            • <b>Quota residua immobile da saldare:</b> <b class="sensitive-value">${formatCurrency(scopeImmobileDaSaldare)}</b>
+          </div>
+          <div>
+            • <b>Mutuo deliberato:</b> <b class="sensitive-value" style="color: var(--md-sys-color-primary);">${formatCurrency(scopeMutuo)}</b>
+            <div style="font-size: 12px; color: var(--md-sys-color-outline); margin-left: 14px; margin-top: 1px;">
+              ↳ Quota di tasca propria per l'immobile: <b class="sensitive-value">${formatCurrency(scopeSaldoImmobileProprio)}</b>
+            </div>
+          </div>
+          <div>
+            • <b>Spese extra selezionate non mutuabili:</b> <b class="sensitive-value" style="color: #f59e0b;">${formatCurrency(scopeExtraDaSaldare)}</b>
+          </div>
+        </div>
+        <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--md-sys-color-surface-container-high);">
+          💰 <b>Esborso totale effettivo da versare (${beneficiaryLabel}):</b> <b class="sensitive-value" style="color: var(--md-sys-color-primary); font-size: 14.5px;">${formatCurrency(scopeTotaleEsborso)}</b>
+        </div>
       </div>
     `;
     updateTableViewModeUI();
