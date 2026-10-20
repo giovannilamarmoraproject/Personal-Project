@@ -997,7 +997,7 @@ function updateTableViewModeUI() {
 
 /**
  * ============================================================================== 
- * EDITOR DI TESTO FORMATTATO (RICH TEXT) - v1.9.16
+ * EDITOR DI TESTO FORMATTATO (RICH TEXT) - v1.9.17
  * ============================================================================== 
  */
 
