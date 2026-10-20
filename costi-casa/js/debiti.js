@@ -466,6 +466,8 @@ function openAddDebitoModal() {
 
   populateDebitoUserSelect();
   updateDebitoModalPreview();
+  const delBtnAdd = document.getElementById("debito-btn-delete");
+  if (delBtnAdd) delBtnAdd.style.display = "none";
 
   openModalOverlay("debitoModal");
 }
@@ -490,6 +492,8 @@ function openEditDebitoModal(id) {
 
   populateDebitoUserSelect(debito.userId);
   updateDebitoModalPreview();
+  const delBtnEdit = document.getElementById("debito-btn-delete");
+  if (delBtnEdit) delBtnEdit.style.display = "inline-flex";
 
   openModalOverlay("debitoModal");
 }
@@ -719,3 +723,14 @@ async function ripristinaRataDebito(id) {
   }
 }
 
+
+/**
+ * Elimina un debito direttamente dalla modale di modifica.
+ */
+async function deleteDebitoFromModal() {
+  const id = parseInt(document.getElementById("debito-edit-id").value);
+  if (id) {
+    await deleteDebito(id);
+    closeDebitoModal();
+  }
+}

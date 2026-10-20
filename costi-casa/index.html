@@ -465,37 +465,27 @@
             </div>
           </div>
         </div>
-        <div
-          style="
-            display: flex;
-            justify-content: space-between;
-            margin-top: 32px;
-            gap: 8px;
-            flex-wrap: wrap;
-          "
-        >
-          <button class="btn btn-error" onclick="deleteFromModal()">
-            <span class="material-symbols-outlined">delete</span> Elimina
-          </button>
-          <div style="display: flex; gap: 8px; flex-wrap: wrap">
-            <button
-              id="modal-add-payment-btn"
-              class="btn btn-tonal"
-              onclick="
-                openPaymentModal(
-                  parseInt(document.getElementById('modal-id').value),
-                )
-              "
-              style="display: none"
-            >
-              <span class="material-symbols-outlined">payments</span> Aggiungi
-              Pagamento
-            </button>
-            <button class="btn btn-tonal" onclick="closeModal()">
+        <div class="modal-actions modal-actions-edit">
+          <div class="modal-actions-left">
+            <button type="button" class="btn btn-tonal" onclick="closeModal()">
               Annulla
             </button>
-            <button class="btn btn-filled" onclick="saveModalChanges()">
-              Salva Modifiche
+            <button type="button" class="btn btn-error" id="modal-delete-btn" onclick="deleteFromModal()">
+              <span class="material-symbols-outlined">delete</span> Elimina
+            </button>
+          </div>
+          <div class="modal-actions-right">
+            <button
+              type="button"
+              id="modal-add-payment-btn"
+              class="btn btn-tonal"
+              onclick="openPaymentModal(parseInt(document.getElementById('modal-id').value))"
+              style="display: none"
+            >
+              <span class="material-symbols-outlined">payments</span> Aggiungi Pagamento
+            </button>
+            <button type="button" class="btn btn-filled" onclick="saveModalChanges()">
+              <span class="material-symbols-outlined">check</span> Salva Modifiche
             </button>
           </div>
         </div>
@@ -728,29 +718,24 @@
           "
         ></div>
 
-        <div
-          style="
-            display: flex;
-            justify-content: space-between;
-            margin-top: 24px;
-            gap: 8px;
-            flex-wrap: wrap;
-          "
-        >
-          <button
-            class="btn btn-error"
-            id="pay-delete-btn"
-            onclick="deletePaymentFromModal()"
-            style="display: none"
-          >
-            <span class="material-symbols-outlined">delete</span> Elimina
-          </button>
-          <div style="display: flex; gap: 8px; margin-left: auto">
-            <button class="btn btn-tonal" onclick="closePaymentModal()">
+        <div class="modal-actions">
+          <div class="modal-actions-left">
+            <button
+              type="button"
+              class="btn btn-error"
+              id="pay-delete-btn"
+              onclick="deletePaymentFromModal()"
+              style="display: none"
+            >
+              <span class="material-symbols-outlined">delete</span> Elimina
+            </button>
+          </div>
+          <div class="modal-actions-right">
+            <button type="button" class="btn btn-tonal" onclick="closePaymentModal()">
               Annulla
             </button>
-            <button class="btn btn-filled" onclick="savePayment()">
-              <span class="material-symbols-outlined">save</span> Salva
+            <button type="button" class="btn btn-filled" onclick="savePayment()">
+              <span class="material-symbols-outlined">check</span> Salva
             </button>
           </div>
         </div>
@@ -786,31 +771,27 @@
             Immobile / Valore Casa (per Mutuo)
           </label>
         </div>
-        <div
-          style="
-            display: flex;
-            justify-content: space-between;
-            margin-top: 32px;
-          "
-        >
-          <button
-            class="btn btn-error"
-            id="cat-btn-delete"
-            onclick="deleteCategory()"
-          >
-            <span class="material-symbols-outlined">delete</span>
-          </button>
-          <div style="display: flex; gap: 8px">
+        <div class="modal-actions">
+          <div class="modal-actions-left">
             <button
+              type="button"
+              class="btn btn-error"
+              id="cat-btn-delete"
+              onclick="deleteCategory()"
+            >
+              <span class="material-symbols-outlined">delete</span> Elimina
+            </button>
+          </div>
+          <div class="modal-actions-right">
+            <button
+              type="button"
               class="btn btn-tonal"
-              onclick="
-                document.getElementById('catModal').classList.remove('active')
-              "
+              onclick="closeModalOverlay('catModal')"
             >
               Annulla
             </button>
-            <button class="btn btn-filled" onclick="saveCategoryEdit()">
-              Salva
+            <button type="button" class="btn btn-filled" onclick="saveCategoryEdit()">
+              <span class="material-symbols-outlined">check</span> Salva
             </button>
           </div>
         </div>
@@ -1217,27 +1198,23 @@
             class="note-images-grid modal-images-preview"
           ></div>
         </div>
-        <div
-          style="
-            display: flex;
-            justify-content: space-between;
-            margin-top: 32px;
-            gap: 8px;
-          "
-        >
-          <button
-            class="btn btn-error"
-            id="qa-btn-delete"
-            onclick="deleteQAFromModal()"
-          >
-            <span class="material-symbols-outlined">delete</span> Elimina
-          </button>
-          <div style="display: flex; gap: 8px">
-            <button class="btn btn-tonal" onclick="closeQAModal()">
+        <div class="modal-actions">
+          <div class="modal-actions-left">
+            <button
+              type="button"
+              class="btn btn-error"
+              id="qa-btn-delete"
+              onclick="deleteQAFromModal()"
+            >
+              <span class="material-symbols-outlined">delete</span> Elimina
+            </button>
+          </div>
+          <div class="modal-actions-right">
+            <button type="button" class="btn btn-tonal" onclick="closeQAModal()">
               Annulla
             </button>
-            <button class="btn btn-filled" onclick="saveQAModalChanges()">
-              Salva
+            <button type="button" class="btn btn-filled" onclick="saveQAModalChanges()">
+              <span class="material-symbols-outlined">check</span> Salva
             </button>
           </div>
         </div>
@@ -1510,27 +1487,23 @@
             class="note-images-grid modal-images-preview"
           ></div>
         </div>
-        <div
-          style="
-            display: flex;
-            justify-content: space-between;
-            margin-top: 32px;
-            gap: 8px;
-          "
-        >
-          <button
-            class="btn btn-error"
-            id="task-btn-delete"
-            onclick="deleteTaskFromModal()"
-          >
-            <span class="material-symbols-outlined">delete</span> Elimina
-          </button>
-          <div style="display: flex; gap: 8px">
-            <button class="btn btn-tonal" onclick="closeTaskModal()">
+        <div class="modal-actions">
+          <div class="modal-actions-left">
+            <button
+              type="button"
+              class="btn btn-error"
+              id="task-btn-delete"
+              onclick="deleteTaskFromModal()"
+            >
+              <span class="material-symbols-outlined">delete</span> Elimina
+            </button>
+          </div>
+          <div class="modal-actions-right">
+            <button type="button" class="btn btn-tonal" onclick="closeTaskModal()">
               Annulla
             </button>
-            <button class="btn btn-filled" onclick="saveTaskModalChanges()">
-              Salva
+            <button type="button" class="btn btn-filled" onclick="saveTaskModalChanges()">
+              <span class="material-symbols-outlined">check</span> Salva
             </button>
           </div>
         </div>
@@ -1803,27 +1776,23 @@
             class="note-images-grid modal-images-preview"
           ></div>
         </div>
-        <div
-          style="
-            display: flex;
-            justify-content: space-between;
-            margin-top: 32px;
-            gap: 8px;
-          "
-        >
-          <button
-            class="btn btn-error"
-            id="note-btn-delete"
-            onclick="deleteNoteFromModal()"
-          >
-            <span class="material-symbols-outlined">delete</span> Elimina
-          </button>
-          <div style="display: flex; gap: 8px">
-            <button class="btn btn-tonal" onclick="closeNoteModal()">
+        <div class="modal-actions">
+          <div class="modal-actions-left">
+            <button
+              type="button"
+              class="btn btn-error"
+              id="note-btn-delete"
+              onclick="deleteNoteFromModal()"
+            >
+              <span class="material-symbols-outlined">delete</span> Elimina
+            </button>
+          </div>
+          <div class="modal-actions-right">
+            <button type="button" class="btn btn-tonal" onclick="closeNoteModal()">
               Annulla
             </button>
-            <button class="btn btn-filled" onclick="saveNoteModalChanges()">
-              Salva
+            <button type="button" class="btn btn-filled" onclick="saveNoteModalChanges()">
+              <span class="material-symbols-outlined">check</span> Salva
             </button>
           </div>
         </div>
@@ -1853,18 +1822,19 @@
             placeholder="https://drive.google.com/drive/folders/..."
           />
         </div>
-        <div style="display: flex; justify-content: flex-end; gap: 8px">
-          <button
-            class="btn btn-tonal"
-            onclick="
-              document.getElementById('driveModal').classList.remove('active')
-            "
-          >
-            Annulla
-          </button>
-          <button class="btn btn-filled" onclick="saveDriveLink()">
-            Salva Link
-          </button>
+        <div class="modal-actions">
+          <div class="modal-actions-right">
+            <button
+              type="button"
+              class="btn btn-tonal"
+              onclick="closeModalOverlay('driveModal')"
+            >
+              Annulla
+            </button>
+            <button type="button" class="btn btn-filled" onclick="saveDriveLink()">
+              <span class="material-symbols-outlined">check</span> Salva Link
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -2513,21 +2483,15 @@
           </div>
         </div>
 
-        <div
-          style="
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-            margin-top: 24px;
-          "
-        >
-          <button class="btn btn-tonal" onclick="closeSavingsModal()">
-            Annulla
-          </button>
-          <button class="btn btn-filled" onclick="saveSavingsSnapshot()">
-            <span class="material-symbols-outlined">save</span> Salva
-            Rilevazione
-          </button>
+        <div class="modal-actions">
+          <div class="modal-actions-right">
+            <button type="button" class="btn btn-tonal" onclick="closeSavingsModal()">
+              Annulla
+            </button>
+            <button type="button" class="btn btn-filled" onclick="saveSavingsSnapshot()">
+              <span class="material-symbols-outlined">check</span> Salva Rilevazione
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -2818,29 +2782,34 @@
           </div>
         </div>
 
-        <div
-          style="
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-            margin-top: 20px;
-          "
-        >
-          <button
-            type="button"
-            class="btn btn-tonal"
-            onclick="closeDebitoModal()"
-          >
-            Annulla
-          </button>
-          <button
-            type="button"
-            class="btn btn-filled"
-            onclick="saveDebitoModal()"
-          >
-            <span class="material-symbols-outlined">save</span> Salva
-            Finanziamento
-          </button>
+        <div class="modal-actions">
+          <div class="modal-actions-left">
+            <button
+              type="button"
+              class="btn btn-error"
+              id="debito-btn-delete"
+              onclick="deleteDebitoFromModal()"
+              style="display: none"
+            >
+              <span class="material-symbols-outlined">delete</span> Elimina
+            </button>
+          </div>
+          <div class="modal-actions-right">
+            <button
+              type="button"
+              class="btn btn-tonal"
+              onclick="closeDebitoModal()"
+            >
+              Annulla
+            </button>
+            <button
+              type="button"
+              class="btn btn-filled"
+              onclick="saveDebitoModal()"
+            >
+              <span class="material-symbols-outlined">check</span> Salva Finanziamento
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -3178,7 +3147,7 @@
             <span class="nav-drawer-footer-label">Versione App</span>
           </div>
           <span class="nav-drawer-version-badge" id="drawer-version-badge"
-            >v1.9.17</span
+            >v1.9.18</span
           >
         </div>
       </div>
@@ -5726,13 +5695,13 @@
             <a href="https://giovannilamarmora.github.io/" target="_blank"
               >Giovanni Lamarmora</a
             >
-            <span class="version-number">v1.9.17</span>
+            <span class="version-number">v1.9.18</span>
           </h4>
         </div>
       </div>
     </div>
 
-    <!-- Script modulari dell'applicazione (v1.9.17) -->
+    <!-- Script modulari dell'applicazione (v1.9.18) -->
     <script src="./js/config.js"></script>
     <script src="./js/ui.js"></script>
     <script src="./js/storage.js"></script>
