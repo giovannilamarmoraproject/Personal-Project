@@ -375,6 +375,65 @@ body.dark-mode .theme-toggle-thumb {
   line-height: 1;
 }
 
+.nav-drawer-footer {
+  padding: 14px 18px;
+  background-color: var(--md-sys-color-surface-container-low);
+  border-top: 1px solid var(--md-sys-color-surface-container-high);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.nav-drawer-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-drawer-footer-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--md-sys-color-outline);
+}
+
+.nav-drawer-footer-icon {
+  font-size: 18px;
+  color: var(--md-sys-color-outline);
+}
+
+.nav-drawer-footer-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--md-sys-color-outline);
+  letter-spacing: 0.2px;
+}
+
+.nav-drawer-version-badge {
+  font-size: 11px;
+  font-weight: 600;
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  padding: 3px 10px;
+  border-radius: var(--md-sys-shape-corner-full);
+  letter-spacing: 0.3px;
+  float: none;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+body.dark-mode .nav-drawer-footer {
+  background-color: var(--md-sys-color-surface-container-low);
+  border-color: var(--md-sys-color-surface-container-high);
+}
+
+body.dark-mode .nav-drawer-version-badge {
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+
 /* Hero Image */
 .hero-header {
   width: 100%;
@@ -3821,7 +3880,7 @@ body.dark-mode .table-view-toggle .btn-toggle:hover {
 }
 
 /* ==============================================================================
-   RICH TEXT EDITOR & RENDERED CONTENT (v1.9.15)
+   RICH TEXT EDITOR & RENDERED CONTENT (v1.9.16)
    ============================================================================== */
 
 .rich-editor-wrapper {

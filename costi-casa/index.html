@@ -3,7 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>Riepilogo Generale | Costi Casa</title>
@@ -260,11 +263,11 @@
         <input type="hidden" id="modal-type" />
 
         <div class="input-group" id="modal-cat-group" style="display: none">
-          <div class="input-field" style="flex: 1.2;">
+          <div class="input-field" style="flex: 1.2">
             <label>Categoria</label>
             <select id="modal-cat"></select>
           </div>
-          <div class="input-field" style="flex: 1;">
+          <div class="input-field" style="flex: 1">
             <label>Stato Costo</label>
             <select id="modal-confermato">
               <option value="true">Confermato</option>
@@ -329,26 +332,136 @@
             <label>Note / Stato</label>
             <div class="rich-editor-wrapper">
               <div class="rich-editor-toolbar" data-editor-id="modal-note">
-                <button type="button" class="rich-editor-btn" data-command="bold" title="Grassetto"><span class="material-symbols-outlined">format_bold</span></button>
-                <button type="button" class="rich-editor-btn" data-command="italic" title="Corsivo"><span class="material-symbols-outlined">format_italic</span></button>
-                <button type="button" class="rich-editor-btn" data-command="underline" title="Sottolineato"><span class="material-symbols-outlined">format_underlined</span></button>
-                <button type="button" class="rich-editor-btn" data-command="strikeThrough" title="Barrato"><span class="material-symbols-outlined">strikethrough_s</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="bold"
+                  title="Grassetto"
+                >
+                  <span class="material-symbols-outlined">format_bold</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="italic"
+                  title="Corsivo"
+                >
+                  <span class="material-symbols-outlined">format_italic</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="underline"
+                  title="Sottolineato"
+                >
+                  <span class="material-symbols-outlined"
+                    >format_underlined</span
+                  >
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="strikeThrough"
+                  title="Barrato"
+                >
+                  <span class="material-symbols-outlined">strikethrough_s</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="heading" title="Testo Grande (Titolo)"><span class="material-symbols-outlined">format_size</span></button>
-                <button type="button" class="rich-editor-btn" data-command="normal" title="Testo Normale"><span class="material-symbols-outlined">match_case</span></button>
-                <button type="button" class="rich-editor-btn" data-command="small" title="Testo Piccolo"><span class="material-symbols-outlined">text_fields</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="heading"
+                  title="Testo Grande (Titolo)"
+                >
+                  <span class="material-symbols-outlined">format_size</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="normal"
+                  title="Testo Normale"
+                >
+                  <span class="material-symbols-outlined">match_case</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="small"
+                  title="Testo Piccolo"
+                >
+                  <span class="material-symbols-outlined">text_fields</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="highlight" title="Evidenziatore"><span class="material-symbols-outlined">ink_highlighter</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="highlight"
+                  title="Evidenziatore"
+                >
+                  <span class="material-symbols-outlined">ink_highlighter</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="insertUnorderedList" title="Elenco puntato"><span class="material-symbols-outlined">format_list_bulleted</span></button>
-                <button type="button" class="rich-editor-btn" data-command="insertOrderedList" title="Elenco numerato"><span class="material-symbols-outlined">format_list_numbered</span></button>
-                <button type="button" class="rich-editor-btn" data-command="checklist" title="Checklist"><span class="material-symbols-outlined">checklist</span></button>
-                <button type="button" class="rich-editor-btn" data-command="quote" title="Citazione"><span class="material-symbols-outlined">format_quote</span></button>
-                <button type="button" class="rich-editor-btn" data-command="createLink" title="Inserisci Link (URL)"><span class="material-symbols-outlined">link</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="insertUnorderedList"
+                  title="Elenco puntato"
+                >
+                  <span class="material-symbols-outlined"
+                    >format_list_bulleted</span
+                  >
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="insertOrderedList"
+                  title="Elenco numerato"
+                >
+                  <span class="material-symbols-outlined"
+                    >format_list_numbered</span
+                  >
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="checklist"
+                  title="Checklist"
+                >
+                  <span class="material-symbols-outlined">checklist</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="quote"
+                  title="Citazione"
+                >
+                  <span class="material-symbols-outlined">format_quote</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="createLink"
+                  title="Inserisci Link (URL)"
+                >
+                  <span class="material-symbols-outlined">link</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="removeFormat" title="Rimuovi formattazione"><span class="material-symbols-outlined">format_clear</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="removeFormat"
+                  title="Rimuovi formattazione"
+                >
+                  <span class="material-symbols-outlined">format_clear</span>
+                </button>
               </div>
-              <div id="modal-note" class="rich-editor-content" contenteditable="true" data-placeholder="Dettagli aggiuntivi, preventivi o stato..." style="min-height: 80px;"></div>
+              <div
+                id="modal-note"
+                class="rich-editor-content"
+                contenteditable="true"
+                data-placeholder="Dettagli aggiuntivi, preventivi o stato..."
+                style="min-height: 80px"
+              ></div>
             </div>
           </div>
         </div>
@@ -429,26 +542,136 @@
             <label>Commento / Nota (opzionale)</label>
             <div class="rich-editor-wrapper">
               <div class="rich-editor-toolbar" data-editor-id="pay-commento">
-                <button type="button" class="rich-editor-btn" data-command="bold" title="Grassetto"><span class="material-symbols-outlined">format_bold</span></button>
-                <button type="button" class="rich-editor-btn" data-command="italic" title="Corsivo"><span class="material-symbols-outlined">format_italic</span></button>
-                <button type="button" class="rich-editor-btn" data-command="underline" title="Sottolineato"><span class="material-symbols-outlined">format_underlined</span></button>
-                <button type="button" class="rich-editor-btn" data-command="strikeThrough" title="Barrato"><span class="material-symbols-outlined">strikethrough_s</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="bold"
+                  title="Grassetto"
+                >
+                  <span class="material-symbols-outlined">format_bold</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="italic"
+                  title="Corsivo"
+                >
+                  <span class="material-symbols-outlined">format_italic</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="underline"
+                  title="Sottolineato"
+                >
+                  <span class="material-symbols-outlined"
+                    >format_underlined</span
+                  >
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="strikeThrough"
+                  title="Barrato"
+                >
+                  <span class="material-symbols-outlined">strikethrough_s</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="heading" title="Testo Grande (Titolo)"><span class="material-symbols-outlined">format_size</span></button>
-                <button type="button" class="rich-editor-btn" data-command="normal" title="Testo Normale"><span class="material-symbols-outlined">match_case</span></button>
-                <button type="button" class="rich-editor-btn" data-command="small" title="Testo Piccolo"><span class="material-symbols-outlined">text_fields</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="heading"
+                  title="Testo Grande (Titolo)"
+                >
+                  <span class="material-symbols-outlined">format_size</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="normal"
+                  title="Testo Normale"
+                >
+                  <span class="material-symbols-outlined">match_case</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="small"
+                  title="Testo Piccolo"
+                >
+                  <span class="material-symbols-outlined">text_fields</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="highlight" title="Evidenziatore"><span class="material-symbols-outlined">ink_highlighter</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="highlight"
+                  title="Evidenziatore"
+                >
+                  <span class="material-symbols-outlined">ink_highlighter</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="insertUnorderedList" title="Elenco puntato"><span class="material-symbols-outlined">format_list_bulleted</span></button>
-                <button type="button" class="rich-editor-btn" data-command="insertOrderedList" title="Elenco numerato"><span class="material-symbols-outlined">format_list_numbered</span></button>
-                <button type="button" class="rich-editor-btn" data-command="checklist" title="Checklist"><span class="material-symbols-outlined">checklist</span></button>
-                <button type="button" class="rich-editor-btn" data-command="quote" title="Citazione"><span class="material-symbols-outlined">format_quote</span></button>
-                <button type="button" class="rich-editor-btn" data-command="createLink" title="Inserisci Link (URL)"><span class="material-symbols-outlined">link</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="insertUnorderedList"
+                  title="Elenco puntato"
+                >
+                  <span class="material-symbols-outlined"
+                    >format_list_bulleted</span
+                  >
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="insertOrderedList"
+                  title="Elenco numerato"
+                >
+                  <span class="material-symbols-outlined"
+                    >format_list_numbered</span
+                  >
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="checklist"
+                  title="Checklist"
+                >
+                  <span class="material-symbols-outlined">checklist</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="quote"
+                  title="Citazione"
+                >
+                  <span class="material-symbols-outlined">format_quote</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="createLink"
+                  title="Inserisci Link (URL)"
+                >
+                  <span class="material-symbols-outlined">link</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="removeFormat" title="Rimuovi formattazione"><span class="material-symbols-outlined">format_clear</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="removeFormat"
+                  title="Rimuovi formattazione"
+                >
+                  <span class="material-symbols-outlined">format_clear</span>
+                </button>
               </div>
-              <div id="pay-commento" class="rich-editor-content" contenteditable="true" data-placeholder="Es: Acconto, saldo finale, rata mensile..." style="min-height: 70px;"></div>
+              <div
+                id="pay-commento"
+                class="rich-editor-content"
+                contenteditable="true"
+                data-placeholder="Es: Acconto, saldo finale, rata mensile..."
+                style="min-height: 70px"
+              ></div>
             </div>
           </div>
         </div>
@@ -622,27 +845,139 @@
           <div class="input-field" style="width: 100%">
             <label>Domanda da fare</label>
             <div class="rich-editor-wrapper">
-              <div class="rich-editor-toolbar" data-editor-id="qa-modal-question">
-                <button type="button" class="rich-editor-btn" data-command="bold" title="Grassetto"><span class="material-symbols-outlined">format_bold</span></button>
-                <button type="button" class="rich-editor-btn" data-command="italic" title="Corsivo"><span class="material-symbols-outlined">format_italic</span></button>
-                <button type="button" class="rich-editor-btn" data-command="underline" title="Sottolineato"><span class="material-symbols-outlined">format_underlined</span></button>
-                <button type="button" class="rich-editor-btn" data-command="strikeThrough" title="Barrato"><span class="material-symbols-outlined">strikethrough_s</span></button>
+              <div
+                class="rich-editor-toolbar"
+                data-editor-id="qa-modal-question"
+              >
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="bold"
+                  title="Grassetto"
+                >
+                  <span class="material-symbols-outlined">format_bold</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="italic"
+                  title="Corsivo"
+                >
+                  <span class="material-symbols-outlined">format_italic</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="underline"
+                  title="Sottolineato"
+                >
+                  <span class="material-symbols-outlined"
+                    >format_underlined</span
+                  >
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="strikeThrough"
+                  title="Barrato"
+                >
+                  <span class="material-symbols-outlined">strikethrough_s</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="heading" title="Testo Grande (Titolo)"><span class="material-symbols-outlined">format_size</span></button>
-                <button type="button" class="rich-editor-btn" data-command="normal" title="Testo Normale"><span class="material-symbols-outlined">match_case</span></button>
-                <button type="button" class="rich-editor-btn" data-command="small" title="Testo Piccolo"><span class="material-symbols-outlined">text_fields</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="heading"
+                  title="Testo Grande (Titolo)"
+                >
+                  <span class="material-symbols-outlined">format_size</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="normal"
+                  title="Testo Normale"
+                >
+                  <span class="material-symbols-outlined">match_case</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="small"
+                  title="Testo Piccolo"
+                >
+                  <span class="material-symbols-outlined">text_fields</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="highlight" title="Evidenziatore"><span class="material-symbols-outlined">ink_highlighter</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="highlight"
+                  title="Evidenziatore"
+                >
+                  <span class="material-symbols-outlined">ink_highlighter</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="insertUnorderedList" title="Elenco puntato"><span class="material-symbols-outlined">format_list_bulleted</span></button>
-                <button type="button" class="rich-editor-btn" data-command="insertOrderedList" title="Elenco numerato"><span class="material-symbols-outlined">format_list_numbered</span></button>
-                <button type="button" class="rich-editor-btn" data-command="checklist" title="Checklist"><span class="material-symbols-outlined">checklist</span></button>
-                <button type="button" class="rich-editor-btn" data-command="quote" title="Citazione"><span class="material-symbols-outlined">format_quote</span></button>
-                <button type="button" class="rich-editor-btn" data-command="createLink" title="Inserisci Link (URL)"><span class="material-symbols-outlined">link</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="insertUnorderedList"
+                  title="Elenco puntato"
+                >
+                  <span class="material-symbols-outlined"
+                    >format_list_bulleted</span
+                  >
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="insertOrderedList"
+                  title="Elenco numerato"
+                >
+                  <span class="material-symbols-outlined"
+                    >format_list_numbered</span
+                  >
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="checklist"
+                  title="Checklist"
+                >
+                  <span class="material-symbols-outlined">checklist</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="quote"
+                  title="Citazione"
+                >
+                  <span class="material-symbols-outlined">format_quote</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="createLink"
+                  title="Inserisci Link (URL)"
+                >
+                  <span class="material-symbols-outlined">link</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="removeFormat" title="Rimuovi formattazione"><span class="material-symbols-outlined">format_clear</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="removeFormat"
+                  title="Rimuovi formattazione"
+                >
+                  <span class="material-symbols-outlined">format_clear</span>
+                </button>
               </div>
-              <div id="qa-modal-question" class="rich-editor-content" contenteditable="true" data-placeholder="Cosa dobbiamo chiedere o verificare?"></div>
+              <div
+                id="qa-modal-question"
+                class="rich-editor-content"
+                contenteditable="true"
+                data-placeholder="Cosa dobbiamo chiedere o verificare?"
+              ></div>
             </div>
           </div>
         </div>
@@ -651,26 +986,135 @@
             <label>Risposta ricevuta (opzionale)</label>
             <div class="rich-editor-wrapper">
               <div class="rich-editor-toolbar" data-editor-id="qa-modal-answer">
-                <button type="button" class="rich-editor-btn" data-command="bold" title="Grassetto"><span class="material-symbols-outlined">format_bold</span></button>
-                <button type="button" class="rich-editor-btn" data-command="italic" title="Corsivo"><span class="material-symbols-outlined">format_italic</span></button>
-                <button type="button" class="rich-editor-btn" data-command="underline" title="Sottolineato"><span class="material-symbols-outlined">format_underlined</span></button>
-                <button type="button" class="rich-editor-btn" data-command="strikeThrough" title="Barrato"><span class="material-symbols-outlined">strikethrough_s</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="bold"
+                  title="Grassetto"
+                >
+                  <span class="material-symbols-outlined">format_bold</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="italic"
+                  title="Corsivo"
+                >
+                  <span class="material-symbols-outlined">format_italic</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="underline"
+                  title="Sottolineato"
+                >
+                  <span class="material-symbols-outlined"
+                    >format_underlined</span
+                  >
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="strikeThrough"
+                  title="Barrato"
+                >
+                  <span class="material-symbols-outlined">strikethrough_s</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="heading" title="Testo Grande (Titolo)"><span class="material-symbols-outlined">format_size</span></button>
-                <button type="button" class="rich-editor-btn" data-command="normal" title="Testo Normale"><span class="material-symbols-outlined">match_case</span></button>
-                <button type="button" class="rich-editor-btn" data-command="small" title="Testo Piccolo"><span class="material-symbols-outlined">text_fields</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="heading"
+                  title="Testo Grande (Titolo)"
+                >
+                  <span class="material-symbols-outlined">format_size</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="normal"
+                  title="Testo Normale"
+                >
+                  <span class="material-symbols-outlined">match_case</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="small"
+                  title="Testo Piccolo"
+                >
+                  <span class="material-symbols-outlined">text_fields</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="highlight" title="Evidenziatore"><span class="material-symbols-outlined">ink_highlighter</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="highlight"
+                  title="Evidenziatore"
+                >
+                  <span class="material-symbols-outlined">ink_highlighter</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="insertUnorderedList" title="Elenco puntato"><span class="material-symbols-outlined">format_list_bulleted</span></button>
-                <button type="button" class="rich-editor-btn" data-command="insertOrderedList" title="Elenco numerato"><span class="material-symbols-outlined">format_list_numbered</span></button>
-                <button type="button" class="rich-editor-btn" data-command="checklist" title="Checklist"><span class="material-symbols-outlined">checklist</span></button>
-                <button type="button" class="rich-editor-btn" data-command="quote" title="Citazione"><span class="material-symbols-outlined">format_quote</span></button>
-                <button type="button" class="rich-editor-btn" data-command="createLink" title="Inserisci Link (URL)"><span class="material-symbols-outlined">link</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="insertUnorderedList"
+                  title="Elenco puntato"
+                >
+                  <span class="material-symbols-outlined"
+                    >format_list_bulleted</span
+                  >
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="insertOrderedList"
+                  title="Elenco numerato"
+                >
+                  <span class="material-symbols-outlined"
+                    >format_list_numbered</span
+                  >
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="checklist"
+                  title="Checklist"
+                >
+                  <span class="material-symbols-outlined">checklist</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="quote"
+                  title="Citazione"
+                >
+                  <span class="material-symbols-outlined">format_quote</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="createLink"
+                  title="Inserisci Link (URL)"
+                >
+                  <span class="material-symbols-outlined">link</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="removeFormat" title="Rimuovi formattazione"><span class="material-symbols-outlined">format_clear</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="removeFormat"
+                  title="Rimuovi formattazione"
+                >
+                  <span class="material-symbols-outlined">format_clear</span>
+                </button>
               </div>
-              <div id="qa-modal-answer" class="rich-editor-content" contenteditable="true" data-placeholder="Risposta fornita o dettagli ottenuti..."></div>
+              <div
+                id="qa-modal-answer"
+                class="rich-editor-content"
+                contenteditable="true"
+                data-placeholder="Risposta fornita o dettagli ottenuti..."
+              ></div>
             </div>
           </div>
         </div>
@@ -835,26 +1279,135 @@
             <label>Descrizione (facoltativa)</label>
             <div class="rich-editor-wrapper">
               <div class="rich-editor-toolbar" data-editor-id="task-modal-desc">
-                <button type="button" class="rich-editor-btn" data-command="bold" title="Grassetto"><span class="material-symbols-outlined">format_bold</span></button>
-                <button type="button" class="rich-editor-btn" data-command="italic" title="Corsivo"><span class="material-symbols-outlined">format_italic</span></button>
-                <button type="button" class="rich-editor-btn" data-command="underline" title="Sottolineato"><span class="material-symbols-outlined">format_underlined</span></button>
-                <button type="button" class="rich-editor-btn" data-command="strikeThrough" title="Barrato"><span class="material-symbols-outlined">strikethrough_s</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="bold"
+                  title="Grassetto"
+                >
+                  <span class="material-symbols-outlined">format_bold</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="italic"
+                  title="Corsivo"
+                >
+                  <span class="material-symbols-outlined">format_italic</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="underline"
+                  title="Sottolineato"
+                >
+                  <span class="material-symbols-outlined"
+                    >format_underlined</span
+                  >
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="strikeThrough"
+                  title="Barrato"
+                >
+                  <span class="material-symbols-outlined">strikethrough_s</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="heading" title="Testo Grande (Titolo)"><span class="material-symbols-outlined">format_size</span></button>
-                <button type="button" class="rich-editor-btn" data-command="normal" title="Testo Normale"><span class="material-symbols-outlined">match_case</span></button>
-                <button type="button" class="rich-editor-btn" data-command="small" title="Testo Piccolo"><span class="material-symbols-outlined">text_fields</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="heading"
+                  title="Testo Grande (Titolo)"
+                >
+                  <span class="material-symbols-outlined">format_size</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="normal"
+                  title="Testo Normale"
+                >
+                  <span class="material-symbols-outlined">match_case</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="small"
+                  title="Testo Piccolo"
+                >
+                  <span class="material-symbols-outlined">text_fields</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="highlight" title="Evidenziatore"><span class="material-symbols-outlined">ink_highlighter</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="highlight"
+                  title="Evidenziatore"
+                >
+                  <span class="material-symbols-outlined">ink_highlighter</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="insertUnorderedList" title="Elenco puntato"><span class="material-symbols-outlined">format_list_bulleted</span></button>
-                <button type="button" class="rich-editor-btn" data-command="insertOrderedList" title="Elenco numerato"><span class="material-symbols-outlined">format_list_numbered</span></button>
-                <button type="button" class="rich-editor-btn" data-command="checklist" title="Checklist"><span class="material-symbols-outlined">checklist</span></button>
-                <button type="button" class="rich-editor-btn" data-command="quote" title="Citazione"><span class="material-symbols-outlined">format_quote</span></button>
-                <button type="button" class="rich-editor-btn" data-command="createLink" title="Inserisci Link (URL)"><span class="material-symbols-outlined">link</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="insertUnorderedList"
+                  title="Elenco puntato"
+                >
+                  <span class="material-symbols-outlined"
+                    >format_list_bulleted</span
+                  >
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="insertOrderedList"
+                  title="Elenco numerato"
+                >
+                  <span class="material-symbols-outlined"
+                    >format_list_numbered</span
+                  >
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="checklist"
+                  title="Checklist"
+                >
+                  <span class="material-symbols-outlined">checklist</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="quote"
+                  title="Citazione"
+                >
+                  <span class="material-symbols-outlined">format_quote</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="createLink"
+                  title="Inserisci Link (URL)"
+                >
+                  <span class="material-symbols-outlined">link</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="removeFormat" title="Rimuovi formattazione"><span class="material-symbols-outlined">format_clear</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="removeFormat"
+                  title="Rimuovi formattazione"
+                >
+                  <span class="material-symbols-outlined">format_clear</span>
+                </button>
               </div>
-              <div id="task-modal-desc" class="rich-editor-content" contenteditable="true" data-placeholder="Dettagli del task..."></div>
+              <div
+                id="task-modal-desc"
+                class="rich-editor-content"
+                contenteditable="true"
+                data-placeholder="Dettagli del task..."
+              ></div>
             </div>
           </div>
         </div>
@@ -1014,27 +1567,140 @@
           <div class="input-field" style="width: 100%">
             <label>Testo</label>
             <div class="rich-editor-wrapper">
-              <div class="rich-editor-toolbar" data-editor-id="note-modal-content">
-                <button type="button" class="rich-editor-btn" data-command="bold" title="Grassetto"><span class="material-symbols-outlined">format_bold</span></button>
-                <button type="button" class="rich-editor-btn" data-command="italic" title="Corsivo"><span class="material-symbols-outlined">format_italic</span></button>
-                <button type="button" class="rich-editor-btn" data-command="underline" title="Sottolineato"><span class="material-symbols-outlined">format_underlined</span></button>
-                <button type="button" class="rich-editor-btn" data-command="strikeThrough" title="Barrato"><span class="material-symbols-outlined">strikethrough_s</span></button>
+              <div
+                class="rich-editor-toolbar"
+                data-editor-id="note-modal-content"
+              >
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="bold"
+                  title="Grassetto"
+                >
+                  <span class="material-symbols-outlined">format_bold</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="italic"
+                  title="Corsivo"
+                >
+                  <span class="material-symbols-outlined">format_italic</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="underline"
+                  title="Sottolineato"
+                >
+                  <span class="material-symbols-outlined"
+                    >format_underlined</span
+                  >
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="strikeThrough"
+                  title="Barrato"
+                >
+                  <span class="material-symbols-outlined">strikethrough_s</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="heading" title="Testo Grande (Titolo)"><span class="material-symbols-outlined">format_size</span></button>
-                <button type="button" class="rich-editor-btn" data-command="normal" title="Testo Normale"><span class="material-symbols-outlined">match_case</span></button>
-                <button type="button" class="rich-editor-btn" data-command="small" title="Testo Piccolo"><span class="material-symbols-outlined">text_fields</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="heading"
+                  title="Testo Grande (Titolo)"
+                >
+                  <span class="material-symbols-outlined">format_size</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="normal"
+                  title="Testo Normale"
+                >
+                  <span class="material-symbols-outlined">match_case</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="small"
+                  title="Testo Piccolo"
+                >
+                  <span class="material-symbols-outlined">text_fields</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="highlight" title="Evidenziatore"><span class="material-symbols-outlined">ink_highlighter</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="highlight"
+                  title="Evidenziatore"
+                >
+                  <span class="material-symbols-outlined">ink_highlighter</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="insertUnorderedList" title="Elenco puntato"><span class="material-symbols-outlined">format_list_bulleted</span></button>
-                <button type="button" class="rich-editor-btn" data-command="insertOrderedList" title="Elenco numerato"><span class="material-symbols-outlined">format_list_numbered</span></button>
-                <button type="button" class="rich-editor-btn" data-command="checklist" title="Checklist"><span class="material-symbols-outlined">checklist</span></button>
-                <button type="button" class="rich-editor-btn" data-command="quote" title="Citazione"><span class="material-symbols-outlined">format_quote</span></button>
-                <button type="button" class="rich-editor-btn" data-command="createLink" title="Inserisci Link (URL)"><span class="material-symbols-outlined">link</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="insertUnorderedList"
+                  title="Elenco puntato"
+                >
+                  <span class="material-symbols-outlined"
+                    >format_list_bulleted</span
+                  >
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="insertOrderedList"
+                  title="Elenco numerato"
+                >
+                  <span class="material-symbols-outlined"
+                    >format_list_numbered</span
+                  >
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="checklist"
+                  title="Checklist"
+                >
+                  <span class="material-symbols-outlined">checklist</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="quote"
+                  title="Citazione"
+                >
+                  <span class="material-symbols-outlined">format_quote</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="createLink"
+                  title="Inserisci Link (URL)"
+                >
+                  <span class="material-symbols-outlined">link</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="removeFormat" title="Rimuovi formattazione"><span class="material-symbols-outlined">format_clear</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="removeFormat"
+                  title="Rimuovi formattazione"
+                >
+                  <span class="material-symbols-outlined">format_clear</span>
+                </button>
               </div>
-              <div id="note-modal-content" class="rich-editor-content" contenteditable="true" data-placeholder="Scrivi qui i tuoi appunti..." style="min-height: 140px;"></div>
+              <div
+                id="note-modal-content"
+                class="rich-editor-content"
+                contenteditable="true"
+                data-placeholder="Scrivi qui i tuoi appunti..."
+                style="min-height: 140px"
+              ></div>
             </div>
           </div>
         </div>
@@ -1205,60 +1871,181 @@
 
     <!-- Modale Dedicato: Imposta Capitale Iniziale (Setup di Partenza) -->
     <div id="savingsInitialModal" class="modal-overlay">
-      <div class="modal-content" style="max-width: 520px;">
-        <h2 style="margin-top: 0; color: var(--md-sys-color-primary); display: flex; align-items: center; gap: 8px;">
-          <span class="material-symbols-outlined">account_balance</span> Imposta Capitale Iniziale
+      <div class="modal-content" style="max-width: 520px">
+        <h2
+          style="
+            margin-top: 0;
+            color: var(--md-sys-color-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          "
+        >
+          <span class="material-symbols-outlined">account_balance</span> Imposta
+          Capitale Iniziale
         </h2>
-        <p style="font-size: 13px; color: var(--md-sys-color-outline); margin-top: -6px; margin-bottom: 20px;">
-          Seleziona la risorsa di partenza dai tuoi Budget e la data di avvio. Una volta salvata, rimarrà bloccata per calcolare il risparmio nel tempo.
+        <p
+          style="
+            font-size: 13px;
+            color: var(--md-sys-color-outline);
+            margin-top: -6px;
+            margin-bottom: 20px;
+          "
+        >
+          Seleziona la risorsa di partenza dai tuoi Budget e la data di avvio.
+          Una volta salvata, rimarrà bloccata per calcolare il risparmio nel
+          tempo.
         </p>
 
-        <div class="input-field" style="margin-bottom: 16px;">
+        <div class="input-field" style="margin-bottom: 16px">
           <label>Utente</label>
-          <select id="savings-initial-user" onchange="onSavingsInitialUserChange()"></select>
+          <select
+            id="savings-initial-user"
+            onchange="onSavingsInitialUserChange()"
+          ></select>
         </div>
 
-        <div class="input-field" style="margin-bottom: 16px;">
-          <label style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
-            <span class="material-symbols-outlined" style="font-size: 18px; color: var(--md-sys-color-primary);">account_balance_wallet</span>
+        <div class="input-field" style="margin-bottom: 16px">
+          <label
+            style="
+              display: flex;
+              align-items: center;
+              gap: 6px;
+              margin-bottom: 6px;
+            "
+          >
+            <span
+              class="material-symbols-outlined"
+              style="font-size: 18px; color: var(--md-sys-color-primary)"
+              >account_balance_wallet</span
+            >
             Capitale Iniziale dai Budget (€)
           </label>
           <input type="hidden" id="savings-initial-capitale-value" value="" />
 
           <!-- Selettore Custom M3 dai Budget -->
-          <div class="savings-budget-picker-container" id="savings-initial-budget-picker-container">
-            <button type="button" class="savings-budget-picker-trigger" id="savings-initial-budget-picker-trigger" onclick="toggleSavingsInitialBudgetPicker(event)">
-              <div style="display: flex; align-items: center; gap: 8px; min-width: 0;">
-                <span class="material-symbols-outlined trigger-icon">account_balance_wallet</span>
-                <span id="savings-initial-budget-trigger-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--md-sys-color-outline);">Seleziona dai Budget...</span>
+          <div
+            class="savings-budget-picker-container"
+            id="savings-initial-budget-picker-container"
+          >
+            <button
+              type="button"
+              class="savings-budget-picker-trigger"
+              id="savings-initial-budget-picker-trigger"
+              onclick="toggleSavingsInitialBudgetPicker(event)"
+            >
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  min-width: 0;
+                "
+              >
+                <span class="material-symbols-outlined trigger-icon"
+                  >account_balance_wallet</span
+                >
+                <span
+                  id="savings-initial-budget-trigger-text"
+                  style="
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    color: var(--md-sys-color-outline);
+                  "
+                  >Seleziona dai Budget...</span
+                >
               </div>
-              <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
-                <span class="savings-budget-trigger-pill" id="savings-initial-budget-trigger-pill" style="display: none;">0,00 €</span>
-                <span class="material-symbols-outlined trigger-arrow">expand_more</span>
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  flex-shrink: 0;
+                "
+              >
+                <span
+                  class="savings-budget-trigger-pill"
+                  id="savings-initial-budget-trigger-pill"
+                  style="display: none"
+                  >0,00 €</span
+                >
+                <span class="material-symbols-outlined trigger-arrow"
+                  >expand_more</span
+                >
               </div>
             </button>
-            <div class="savings-budget-picker-menu" id="savings-initial-budget-picker-menu"></div>
+            <div
+              class="savings-budget-picker-menu"
+              id="savings-initial-budget-picker-menu"
+            ></div>
           </div>
-          <small style="font-size: 11px; color: var(--md-sys-color-outline); margin-top: 4px; display: block;">
-            Seleziona la quota di risparmio/fondi iniziali registrata nel Budget.
+          <small
+            style="
+              font-size: 11px;
+              color: var(--md-sys-color-outline);
+              margin-top: 4px;
+              display: block;
+            "
+          >
+            Seleziona la quota di risparmio/fondi iniziali registrata nel
+            Budget.
           </small>
         </div>
 
-        <div class="input-field" style="margin-bottom: 24px;">
-          <label style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
-            <span class="material-symbols-outlined" style="font-size: 18px; color: var(--md-sys-color-primary);">event_note</span>
+        <div class="input-field" style="margin-bottom: 24px">
+          <label
+            style="
+              display: flex;
+              align-items: center;
+              gap: 6px;
+              margin-bottom: 6px;
+            "
+          >
+            <span
+              class="material-symbols-outlined"
+              style="font-size: 18px; color: var(--md-sys-color-primary)"
+              >event_note</span
+            >
             Data Avvio / Registrazione Capitale Iniziale
           </label>
           <input type="date" id="savings-initial-data-avvio" />
-          <small style="font-size: 11px; color: var(--md-sys-color-outline); display: block; margin-top: 4px;">
-            Giorno di partenza a partire dal quale viene calcolato il tasso di risparmio nel tempo.
+          <small
+            style="
+              font-size: 11px;
+              color: var(--md-sys-color-outline);
+              display: block;
+              margin-top: 4px;
+            "
+          >
+            Giorno di partenza a partire dal quale viene calcolato il tasso di
+            risparmio nel tempo.
           </small>
         </div>
 
-        <div class="modal-actions" style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 24px;">
-          <button type="button" class="btn btn-tonal" onclick="closeSavingsInitialModal()">Annulla</button>
-          <button type="button" class="btn btn-filled" onclick="saveSavingsInitialSetup()">
-            <span class="material-symbols-outlined">check_circle</span> Conferma e Fissa Capitale
+        <div
+          class="modal-actions"
+          style="
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 24px;
+          "
+        >
+          <button
+            type="button"
+            class="btn btn-tonal"
+            onclick="closeSavingsInitialModal()"
+          >
+            Annulla
+          </button>
+          <button
+            type="button"
+            class="btn btn-filled"
+            onclick="saveSavingsInitialSetup()"
+          >
+            <span class="material-symbols-outlined">check_circle</span> Conferma
+            e Fissa Capitale
           </button>
         </div>
       </div>
@@ -1266,25 +2053,72 @@
 
     <!-- Modale Registrazione Rilevazione Risparmio (Solo dati correnti / attuali) -->
     <div id="savingsModal" class="modal-overlay">
-      <div class="modal-content" style="max-width: 650px;">
-        <h2 style="margin-top: 0; color: var(--md-sys-color-primary); display: flex; align-items: center; gap: 8px;">
-          <span class="material-symbols-outlined">trending_up</span> Registra Rilevazione Risparmio
+      <div class="modal-content" style="max-width: 650px">
+        <h2
+          style="
+            margin-top: 0;
+            color: var(--md-sys-color-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          "
+        >
+          <span class="material-symbols-outlined">trending_up</span> Registra
+          Rilevazione Risparmio
         </h2>
-        <p style="font-size: 13px; color: var(--md-sys-color-outline); margin-top: -6px; margin-bottom: 16px;">
-          Aggiorna i parametri di liquidità, disinvestimenti e debiti per calcolare e archiviare il risparmio netto.
+        <p
+          style="
+            font-size: 13px;
+            color: var(--md-sys-color-outline);
+            margin-top: -6px;
+            margin-bottom: 16px;
+          "
+        >
+          Aggiorna i parametri di liquidità, disinvestimenti e debiti per
+          calcolare e archiviare il risparmio netto.
         </p>
 
         <input type="hidden" id="savings-edit-id" />
 
         <!-- Info Card: Capitale Iniziale e Data Avvio già fissati -->
-        <div class="savings-budget-locked-card" style="margin-bottom: 16px; background: var(--md-sys-color-surface-container);">
-          <div style="display: flex; align-items: center; gap: 10px; min-width: 0;">
+        <div
+          class="savings-budget-locked-card"
+          style="
+            margin-bottom: 16px;
+            background: var(--md-sys-color-surface-container);
+          "
+        >
+          <div
+            style="display: flex; align-items: center; gap: 10px; min-width: 0"
+          >
             <div class="savings-locked-icon-badge">
-              <span class="material-symbols-outlined" style="font-size: 18px;">lock</span>
+              <span class="material-symbols-outlined" style="font-size: 18px"
+                >lock</span
+              >
             </div>
-            <div style="min-width: 0; flex: 1;">
-              <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--md-sys-color-outline); letter-spacing: 0.5px;">Capitale Iniziale Fissato</div>
-              <div id="savings-modal-fixed-summary" style="font-size: 13px; font-weight: 600; color: var(--md-sys-color-on-surface); word-break: break-word;">—</div>
+            <div style="min-width: 0; flex: 1">
+              <div
+                style="
+                  font-size: 11px;
+                  font-weight: 600;
+                  text-transform: uppercase;
+                  color: var(--md-sys-color-outline);
+                  letter-spacing: 0.5px;
+                "
+              >
+                Capitale Iniziale Fissato
+              </div>
+              <div
+                id="savings-modal-fixed-summary"
+                style="
+                  font-size: 13px;
+                  font-weight: 600;
+                  color: var(--md-sys-color-on-surface);
+                  word-break: break-word;
+                "
+              >
+                —
+              </div>
             </div>
           </div>
         </div>
@@ -1294,127 +2128,405 @@
 
         <!-- Riga 1: Utente e Data Prevista Rogito / Mutuo -->
         <div class="input-group">
-          <div class="input-field" style="flex: 1;">
+          <div class="input-field" style="flex: 1">
             <label>Utente</label>
-            <select id="savings-modal-user" onchange="onSavingsUserChange()"></select>
+            <select
+              id="savings-modal-user"
+              onchange="onSavingsUserChange()"
+            ></select>
           </div>
-          <div class="input-field" style="flex: 1;">
+          <div class="input-field" style="flex: 1">
             <label>Data Prevista Rogito / Mutuo</label>
-            <input type="date" id="savings-modal-target-date" onchange="refreshSavingsModalPreview()" />
-            <small id="savings-modal-target-date-countdown" style="font-size: 11px; color: var(--md-sys-color-primary); margin-top: 4px; display: block;"></small>
+            <input
+              type="date"
+              id="savings-modal-target-date"
+              onchange="refreshSavingsModalPreview()"
+            />
+            <small
+              id="savings-modal-target-date-countdown"
+              style="
+                font-size: 11px;
+                color: var(--md-sys-color-primary);
+                margin-top: 4px;
+                display: block;
+              "
+            ></small>
           </div>
         </div>
 
         <!-- Riga 2: Saldo Conto Attuale e Data Rilevazione insieme -->
         <div class="input-group">
-          <div class="input-field" style="flex: 1;">
+          <div class="input-field" style="flex: 1">
             <label>Saldo Conto Attuale (€)</label>
-            <input type="number" step="0.01" id="savings-modal-saldo-conto" placeholder="es. 15000" oninput="refreshSavingsModalPreview()" />
-            <small style="font-size: 11px; color: var(--md-sys-color-outline); margin-top: 4px; display: block;">Giacenza lorda disponibile sul conto</small>
+            <input
+              type="number"
+              step="0.01"
+              id="savings-modal-saldo-conto"
+              placeholder="es. 15000"
+              oninput="refreshSavingsModalPreview()"
+            />
+            <small
+              style="
+                font-size: 11px;
+                color: var(--md-sys-color-outline);
+                margin-top: 4px;
+                display: block;
+              "
+              >Giacenza lorda disponibile sul conto</small
+            >
           </div>
-          <div class="input-field" style="flex: 1;">
+          <div class="input-field" style="flex: 1">
             <label>Data Rilevazione</label>
             <input type="date" id="savings-modal-date" />
-            <small style="font-size: 11px; color: var(--md-sys-color-outline); margin-top: 4px; display: block;">Data a cui fa riferimento la giacenza</small>
+            <small
+              style="
+                font-size: 11px;
+                color: var(--md-sys-color-outline);
+                margin-top: 4px;
+                display: block;
+              "
+              >Data a cui fa riferimento la giacenza</small
+            >
           </div>
         </div>
 
         <!-- Riga 3: Spese Totali Sostenute su un'unica riga in basso -->
         <div class="input-group">
-          <div class="input-field" style="flex: 1 1 100%;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-              <label style="display: flex; align-items: center; gap: 6px; margin: 0;">
-                <span class="material-symbols-outlined" style="font-size: 16px; color: var(--md-sys-color-primary);">lock</span>
+          <div class="input-field" style="flex: 1 1 100%">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 4px;
+              "
+            >
+              <label
+                style="display: flex; align-items: center; gap: 6px; margin: 0"
+              >
+                <span
+                  class="material-symbols-outlined"
+                  style="font-size: 16px; color: var(--md-sys-color-primary)"
+                  >lock</span
+                >
                 Spese Totali Sostenute (€)
               </label>
-              <span class="savings-badge-pill" style="background: rgba(99, 102, 241, 0.15); color: #6366f1; font-size: 11px;">
-                <span class="material-symbols-outlined" style="font-size: 13px;">sync</span> Calcolato da Costi
+              <span
+                class="savings-badge-pill"
+                style="
+                  background: rgba(99, 102, 241, 0.15);
+                  color: #6366f1;
+                  font-size: 11px;
+                "
+              >
+                <span class="material-symbols-outlined" style="font-size: 13px"
+                  >sync</span
+                >
+                Calcolato da Costi
               </span>
             </div>
-            <input type="number" step="0.01" id="savings-modal-spese" readonly style="background-color: var(--md-sys-color-surface-container-high); cursor: not-allowed; opacity: 0.9;" title="Calcolato automaticamente dalla somma dei costi pagati dall'utente." />
-            <small style="font-size: 11px; color: var(--md-sys-color-outline); margin-top: 4px; display: block;">
-              Totale delle uscite effettivamente pagate dall'utente registrate in Costi Casa (non modificabile).
+            <input
+              type="number"
+              step="0.01"
+              id="savings-modal-spese"
+              readonly
+              style="
+                background-color: var(--md-sys-color-surface-container-high);
+                cursor: not-allowed;
+                opacity: 0.9;
+              "
+              title="Calcolato automaticamente dalla somma dei costi pagati dall'utente."
+            />
+            <small
+              style="
+                font-size: 11px;
+                color: var(--md-sys-color-outline);
+                margin-top: 4px;
+                display: block;
+              "
+            >
+              Totale delle uscite effettivamente pagate dall'utente registrate
+              in Costi Casa (non modificabile).
             </small>
           </div>
         </div>
 
         <!-- Sezione Trasferimenti Straordinari (Asset / Disinvestimenti) -->
-        <div style="margin-top: 16px; border-top: 1px solid var(--md-sys-color-surface-container-high); padding-top: 12px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <div
+          style="
+            margin-top: 16px;
+            border-top: 1px solid var(--md-sys-color-surface-container-high);
+            padding-top: 12px;
+          "
+        >
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 8px;
+            "
+          >
             <div>
-              <strong style="font-size: 14px; color: var(--md-sys-color-primary);">Fondi da Altri Asset / Disinvestimenti</strong>
-              <div style="font-size: 11px; color: var(--md-sys-color-outline);">Entrate che derivano da beni già posseduti (es. disinvestimento titoli, vendita oro)</div>
+              <strong
+                style="font-size: 14px; color: var(--md-sys-color-primary)"
+                >Fondi da Altri Asset / Disinvestimenti</strong
+              >
+              <div style="font-size: 11px; color: var(--md-sys-color-outline)">
+                Entrate che derivano da beni già posseduti (es. disinvestimento
+                titoli, vendita oro)
+              </div>
             </div>
-            <button type="button" class="btn btn-tonal" style="font-size: 12px; padding: 4px 10px;" onclick="addSavingsAssetRow()">
-              <span class="material-symbols-outlined" style="font-size: 16px;">add</span> Voce
+            <button
+              type="button"
+              class="btn btn-tonal"
+              style="font-size: 12px; padding: 4px 10px"
+              onclick="addSavingsAssetRow()"
+            >
+              <span class="material-symbols-outlined" style="font-size: 16px"
+                >add</span
+              >
+              Voce
             </button>
           </div>
           <div id="savings-assets-container"></div>
         </div>
 
         <!-- Sezione Passività e Debiti -->
-        <div style="margin-top: 16px; border-top: 1px solid var(--md-sys-color-surface-container-high); padding-top: 12px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <div
+          style="
+            margin-top: 16px;
+            border-top: 1px solid var(--md-sys-color-surface-container-high);
+            padding-top: 12px;
+          "
+        >
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 8px;
+            "
+          >
             <div>
-              <strong style="font-size: 14px; color: var(--md-sys-color-error);">Debiti e Prestiti da Rimborsare</strong>
-              <div style="font-size: 11px; color: var(--md-sys-color-outline);">Somme anticipate da altri o prestiti ancora aperti da saldare</div>
+              <strong style="font-size: 14px; color: var(--md-sys-color-error)"
+                >Debiti e Prestiti da Rimborsare</strong
+              >
+              <div style="font-size: 11px; color: var(--md-sys-color-outline)">
+                Somme anticipate da altri o prestiti ancora aperti da saldare
+              </div>
             </div>
-            <button type="button" class="btn btn-tonal" style="font-size: 12px; padding: 4px 10px;" onclick="addSavingsDebtRow()">
-              <span class="material-symbols-outlined" style="font-size: 16px;">add</span> Debito
+            <button
+              type="button"
+              class="btn btn-tonal"
+              style="font-size: 12px; padding: 4px 10px"
+              onclick="addSavingsDebtRow()"
+            >
+              <span class="material-symbols-outlined" style="font-size: 16px"
+                >add</span
+              >
+              Debito
             </button>
           </div>
           <div id="savings-debts-container"></div>
         </div>
 
-        <div class="input-group" style="margin-top: 16px;">
+        <div class="input-group" style="margin-top: 16px">
           <div class="input-field" style="width: 100%">
             <label>Note o Memo Rilevazione (opzionale)</label>
             <div class="rich-editor-wrapper">
-              <div class="rich-editor-toolbar" data-editor-id="savings-modal-note">
-                <button type="button" class="rich-editor-btn" data-command="bold" title="Grassetto"><span class="material-symbols-outlined">format_bold</span></button>
-                <button type="button" class="rich-editor-btn" data-command="italic" title="Corsivo"><span class="material-symbols-outlined">format_italic</span></button>
-                <button type="button" class="rich-editor-btn" data-command="underline" title="Sottolineato"><span class="material-symbols-outlined">format_underlined</span></button>
-                <button type="button" class="rich-editor-btn" data-command="strikeThrough" title="Barrato"><span class="material-symbols-outlined">strikethrough_s</span></button>
+              <div
+                class="rich-editor-toolbar"
+                data-editor-id="savings-modal-note"
+              >
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="bold"
+                  title="Grassetto"
+                >
+                  <span class="material-symbols-outlined">format_bold</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="italic"
+                  title="Corsivo"
+                >
+                  <span class="material-symbols-outlined">format_italic</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="underline"
+                  title="Sottolineato"
+                >
+                  <span class="material-symbols-outlined"
+                    >format_underlined</span
+                  >
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="strikeThrough"
+                  title="Barrato"
+                >
+                  <span class="material-symbols-outlined">strikethrough_s</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="heading" title="Testo Grande (Titolo)"><span class="material-symbols-outlined">format_size</span></button>
-                <button type="button" class="rich-editor-btn" data-command="normal" title="Testo Normale"><span class="material-symbols-outlined">match_case</span></button>
-                <button type="button" class="rich-editor-btn" data-command="small" title="Testo Piccolo"><span class="material-symbols-outlined">text_fields</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="heading"
+                  title="Testo Grande (Titolo)"
+                >
+                  <span class="material-symbols-outlined">format_size</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="normal"
+                  title="Testo Normale"
+                >
+                  <span class="material-symbols-outlined">match_case</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="small"
+                  title="Testo Piccolo"
+                >
+                  <span class="material-symbols-outlined">text_fields</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="highlight" title="Evidenziatore"><span class="material-symbols-outlined">ink_highlighter</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="highlight"
+                  title="Evidenziatore"
+                >
+                  <span class="material-symbols-outlined">ink_highlighter</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="insertUnorderedList" title="Elenco puntato"><span class="material-symbols-outlined">format_list_bulleted</span></button>
-                <button type="button" class="rich-editor-btn" data-command="insertOrderedList" title="Elenco numerato"><span class="material-symbols-outlined">format_list_numbered</span></button>
-                <button type="button" class="rich-editor-btn" data-command="checklist" title="Checklist"><span class="material-symbols-outlined">checklist</span></button>
-                <button type="button" class="rich-editor-btn" data-command="quote" title="Citazione"><span class="material-symbols-outlined">format_quote</span></button>
-                <button type="button" class="rich-editor-btn" data-command="createLink" title="Inserisci Link (URL)"><span class="material-symbols-outlined">link</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="insertUnorderedList"
+                  title="Elenco puntato"
+                >
+                  <span class="material-symbols-outlined"
+                    >format_list_bulleted</span
+                  >
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="insertOrderedList"
+                  title="Elenco numerato"
+                >
+                  <span class="material-symbols-outlined"
+                    >format_list_numbered</span
+                  >
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="checklist"
+                  title="Checklist"
+                >
+                  <span class="material-symbols-outlined">checklist</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="quote"
+                  title="Citazione"
+                >
+                  <span class="material-symbols-outlined">format_quote</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="createLink"
+                  title="Inserisci Link (URL)"
+                >
+                  <span class="material-symbols-outlined">link</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="removeFormat" title="Rimuovi formattazione"><span class="material-symbols-outlined">format_clear</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="removeFormat"
+                  title="Rimuovi formattazione"
+                >
+                  <span class="material-symbols-outlined">format_clear</span>
+                </button>
               </div>
-              <div id="savings-modal-note" class="rich-editor-content" contenteditable="true" data-placeholder="Es. Dopo stipendio e conguaglio..." style="min-height: 60px;"></div>
+              <div
+                id="savings-modal-note"
+                class="rich-editor-content"
+                contenteditable="true"
+                data-placeholder="Es. Dopo stipendio e conguaglio..."
+                style="min-height: 60px"
+              ></div>
             </div>
           </div>
         </div>
 
         <!-- Box Anteprima Calcolo Live -->
-        <div id="savings-modal-preview-box" style="margin-top: 16px; padding: 12px 16px; border-radius: 12px; background: var(--md-sys-color-surface-container); border: 1px solid var(--md-sys-color-surface-container-high); font-size: 13px;">
-          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+        <div
+          id="savings-modal-preview-box"
+          style="
+            margin-top: 16px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            background: var(--md-sys-color-surface-container);
+            border: 1px solid var(--md-sys-color-surface-container-high);
+            font-size: 13px;
+          "
+        >
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 4px;
+            "
+          >
             <span>Risparmio Lordo da Reddito:</span>
             <strong id="savings-preview-lordo">€ 0.00</strong>
           </div>
-          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 4px;
+            "
+          >
             <span>Risparmio Netto Effettivo:</span>
-            <strong id="savings-preview-netto" style="color: #10b981;">€ 0.00</strong>
+            <strong id="savings-preview-netto" style="color: #10b981"
+              >€ 0.00</strong
+            >
           </div>
-          <div style="display: flex; justify-content: space-between;">
+          <div style="display: flex; justify-content: space-between">
             <span>Liquidità Reale Netta Disponibile:</span>
             <strong id="savings-preview-liquidita">€ 0.00</strong>
           </div>
         </div>
 
-        <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 24px;">
-          <button class="btn btn-tonal" onclick="closeSavingsModal()">Annulla</button>
+        <div
+          style="
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 24px;
+          "
+        >
+          <button class="btn btn-tonal" onclick="closeSavingsModal()">
+            Annulla
+          </button>
           <button class="btn btn-filled" onclick="saveSavingsSnapshot()">
-            <span class="material-symbols-outlined">save</span> Salva Rilevazione
+            <span class="material-symbols-outlined">save</span> Salva
+            Rilevazione
           </button>
         </div>
       </div>
@@ -1422,51 +2534,148 @@
 
     <!-- Modale Aggiungi / Modifica Debito & Finanziamento -->
     <div id="debitoModal" class="modal-overlay">
-      <div class="modal-content" style="max-width: 680px; width: 100%;">
-        <h2 id="debito-modal-title" style="margin-top: 0; color: var(--md-sys-color-primary); display: flex; align-items: center; gap: 8px;">
-          <span class="material-symbols-outlined">credit_card_off</span> Nuovo Finanziamento / Debito
+      <div class="modal-content" style="max-width: 680px; width: 100%">
+        <h2
+          id="debito-modal-title"
+          style="
+            margin-top: 0;
+            color: var(--md-sys-color-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          "
+        >
+          <span class="material-symbols-outlined">credit_card_off</span> Nuovo
+          Finanziamento / Debito
         </h2>
-        <p style="font-size: 13px; color: var(--md-sys-color-outline); margin-top: -6px; margin-bottom: 20px;">
-          Inserisci i dettagli del debito in corso. Il valore residuo (rata × mesi rimanenti) verrà detratto automaticamente dal budget dell'intestatario finché non arriva a 0.
+        <p
+          style="
+            font-size: 13px;
+            color: var(--md-sys-color-outline);
+            margin-top: -6px;
+            margin-bottom: 20px;
+          "
+        >
+          Inserisci i dettagli del debito in corso. Il valore residuo (rata ×
+          mesi rimanenti) verrà detratto automaticamente dal budget
+          dell'intestatario finché non arriva a 0.
         </p>
 
         <input type="hidden" id="debito-edit-id" />
 
         <div class="input-group">
-          <div class="input-field" style="flex: 2;">
+          <div class="input-field" style="flex: 2">
             <label>Descrizione / Nome Finanziamento</label>
-            <input type="text" id="debito-desc" placeholder="es. Finanziamento Auto, Prestito Personale..." />
+            <input
+              type="text"
+              id="debito-desc"
+              placeholder="es. Finanziamento Auto, Prestito Personale..."
+            />
           </div>
-          <div class="input-field" style="flex: 1.2;">
+          <div class="input-field" style="flex: 1.2">
             <label>Intestatario</label>
             <select id="debito-user"></select>
           </div>
         </div>
 
         <div class="input-group">
-          <div class="input-field" style="flex: 1.2;">
+          <div class="input-field" style="flex: 1.2">
             <label>Rata Mensile (€)</label>
-            <input type="number" step="0.01" min="0" id="debito-rata" placeholder="es. 350.00" oninput="updateDebitoModalPreview()" />
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              id="debito-rata"
+              placeholder="es. 350.00"
+              oninput="updateDebitoModalPreview()"
+            />
           </div>
-          <div class="input-field" style="flex: 1;">
+          <div class="input-field" style="flex: 1">
             <label>Mesi Rimasti</label>
-            <input type="number" step="1" min="0" id="debito-mesi" placeholder="es. 24" oninput="updateDebitoModalPreview()" />
+            <input
+              type="number"
+              step="1"
+              min="0"
+              id="debito-mesi"
+              placeholder="es. 24"
+              oninput="updateDebitoModalPreview()"
+            />
           </div>
-          <div class="input-field" style="flex: 1;">
+          <div class="input-field" style="flex: 1">
             <label>Giorno Addebito</label>
-            <input type="number" step="1" min="1" max="31" id="debito-giorno" placeholder="1 - 31" oninput="updateDebitoModalPreview()" />
+            <input
+              type="number"
+              step="1"
+              min="1"
+              max="31"
+              id="debito-giorno"
+              placeholder="1 - 31"
+              oninput="updateDebitoModalPreview()"
+            />
           </div>
         </div>
 
         <!-- Box Anteprima Live Impatto Budget -->
-        <div id="debito-preview-box" style="margin: 14px 0 18px 0; padding: 14px 18px; border-radius: 12px; background: var(--md-sys-color-surface-container); border: 1px solid var(--md-sys-color-surface-container-high); display: flex; align-items: center; justify-content: space-between;">
+        <div
+          id="debito-preview-box"
+          style="
+            margin: 14px 0 18px 0;
+            padding: 14px 18px;
+            border-radius: 12px;
+            background: var(--md-sys-color-surface-container);
+            border: 1px solid var(--md-sys-color-surface-container-high);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+          "
+        >
           <div>
-            <div style="font-size: 11px; text-transform: uppercase; color: var(--md-sys-color-outline); font-weight: 600; letter-spacing: 0.5px;">Impatto nel Budget</div>
-            <div id="debito-preview-calc" style="font-size: 14px; color: var(--md-sys-color-on-surface); font-weight: 500; margin-top: 2px;">0,00 € &times; 0 rate</div>
+            <div
+              style="
+                font-size: 11px;
+                text-transform: uppercase;
+                color: var(--md-sys-color-outline);
+                font-weight: 600;
+                letter-spacing: 0.5px;
+              "
+            >
+              Impatto nel Budget
+            </div>
+            <div
+              id="debito-preview-calc"
+              style="
+                font-size: 14px;
+                color: var(--md-sys-color-on-surface);
+                font-weight: 500;
+                margin-top: 2px;
+              "
+            >
+              0,00 € &times; 0 rate
+            </div>
           </div>
-          <div style="text-align: right;">
-            <div style="font-size: 11px; color: var(--md-sys-color-error); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Detrazione Totale</div>
-            <div id="debito-preview-totale" style="font-size: 20px; font-weight: 700; color: var(--md-sys-color-error); margin-top: 2px;">- 0,00 €</div>
+          <div style="text-align: right">
+            <div
+              style="
+                font-size: 11px;
+                color: var(--md-sys-color-error);
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+              "
+            >
+              Detrazione Totale
+            </div>
+            <div
+              id="debito-preview-totale"
+              style="
+                font-size: 20px;
+                font-weight: 700;
+                color: var(--md-sys-color-error);
+                margin-top: 2px;
+              "
+            >
+              - 0,00 €
+            </div>
           </div>
         </div>
 
@@ -1475,34 +2684,162 @@
             <label>Note (Opzionale)</label>
             <div class="rich-editor-wrapper">
               <div class="rich-editor-toolbar" data-editor-id="debito-note">
-                <button type="button" class="rich-editor-btn" data-command="bold" title="Grassetto"><span class="material-symbols-outlined">format_bold</span></button>
-                <button type="button" class="rich-editor-btn" data-command="italic" title="Corsivo"><span class="material-symbols-outlined">format_italic</span></button>
-                <button type="button" class="rich-editor-btn" data-command="underline" title="Sottolineato"><span class="material-symbols-outlined">format_underlined</span></button>
-                <button type="button" class="rich-editor-btn" data-command="strikeThrough" title="Barrato"><span class="material-symbols-outlined">strikethrough_s</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="bold"
+                  title="Grassetto"
+                >
+                  <span class="material-symbols-outlined">format_bold</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="italic"
+                  title="Corsivo"
+                >
+                  <span class="material-symbols-outlined">format_italic</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="underline"
+                  title="Sottolineato"
+                >
+                  <span class="material-symbols-outlined"
+                    >format_underlined</span
+                  >
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="strikeThrough"
+                  title="Barrato"
+                >
+                  <span class="material-symbols-outlined">strikethrough_s</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="heading" title="Testo Grande (Titolo)"><span class="material-symbols-outlined">format_size</span></button>
-                <button type="button" class="rich-editor-btn" data-command="normal" title="Testo Normale"><span class="material-symbols-outlined">match_case</span></button>
-                <button type="button" class="rich-editor-btn" data-command="small" title="Testo Piccolo"><span class="material-symbols-outlined">text_fields</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="heading"
+                  title="Testo Grande (Titolo)"
+                >
+                  <span class="material-symbols-outlined">format_size</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="normal"
+                  title="Testo Normale"
+                >
+                  <span class="material-symbols-outlined">match_case</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="small"
+                  title="Testo Piccolo"
+                >
+                  <span class="material-symbols-outlined">text_fields</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="highlight" title="Evidenziatore"><span class="material-symbols-outlined">ink_highlighter</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="highlight"
+                  title="Evidenziatore"
+                >
+                  <span class="material-symbols-outlined">ink_highlighter</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="insertUnorderedList" title="Elenco puntato"><span class="material-symbols-outlined">format_list_bulleted</span></button>
-                <button type="button" class="rich-editor-btn" data-command="insertOrderedList" title="Elenco numerato"><span class="material-symbols-outlined">format_list_numbered</span></button>
-                <button type="button" class="rich-editor-btn" data-command="checklist" title="Checklist"><span class="material-symbols-outlined">checklist</span></button>
-                <button type="button" class="rich-editor-btn" data-command="quote" title="Citazione"><span class="material-symbols-outlined">format_quote</span></button>
-                <button type="button" class="rich-editor-btn" data-command="createLink" title="Inserisci Link (URL)"><span class="material-symbols-outlined">link</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="insertUnorderedList"
+                  title="Elenco puntato"
+                >
+                  <span class="material-symbols-outlined"
+                    >format_list_bulleted</span
+                  >
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="insertOrderedList"
+                  title="Elenco numerato"
+                >
+                  <span class="material-symbols-outlined"
+                    >format_list_numbered</span
+                  >
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="checklist"
+                  title="Checklist"
+                >
+                  <span class="material-symbols-outlined">checklist</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="quote"
+                  title="Citazione"
+                >
+                  <span class="material-symbols-outlined">format_quote</span>
+                </button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="createLink"
+                  title="Inserisci Link (URL)"
+                >
+                  <span class="material-symbols-outlined">link</span>
+                </button>
                 <div class="rich-editor-divider"></div>
-                <button type="button" class="rich-editor-btn" data-command="removeFormat" title="Rimuovi formattazione"><span class="material-symbols-outlined">format_clear</span></button>
+                <button
+                  type="button"
+                  class="rich-editor-btn"
+                  data-command="removeFormat"
+                  title="Rimuovi formattazione"
+                >
+                  <span class="material-symbols-outlined">format_clear</span>
+                </button>
               </div>
-              <div id="debito-note" class="rich-editor-content" contenteditable="true" data-placeholder="es. Banca Findomestic, TAN 4.5%, scadenza fine 2026..." style="min-height: 70px;"></div>
+              <div
+                id="debito-note"
+                class="rich-editor-content"
+                contenteditable="true"
+                data-placeholder="es. Banca Findomestic, TAN 4.5%, scadenza fine 2026..."
+                style="min-height: 70px"
+              ></div>
             </div>
           </div>
         </div>
 
-        <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px;">
-          <button type="button" class="btn btn-tonal" onclick="closeDebitoModal()">Annulla</button>
-          <button type="button" class="btn btn-filled" onclick="saveDebitoModal()">
-            <span class="material-symbols-outlined">save</span> Salva Finanziamento
+        <div
+          style="
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 20px;
+          "
+        >
+          <button
+            type="button"
+            class="btn btn-tonal"
+            onclick="closeDebitoModal()"
+          >
+            Annulla
+          </button>
+          <button
+            type="button"
+            class="btn btn-filled"
+            onclick="saveDebitoModal()"
+          >
+            <span class="material-symbols-outlined">save</span> Salva
+            Finanziamento
           </button>
         </div>
       </div>
@@ -1693,17 +3030,33 @@
     ></div>
     <div class="nav-drawer" id="nav-drawer">
       <div class="nav-drawer-header">
-        <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
+        <div
+          style="display: flex; align-items: center; gap: 12px; min-width: 0"
+        >
           <img
             src="./icon.jpg?v=1"
             alt="Logo"
-            style="width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;"
+            style="
+              width: 36px;
+              height: 36px;
+              border-radius: 10px;
+              flex-shrink: 0;
+            "
           />
-          <div style="min-width: 0;">
-            <div style="font-weight: 700; font-size: 15px; color: var(--md-sys-color-on-surface); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+          <div style="min-width: 0">
+            <div
+              style="
+                font-weight: 700;
+                font-size: 15px;
+                color: var(--md-sys-color-on-surface);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+              "
+            >
               La nostra Casa
             </div>
-            <div style="font-size: 12px; color: var(--md-sys-color-outline);">
+            <div style="font-size: 12px; color: var(--md-sys-color-outline)">
               Menu Sezioni
             </div>
           </div>
@@ -1718,7 +3071,10 @@
 
         <button
           class="nav-drawer-item"
-          onclick="switchTab('mutuo', 'Calcolatore Mutuo'); closeNavDrawer();"
+          onclick="
+            switchTab('mutuo', 'Calcolatore Mutuo');
+            closeNavDrawer();
+          "
           id="drawer-item-mutuo"
         >
           <span class="material-symbols-outlined">calculate</span>
@@ -1727,7 +3083,10 @@
 
         <button
           class="nav-drawer-item"
-          onclick="switchTab('debiti', 'Debiti & Finanziamenti'); closeNavDrawer();"
+          onclick="
+            switchTab('debiti', 'Debiti & Finanziamenti');
+            closeNavDrawer();
+          "
           id="drawer-item-debiti"
         >
           <span class="material-symbols-outlined">credit_card_off</span>
@@ -1739,22 +3098,28 @@
 
         <button
           class="nav-drawer-item"
-          onclick="switchTab('task', 'Task & Attività'); closeNavDrawer();"
+          onclick="
+            switchTab('task', 'Task & Attività');
+            closeNavDrawer();
+          "
           id="drawer-item-task"
         >
           <span class="material-symbols-outlined">task_alt</span>
-          <span class="nav-drawer-label" style="flex: 1;">Task & Attività</span>
+          <span class="nav-drawer-label" style="flex: 1">Task & Attività</span>
           <span
             id="task-badge-drawer"
             class="nav-drawer-badge"
-            style="display: none;"
+            style="display: none"
             >0</span
           >
         </button>
 
         <button
           class="nav-drawer-item"
-          onclick="switchTab('notes', 'Appunti'); closeNavDrawer();"
+          onclick="
+            switchTab('notes', 'Appunti');
+            closeNavDrawer();
+          "
           id="drawer-item-notes"
         >
           <span class="material-symbols-outlined">edit_note</span>
@@ -1763,7 +3128,10 @@
 
         <button
           class="nav-drawer-item"
-          onclick="switchTab('qa', 'Domande & Risposte'); closeNavDrawer();"
+          onclick="
+            switchTab('qa', 'Domande & Risposte');
+            closeNavDrawer();
+          "
           id="drawer-item-qa"
         >
           <span class="material-symbols-outlined">quiz</span>
@@ -1775,7 +3143,10 @@
 
         <button
           class="nav-drawer-item"
-          onclick="switchTab('gallery', 'Galleria & Documenti'); closeNavDrawer();"
+          onclick="
+            switchTab('gallery', 'Galleria & Documenti');
+            closeNavDrawer();
+          "
           id="drawer-item-gallery"
         >
           <span class="material-symbols-outlined">collections</span>
@@ -1787,21 +3158,36 @@
 
         <button
           class="nav-drawer-item"
-          onclick="switchTab('settings', 'Impostazioni Dati'); closeNavDrawer();"
+          onclick="
+            switchTab('settings', 'Impostazioni Dati');
+            closeNavDrawer();
+          "
           id="drawer-item-settings"
         >
           <span class="material-symbols-outlined">settings_applications</span>
           <span class="nav-drawer-label">Impostazioni Dati</span>
         </button>
       </div>
+
+      <div class="nav-drawer-footer">
+        <div class="nav-drawer-footer-row">
+          <div class="nav-drawer-footer-info">
+            <span class="material-symbols-outlined nav-drawer-footer-icon"
+              >info</span
+            >
+            <span class="nav-drawer-footer-label">Versione App</span>
+          </div>
+          <span class="nav-drawer-version-badge" id="drawer-version-badge"
+            >v1.9.16</span
+          >
+        </div>
+      </div>
     </div>
 
     <!-- Main Content -->
     <div class="main-content" id="main-scroll-container">
       <div class="app-header">
-        <div
-          style="display: flex; align-items: center; gap: 8px; min-width: 0"
-        >
+        <div style="display: flex; align-items: center; gap: 8px; min-width: 0">
           <button
             class="btn-icon mobile-drawer-btn"
             id="mobile-drawer-btn"
@@ -1813,7 +3199,12 @@
           <img
             src="./icon.jpg?v=1"
             alt="Logo"
-            style="width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;"
+            style="
+              width: 30px;
+              height: 30px;
+              border-radius: 8px;
+              flex-shrink: 0;
+            "
           />
           <h1 id="page-main-title">Riepilogo Generale</h1>
         </div>
@@ -2038,7 +3429,9 @@
                 color: var(--md-sys-color-on-surface);
               "
             >
-              <span class="stat-card-label" style="font-size: 14px; opacity: 0.9"
+              <span
+                class="stat-card-label"
+                style="font-size: 14px; opacity: 0.9"
                 >% Spesa Effettuata</span
               >
               <div class="stat-value sensitive-value" id="stat-progresso">
@@ -2046,13 +3439,17 @@
               </div>
             </div>
             <div class="stat-card secondary stat-card-compact-mobile">
-              <span class="stat-card-label" style="font-size: 14px; opacity: 0.9"
+              <span
+                class="stat-card-label"
+                style="font-size: 14px; opacity: 0.9"
                 >Bilancio Conguaglio</span
               >
               <div class="stat-value" id="stat-conguaglio">€ 0.00</div>
             </div>
             <div class="stat-card tertiary stat-card-full-mobile">
-              <span class="stat-card-label" style="font-size: 14px; opacity: 0.9"
+              <span
+                class="stat-card-label"
+                style="font-size: 14px; opacity: 0.9"
                 >Liquidità Residua Reale</span
               >
               <div class="stat-value" id="stat-liquidita">€ 0.00</div>
@@ -2159,27 +3556,150 @@
               <div class="input-field" style="width: 100%; flex: 1">
                 <label>Note / Stato</label>
                 <div class="rich-editor-wrapper">
-                  <div class="rich-editor-toolbar" data-editor-id="add-costo-note">
-                    <button type="button" class="rich-editor-btn" data-command="bold" title="Grassetto"><span class="material-symbols-outlined">format_bold</span></button>
-                    <button type="button" class="rich-editor-btn" data-command="italic" title="Corsivo"><span class="material-symbols-outlined">format_italic</span></button>
-                    <button type="button" class="rich-editor-btn" data-command="underline" title="Sottolineato"><span class="material-symbols-outlined">format_underlined</span></button>
-                    <button type="button" class="rich-editor-btn" data-command="strikeThrough" title="Barrato"><span class="material-symbols-outlined">strikethrough_s</span></button>
+                  <div
+                    class="rich-editor-toolbar"
+                    data-editor-id="add-costo-note"
+                  >
+                    <button
+                      type="button"
+                      class="rich-editor-btn"
+                      data-command="bold"
+                      title="Grassetto"
+                    >
+                      <span class="material-symbols-outlined">format_bold</span>
+                    </button>
+                    <button
+                      type="button"
+                      class="rich-editor-btn"
+                      data-command="italic"
+                      title="Corsivo"
+                    >
+                      <span class="material-symbols-outlined"
+                        >format_italic</span
+                      >
+                    </button>
+                    <button
+                      type="button"
+                      class="rich-editor-btn"
+                      data-command="underline"
+                      title="Sottolineato"
+                    >
+                      <span class="material-symbols-outlined"
+                        >format_underlined</span
+                      >
+                    </button>
+                    <button
+                      type="button"
+                      class="rich-editor-btn"
+                      data-command="strikeThrough"
+                      title="Barrato"
+                    >
+                      <span class="material-symbols-outlined"
+                        >strikethrough_s</span
+                      >
+                    </button>
                     <div class="rich-editor-divider"></div>
-                    <button type="button" class="rich-editor-btn" data-command="heading" title="Testo Grande (Titolo)"><span class="material-symbols-outlined">format_size</span></button>
-                    <button type="button" class="rich-editor-btn" data-command="normal" title="Testo Normale"><span class="material-symbols-outlined">match_case</span></button>
-                    <button type="button" class="rich-editor-btn" data-command="small" title="Testo Piccolo"><span class="material-symbols-outlined">text_fields</span></button>
+                    <button
+                      type="button"
+                      class="rich-editor-btn"
+                      data-command="heading"
+                      title="Testo Grande (Titolo)"
+                    >
+                      <span class="material-symbols-outlined">format_size</span>
+                    </button>
+                    <button
+                      type="button"
+                      class="rich-editor-btn"
+                      data-command="normal"
+                      title="Testo Normale"
+                    >
+                      <span class="material-symbols-outlined">match_case</span>
+                    </button>
+                    <button
+                      type="button"
+                      class="rich-editor-btn"
+                      data-command="small"
+                      title="Testo Piccolo"
+                    >
+                      <span class="material-symbols-outlined">text_fields</span>
+                    </button>
                     <div class="rich-editor-divider"></div>
-                    <button type="button" class="rich-editor-btn" data-command="highlight" title="Evidenziatore"><span class="material-symbols-outlined">ink_highlighter</span></button>
+                    <button
+                      type="button"
+                      class="rich-editor-btn"
+                      data-command="highlight"
+                      title="Evidenziatore"
+                    >
+                      <span class="material-symbols-outlined"
+                        >ink_highlighter</span
+                      >
+                    </button>
                     <div class="rich-editor-divider"></div>
-                    <button type="button" class="rich-editor-btn" data-command="insertUnorderedList" title="Elenco puntato"><span class="material-symbols-outlined">format_list_bulleted</span></button>
-                    <button type="button" class="rich-editor-btn" data-command="insertOrderedList" title="Elenco numerato"><span class="material-symbols-outlined">format_list_numbered</span></button>
-                    <button type="button" class="rich-editor-btn" data-command="checklist" title="Checklist"><span class="material-symbols-outlined">checklist</span></button>
-                    <button type="button" class="rich-editor-btn" data-command="quote" title="Citazione"><span class="material-symbols-outlined">format_quote</span></button>
-                    <button type="button" class="rich-editor-btn" data-command="createLink" title="Inserisci Link (URL)"><span class="material-symbols-outlined">link</span></button>
+                    <button
+                      type="button"
+                      class="rich-editor-btn"
+                      data-command="insertUnorderedList"
+                      title="Elenco puntato"
+                    >
+                      <span class="material-symbols-outlined"
+                        >format_list_bulleted</span
+                      >
+                    </button>
+                    <button
+                      type="button"
+                      class="rich-editor-btn"
+                      data-command="insertOrderedList"
+                      title="Elenco numerato"
+                    >
+                      <span class="material-symbols-outlined"
+                        >format_list_numbered</span
+                      >
+                    </button>
+                    <button
+                      type="button"
+                      class="rich-editor-btn"
+                      data-command="checklist"
+                      title="Checklist"
+                    >
+                      <span class="material-symbols-outlined">checklist</span>
+                    </button>
+                    <button
+                      type="button"
+                      class="rich-editor-btn"
+                      data-command="quote"
+                      title="Citazione"
+                    >
+                      <span class="material-symbols-outlined"
+                        >format_quote</span
+                      >
+                    </button>
+                    <button
+                      type="button"
+                      class="rich-editor-btn"
+                      data-command="createLink"
+                      title="Inserisci Link (URL)"
+                    >
+                      <span class="material-symbols-outlined">link</span>
+                    </button>
                     <div class="rich-editor-divider"></div>
-                    <button type="button" class="rich-editor-btn" data-command="removeFormat" title="Rimuovi formattazione"><span class="material-symbols-outlined">format_clear</span></button>
+                    <button
+                      type="button"
+                      class="rich-editor-btn"
+                      data-command="removeFormat"
+                      title="Rimuovi formattazione"
+                    >
+                      <span class="material-symbols-outlined"
+                        >format_clear</span
+                      >
+                    </button>
                   </div>
-                  <div id="add-costo-note" class="rich-editor-content" contenteditable="true" data-placeholder="Preventivo, Pagato, Da fare..." style="min-height: 70px;"></div>
+                  <div
+                    id="add-costo-note"
+                    class="rich-editor-content"
+                    contenteditable="true"
+                    data-placeholder="Preventivo, Pagato, Da fare..."
+                    style="min-height: 70px"
+                  ></div>
                 </div>
               </div>
             </div>
@@ -2207,15 +3727,27 @@
 
           <div class="card">
             <div class="table-card-header">
-              <h2 class="card-title" style="margin: 0;">
+              <h2 class="card-title" style="margin: 0">
                 Dettaglio Spese (Trascina per riordinare)
               </h2>
               <div class="table-view-toggle" data-table="costi">
-                <button type="button" class="btn-toggle active" data-view="cards" onclick="setTableViewMode('cards')" title="Visualizza come Schede">
+                <button
+                  type="button"
+                  class="btn-toggle active"
+                  data-view="cards"
+                  onclick="setTableViewMode('cards')"
+                  title="Visualizza come Schede"
+                >
                   <span class="material-symbols-outlined">grid_view</span>
                   <span>Schede</span>
                 </button>
-                <button type="button" class="btn-toggle" data-view="table" onclick="setTableViewMode('table')" title="Visualizza come Tabella">
+                <button
+                  type="button"
+                  class="btn-toggle"
+                  data-view="table"
+                  onclick="setTableViewMode('table')"
+                  title="Visualizza come Tabella"
+                >
                   <span class="material-symbols-outlined">table_chart</span>
                   <span>Tabella</span>
                 </button>
@@ -2510,13 +4042,27 @@
 
           <div class="card">
             <div class="table-card-header">
-              <h2 class="card-title" style="margin: 0;">Tabella Riepilogo Categorie</h2>
+              <h2 class="card-title" style="margin: 0">
+                Tabella Riepilogo Categorie
+              </h2>
               <div class="table-view-toggle" data-table="categories">
-                <button type="button" class="btn-toggle active" data-view="cards" onclick="setTableViewMode('cards')" title="Visualizza come Schede">
+                <button
+                  type="button"
+                  class="btn-toggle active"
+                  data-view="cards"
+                  onclick="setTableViewMode('cards')"
+                  title="Visualizza come Schede"
+                >
                   <span class="material-symbols-outlined">grid_view</span>
                   <span>Schede</span>
                 </button>
-                <button type="button" class="btn-toggle" data-view="table" onclick="setTableViewMode('table')" title="Visualizza come Tabella">
+                <button
+                  type="button"
+                  class="btn-toggle"
+                  data-view="table"
+                  onclick="setTableViewMode('table')"
+                  title="Visualizza come Tabella"
+                >
                   <span class="material-symbols-outlined">table_chart</span>
                   <span>Tabella</span>
                 </button>
@@ -2558,15 +4104,15 @@
               onclick="switchTab('debiti', 'Debiti & Finanziamenti')"
               title="Gestisci prestiti e debiti attivi"
             >
-              <span class="material-symbols-outlined">credit_card_off</span> Gestisci Debiti
+              <span class="material-symbols-outlined">credit_card_off</span>
+              Gestisci Debiti
             </button>
             <button
               class="btn btn-filled"
               id="btn-show-add-budget"
               onclick="toggleAddForm('budget', true)"
             >
-              <span class="material-symbols-outlined">add</span> Aggiungi
-              Budget
+              <span class="material-symbols-outlined">add</span> Aggiungi Budget
             </button>
           </div>
 
@@ -2596,27 +4142,150 @@
               <div class="input-field" style="width: 100%">
                 <label>Note</label>
                 <div class="rich-editor-wrapper">
-                  <div class="rich-editor-toolbar" data-editor-id="add-budget-note">
-                    <button type="button" class="rich-editor-btn" data-command="bold" title="Grassetto"><span class="material-symbols-outlined">format_bold</span></button>
-                    <button type="button" class="rich-editor-btn" data-command="italic" title="Corsivo"><span class="material-symbols-outlined">format_italic</span></button>
-                    <button type="button" class="rich-editor-btn" data-command="underline" title="Sottolineato"><span class="material-symbols-outlined">format_underlined</span></button>
-                    <button type="button" class="rich-editor-btn" data-command="strikeThrough" title="Barrato"><span class="material-symbols-outlined">strikethrough_s</span></button>
+                  <div
+                    class="rich-editor-toolbar"
+                    data-editor-id="add-budget-note"
+                  >
+                    <button
+                      type="button"
+                      class="rich-editor-btn"
+                      data-command="bold"
+                      title="Grassetto"
+                    >
+                      <span class="material-symbols-outlined">format_bold</span>
+                    </button>
+                    <button
+                      type="button"
+                      class="rich-editor-btn"
+                      data-command="italic"
+                      title="Corsivo"
+                    >
+                      <span class="material-symbols-outlined"
+                        >format_italic</span
+                      >
+                    </button>
+                    <button
+                      type="button"
+                      class="rich-editor-btn"
+                      data-command="underline"
+                      title="Sottolineato"
+                    >
+                      <span class="material-symbols-outlined"
+                        >format_underlined</span
+                      >
+                    </button>
+                    <button
+                      type="button"
+                      class="rich-editor-btn"
+                      data-command="strikeThrough"
+                      title="Barrato"
+                    >
+                      <span class="material-symbols-outlined"
+                        >strikethrough_s</span
+                      >
+                    </button>
                     <div class="rich-editor-divider"></div>
-                    <button type="button" class="rich-editor-btn" data-command="heading" title="Testo Grande (Titolo)"><span class="material-symbols-outlined">format_size</span></button>
-                    <button type="button" class="rich-editor-btn" data-command="normal" title="Testo Normale"><span class="material-symbols-outlined">match_case</span></button>
-                    <button type="button" class="rich-editor-btn" data-command="small" title="Testo Piccolo"><span class="material-symbols-outlined">text_fields</span></button>
+                    <button
+                      type="button"
+                      class="rich-editor-btn"
+                      data-command="heading"
+                      title="Testo Grande (Titolo)"
+                    >
+                      <span class="material-symbols-outlined">format_size</span>
+                    </button>
+                    <button
+                      type="button"
+                      class="rich-editor-btn"
+                      data-command="normal"
+                      title="Testo Normale"
+                    >
+                      <span class="material-symbols-outlined">match_case</span>
+                    </button>
+                    <button
+                      type="button"
+                      class="rich-editor-btn"
+                      data-command="small"
+                      title="Testo Piccolo"
+                    >
+                      <span class="material-symbols-outlined">text_fields</span>
+                    </button>
                     <div class="rich-editor-divider"></div>
-                    <button type="button" class="rich-editor-btn" data-command="highlight" title="Evidenziatore"><span class="material-symbols-outlined">ink_highlighter</span></button>
+                    <button
+                      type="button"
+                      class="rich-editor-btn"
+                      data-command="highlight"
+                      title="Evidenziatore"
+                    >
+                      <span class="material-symbols-outlined"
+                        >ink_highlighter</span
+                      >
+                    </button>
                     <div class="rich-editor-divider"></div>
-                    <button type="button" class="rich-editor-btn" data-command="insertUnorderedList" title="Elenco puntato"><span class="material-symbols-outlined">format_list_bulleted</span></button>
-                    <button type="button" class="rich-editor-btn" data-command="insertOrderedList" title="Elenco numerato"><span class="material-symbols-outlined">format_list_numbered</span></button>
-                    <button type="button" class="rich-editor-btn" data-command="checklist" title="Checklist"><span class="material-symbols-outlined">checklist</span></button>
-                    <button type="button" class="rich-editor-btn" data-command="quote" title="Citazione"><span class="material-symbols-outlined">format_quote</span></button>
-                    <button type="button" class="rich-editor-btn" data-command="createLink" title="Inserisci Link (URL)"><span class="material-symbols-outlined">link</span></button>
+                    <button
+                      type="button"
+                      class="rich-editor-btn"
+                      data-command="insertUnorderedList"
+                      title="Elenco puntato"
+                    >
+                      <span class="material-symbols-outlined"
+                        >format_list_bulleted</span
+                      >
+                    </button>
+                    <button
+                      type="button"
+                      class="rich-editor-btn"
+                      data-command="insertOrderedList"
+                      title="Elenco numerato"
+                    >
+                      <span class="material-symbols-outlined"
+                        >format_list_numbered</span
+                      >
+                    </button>
+                    <button
+                      type="button"
+                      class="rich-editor-btn"
+                      data-command="checklist"
+                      title="Checklist"
+                    >
+                      <span class="material-symbols-outlined">checklist</span>
+                    </button>
+                    <button
+                      type="button"
+                      class="rich-editor-btn"
+                      data-command="quote"
+                      title="Citazione"
+                    >
+                      <span class="material-symbols-outlined"
+                        >format_quote</span
+                      >
+                    </button>
+                    <button
+                      type="button"
+                      class="rich-editor-btn"
+                      data-command="createLink"
+                      title="Inserisci Link (URL)"
+                    >
+                      <span class="material-symbols-outlined">link</span>
+                    </button>
                     <div class="rich-editor-divider"></div>
-                    <button type="button" class="rich-editor-btn" data-command="removeFormat" title="Rimuovi formattazione"><span class="material-symbols-outlined">format_clear</span></button>
+                    <button
+                      type="button"
+                      class="rich-editor-btn"
+                      data-command="removeFormat"
+                      title="Rimuovi formattazione"
+                    >
+                      <span class="material-symbols-outlined"
+                        >format_clear</span
+                      >
+                    </button>
                   </div>
-                  <div id="add-budget-note" class="rich-editor-content" contenteditable="true" data-placeholder="Opzionale" style="min-height: 70px;"></div>
+                  <div
+                    id="add-budget-note"
+                    class="rich-editor-content"
+                    contenteditable="true"
+                    data-placeholder="Opzionale"
+                    style="min-height: 70px"
+                  ></div>
                 </div>
               </div>
             </div>
@@ -2644,13 +4313,27 @@
 
           <div class="card">
             <div class="table-card-header">
-              <h2 class="card-title" style="margin: 0;">Dettaglio Risorse e Investimenti</h2>
+              <h2 class="card-title" style="margin: 0">
+                Dettaglio Risorse e Investimenti
+              </h2>
               <div class="table-view-toggle" data-table="budget">
-                <button type="button" class="btn-toggle active" data-view="cards" onclick="setTableViewMode('cards')" title="Visualizza come Schede">
+                <button
+                  type="button"
+                  class="btn-toggle active"
+                  data-view="cards"
+                  onclick="setTableViewMode('cards')"
+                  title="Visualizza come Schede"
+                >
                   <span class="material-symbols-outlined">grid_view</span>
                   <span>Schede</span>
                 </button>
-                <button type="button" class="btn-toggle" data-view="table" onclick="setTableViewMode('table')" title="Visualizza come Tabella">
+                <button
+                  type="button"
+                  class="btn-toggle"
+                  data-view="table"
+                  onclick="setTableViewMode('table')"
+                  title="Visualizza come Tabella"
+                >
                   <span class="material-symbols-outlined">table_chart</span>
                   <span>Tabella</span>
                 </button>
@@ -2667,35 +4350,116 @@
           </div>
 
           <!-- Card Monitoraggio Risparmio Netto Integrata nel Budget -->
-          <div class="card" id="budget-savings-card" style="margin-top: 24px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+          <div class="card" id="budget-savings-card" style="margin-top: 24px">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 12px;
+                margin-bottom: 16px;
+              "
+            >
               <div>
-                <h2 class="card-title" id="budget-savings-card-title" style="margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">
-                  <span class="material-symbols-outlined" style="color: var(--md-sys-color-primary)">trending_up</span>
+                <h2
+                  class="card-title"
+                  id="budget-savings-card-title"
+                  style="
+                    margin-bottom: 4px;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                  "
+                >
+                  <span
+                    class="material-symbols-outlined"
+                    style="color: var(--md-sys-color-primary)"
+                    >trending_up</span
+                  >
                   Capacità di Risparmio & Copertura Rogito
                 </h2>
-                <p style="margin: 0; font-size: 13px; color: var(--md-sys-color-outline);">
-                  Proiezione del capitale fresco generato dal reddito rispetto alla quota contanti necessaria per il saldo casa.
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 13px;
+                    color: var(--md-sys-color-outline);
+                  "
+                >
+                  Proiezione del capitale fresco generato dal reddito rispetto
+                  alla quota contanti necessaria per il saldo casa.
                 </p>
               </div>
-              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                  flex-wrap: wrap;
+                "
+              >
                 <!-- Selettore Utente Custom Disegnato M3 identico al Risparmio -->
-                <div class="savings-custom-dropdown" id="budget-savings-user-dropdown-container">
-                  <button type="button" class="savings-dropdown-trigger" id="budget-savings-user-dropdown-btn" onclick="toggleBudgetSavingsUserDropdown(event)" title="Seleziona partecipante da monitorare">
-                    <span class="material-symbols-outlined icon-lead">person</span>
-                    <span class="savings-trigger-text" id="budget-savings-selected-user-name">Utente</span>
-                    <span class="material-symbols-outlined icon-arrow" id="budget-savings-user-dropdown-arrow">expand_more</span>
+                <div
+                  class="savings-custom-dropdown"
+                  id="budget-savings-user-dropdown-container"
+                >
+                  <button
+                    type="button"
+                    class="savings-dropdown-trigger"
+                    id="budget-savings-user-dropdown-btn"
+                    onclick="toggleBudgetSavingsUserDropdown(event)"
+                    title="Seleziona partecipante da monitorare"
+                  >
+                    <span class="material-symbols-outlined icon-lead"
+                      >person</span
+                    >
+                    <span
+                      class="savings-trigger-text"
+                      id="budget-savings-selected-user-name"
+                      >Utente</span
+                    >
+                    <span
+                      class="material-symbols-outlined icon-arrow"
+                      id="budget-savings-user-dropdown-arrow"
+                      >expand_more</span
+                    >
                   </button>
-                  <div class="savings-dropdown-menu" id="budget-savings-user-dropdown-menu"></div>
+                  <div
+                    class="savings-dropdown-menu"
+                    id="budget-savings-user-dropdown-menu"
+                  ></div>
                 </div>
-                <button class="btn btn-tonal" onclick="switchTab('savings', 'Monitoraggio Risparmio Netto')">
-                  <span class="material-symbols-outlined">query_stats</span> Apri Dettaglio Risparmio
+                <button
+                  class="btn btn-tonal"
+                  onclick="switchTab('savings', 'Monitoraggio Risparmio Netto')"
+                >
+                  <span class="material-symbols-outlined">query_stats</span>
+                  Apri Dettaglio Risparmio
                 </button>
               </div>
             </div>
 
-            <div class="dashboard-grid" id="budget-savings-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 12px;"></div>
-            <div id="budget-savings-callout" style="padding: 12px 16px; border-radius: 12px; background: var(--md-sys-color-surface-container); font-size: 13px; display: flex; align-items: center; gap: 8px;"></div>
+            <div
+              class="dashboard-grid"
+              id="budget-savings-grid"
+              style="
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 12px;
+                margin-bottom: 12px;
+              "
+            ></div>
+            <div
+              id="budget-savings-callout"
+              style="
+                padding: 12px 16px;
+                border-radius: 12px;
+                background: var(--md-sys-color-surface-container);
+                font-size: 13px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+              "
+            ></div>
           </div>
         </div>
 
@@ -2708,95 +4472,233 @@
           <div class="dashboard-grid" id="savings-top-cards"></div>
 
           <!-- Card Breakdown Fondi & Proiezione Rogito -->
-          <div class="card" style="margin-bottom: 24px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+          <div class="card" style="margin-bottom: 24px">
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 12px;
+                margin-bottom: 16px;
+              "
+            >
               <div>
-                <h2 class="card-title" style="margin-bottom: 4px;">Composizione Fabbisogno Totale Coperto</h2>
-                <p style="margin: 0; font-size: 13px; color: var(--md-sys-color-outline);">
-                  Distingue il capitale di partenza e i disinvestimenti straordinari dal risparmio reale accumulato.
+                <h2 class="card-title" style="margin-bottom: 4px">
+                  Composizione Fabbisogno Totale Coperto
+                </h2>
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 13px;
+                    color: var(--md-sys-color-outline);
+                  "
+                >
+                  Distingue il capitale di partenza e i disinvestimenti
+                  straordinari dal risparmio reale accumulato.
                 </p>
               </div>
               <div class="savings-header-controls">
                 <!-- Selettore Utente Custom Disegnato M3 -->
-                <div class="savings-custom-dropdown" id="savings-user-dropdown-container">
-                  <button type="button" class="savings-dropdown-trigger" id="savings-user-dropdown-btn" onclick="toggleSavingsUserDropdown(event)" title="Seleziona partecipante da monitorare">
-                    <span class="material-symbols-outlined icon-lead">person</span>
-                    <span class="savings-trigger-text" id="savings-selected-user-name">Utente</span>
-                    <span class="material-symbols-outlined icon-arrow" id="savings-user-dropdown-arrow">expand_more</span>
+                <div
+                  class="savings-custom-dropdown"
+                  id="savings-user-dropdown-container"
+                >
+                  <button
+                    type="button"
+                    class="savings-dropdown-trigger"
+                    id="savings-user-dropdown-btn"
+                    onclick="toggleSavingsUserDropdown(event)"
+                    title="Seleziona partecipante da monitorare"
+                  >
+                    <span class="material-symbols-outlined icon-lead"
+                      >person</span
+                    >
+                    <span
+                      class="savings-trigger-text"
+                      id="savings-selected-user-name"
+                      >Utente</span
+                    >
+                    <span
+                      class="material-symbols-outlined icon-arrow"
+                      id="savings-user-dropdown-arrow"
+                      >expand_more</span
+                    >
                   </button>
-                  <div class="savings-dropdown-menu" id="savings-user-dropdown-menu"></div>
+                  <div
+                    class="savings-dropdown-menu"
+                    id="savings-user-dropdown-menu"
+                  ></div>
                 </div>
 
                 <!-- Selettore Data Prevista Rogito Custom Disegnato M3 -->
-                <div class="savings-custom-dropdown" id="savings-date-dropdown-container">
-                  <button type="button" class="savings-dropdown-trigger" id="savings-date-dropdown-btn" onclick="toggleSavingsDateDropdown(event)" title="Imposta data prevista per rogito / mutuo">
-                    <span class="material-symbols-outlined icon-lead" style="color: var(--md-sys-color-primary);">event</span>
+                <div
+                  class="savings-custom-dropdown"
+                  id="savings-date-dropdown-container"
+                >
+                  <button
+                    type="button"
+                    class="savings-dropdown-trigger"
+                    id="savings-date-dropdown-btn"
+                    onclick="toggleSavingsDateDropdown(event)"
+                    title="Imposta data prevista per rogito / mutuo"
+                  >
+                    <span
+                      class="material-symbols-outlined icon-lead"
+                      style="color: var(--md-sys-color-primary)"
+                      >event</span
+                    >
                     <span class="savings-trigger-label">Rogito / Mutuo:</span>
-                    <span class="savings-trigger-text" id="savings-target-date-display">30 Aprile 2027</span>
-                    <span class="material-symbols-outlined icon-arrow" id="savings-date-dropdown-arrow">expand_more</span>
+                    <span
+                      class="savings-trigger-text"
+                      id="savings-target-date-display"
+                      >30 Aprile 2027</span
+                    >
+                    <span
+                      class="material-symbols-outlined icon-arrow"
+                      id="savings-date-dropdown-arrow"
+                      >expand_more</span
+                    >
                   </button>
-                  <div class="savings-dropdown-menu savings-date-picker-menu" id="savings-date-dropdown-menu">
+                  <div
+                    class="savings-dropdown-menu savings-date-picker-menu"
+                    id="savings-date-dropdown-menu"
+                  >
                     <!-- Header con navigazione Mese e Anno -->
                     <div class="savings-date-picker-header">
-                      <button type="button" class="savings-picker-nav-btn" onclick="stepSavingsPickerMonth(-1, event)" title="Mese precedente">
-                        <span class="material-symbols-outlined">chevron_left</span>
+                      <button
+                        type="button"
+                        class="savings-picker-nav-btn"
+                        onclick="stepSavingsPickerMonth(-1, event)"
+                        title="Mese precedente"
+                      >
+                        <span class="material-symbols-outlined"
+                          >chevron_left</span
+                        >
                       </button>
                       <div class="savings-picker-title-group">
-                        <span class="savings-picker-month-title" id="savings-picker-month-name">Aprile</span>
-                        <span class="savings-picker-year-title" id="savings-picker-year-display">2027</span>
+                        <span
+                          class="savings-picker-month-title"
+                          id="savings-picker-month-name"
+                          >Aprile</span
+                        >
+                        <span
+                          class="savings-picker-year-title"
+                          id="savings-picker-year-display"
+                          >2027</span
+                        >
                       </div>
                       <div class="savings-picker-year-stepper">
-                        <button type="button" class="savings-picker-nav-btn" onclick="stepSavingsPickerMonth(1, event)" title="Mese successivo">
-                          <span class="material-symbols-outlined">chevron_right</span>
+                        <button
+                          type="button"
+                          class="savings-picker-nav-btn"
+                          onclick="stepSavingsPickerMonth(1, event)"
+                          title="Mese successivo"
+                        >
+                          <span class="material-symbols-outlined"
+                            >chevron_right</span
+                          >
                         </button>
                       </div>
                     </div>
 
                     <!-- Intestazione giorni della settimana -->
                     <div class="savings-calendar-weekdays">
-                      <span>L</span><span>M</span><span>M</span><span>G</span><span>V</span><span>S</span><span>D</span>
+                      <span>L</span><span>M</span><span>M</span><span>G</span
+                      ><span>V</span><span>S</span><span>D</span>
                     </div>
 
                     <!-- Griglia giorni del mese -->
-                    <div class="savings-calendar-days-grid" id="savings-calendar-days-grid"></div>
+                    <div
+                      class="savings-calendar-days-grid"
+                      id="savings-calendar-days-grid"
+                    ></div>
 
                     <!-- Countdown live in tempo reale -->
-                    <div class="savings-date-picker-countdown" id="savings-date-picker-countdown"></div>
-
+                    <div
+                      class="savings-date-picker-countdown"
+                      id="savings-date-picker-countdown"
+                    ></div>
                   </div>
                 </div>
 
-                <button class="btn btn-filled" id="btn-savings-register-rilevazione" onclick="openSavingsModal()" style="height: 42px; border-radius: var(--md-sys-shape-corner-full); padding: 0 16px;">
-                  <span class="material-symbols-outlined">add</span> Registra Rilevazione
+                <button
+                  class="btn btn-filled"
+                  id="btn-savings-register-rilevazione"
+                  onclick="openSavingsModal()"
+                  style="
+                    height: 42px;
+                    border-radius: var(--md-sys-shape-corner-full);
+                    padding: 0 16px;
+                  "
+                >
+                  <span class="material-symbols-outlined">add</span> Registra
+                  Rilevazione
                 </button>
               </div>
             </div>
 
             <!-- Breakdown Bar Progressiva -->
             <div class="savings-breakdown-container">
-              <div class="savings-breakdown-bar" id="savings-breakdown-bar"></div>
-              <div class="savings-breakdown-legend" id="savings-breakdown-legend"></div>
+              <div
+                class="savings-breakdown-bar"
+                id="savings-breakdown-bar"
+              ></div>
+              <div
+                class="savings-breakdown-legend"
+                id="savings-breakdown-legend"
+              ></div>
             </div>
 
             <!-- Proiezione temporale target rogito -->
-            <div id="savings-projection-box" style="margin-top: 20px; padding: 16px; border-radius: 12px; background: var(--md-sys-color-surface-container); border: 1px solid var(--md-sys-color-surface-container-high);"></div>
+            <div
+              id="savings-projection-box"
+              style="
+                margin-top: 20px;
+                padding: 16px;
+                border-radius: 12px;
+                background: var(--md-sys-color-surface-container);
+                border: 1px solid var(--md-sys-color-surface-container-high);
+              "
+            ></div>
           </div>
 
           <!-- Card Storico Rilevazioni -->
           <div class="card">
             <div class="table-card-header">
               <div>
-                <h2 class="card-title" style="margin-bottom: 4px;">Storico Punti di Controllo</h2>
-                <p style="margin: 0; font-size: 13px; color: var(--md-sys-color-outline);">
-                  Evoluzione del risparmio e della liquidità netta registrati nel corso del tempo.
+                <h2 class="card-title" style="margin-bottom: 4px">
+                  Storico Punti di Controllo
+                </h2>
+                <p
+                  style="
+                    margin: 0;
+                    font-size: 13px;
+                    color: var(--md-sys-color-outline);
+                  "
+                >
+                  Evoluzione del risparmio e della liquidità netta registrati
+                  nel corso del tempo.
                 </p>
               </div>
               <div class="table-view-toggle" data-table="savings">
-                <button type="button" class="btn-toggle active" data-view="cards" onclick="setTableViewMode('cards')" title="Visualizza come Schede">
+                <button
+                  type="button"
+                  class="btn-toggle active"
+                  data-view="cards"
+                  onclick="setTableViewMode('cards')"
+                  title="Visualizza come Schede"
+                >
                   <span class="material-symbols-outlined">grid_view</span>
                   <span>Schede</span>
                 </button>
-                <button type="button" class="btn-toggle" data-view="table" onclick="setTableViewMode('table')" title="Visualizza come Tabella">
+                <button
+                  type="button"
+                  class="btn-toggle"
+                  data-view="table"
+                  onclick="setTableViewMode('table')"
+                  title="Visualizza come Tabella"
+                >
                   <span class="material-symbols-outlined">table_chart</span>
                   <span>Tabella</span>
                 </button>
@@ -2844,32 +4746,49 @@
               </button>
             </div>
 
-            <div class="mutuo-params-summary-grid" id="mutuo-params-summary-grid">
+            <div
+              class="mutuo-params-summary-grid"
+              id="mutuo-params-summary-grid"
+            >
               <div class="mutuo-param-pill">
                 <span class="mutuo-param-label">Totale Progetto</span>
-                <span class="mutuo-param-value sensitive-value" id="mutuo-summary-totale-progetto">-</span>
+                <span
+                  class="mutuo-param-value sensitive-value"
+                  id="mutuo-summary-totale-progetto"
+                  >-</span
+                >
               </div>
               <div class="mutuo-param-pill">
                 <span class="mutuo-param-label">Valore Immobile</span>
-                <span class="mutuo-param-value sensitive-value" id="mutuo-summary-valore-immobile">-</span>
+                <span
+                  class="mutuo-param-value sensitive-value"
+                  id="mutuo-summary-valore-immobile"
+                  >-</span
+                >
               </div>
               <div class="mutuo-param-pill">
                 <span class="mutuo-param-label">Durata</span>
-                <span class="mutuo-param-value" id="mutuo-summary-durata">30 Anni</span>
+                <span class="mutuo-param-value" id="mutuo-summary-durata"
+                  >30 Anni</span
+                >
               </div>
               <div class="mutuo-param-pill">
                 <span class="mutuo-param-label">Tasso Nominale</span>
-                <span class="mutuo-param-value" id="mutuo-summary-tasso">3.25%</span>
+                <span class="mutuo-param-value" id="mutuo-summary-tasso"
+                  >3.25%</span
+                >
               </div>
               <div class="mutuo-param-pill">
                 <span class="mutuo-param-label">Modalità</span>
-                <span class="mutuo-param-value" id="mutuo-summary-modalita">Calcolo Automatico</span>
+                <span class="mutuo-param-value" id="mutuo-summary-modalita"
+                  >Calcolo Automatico</span
+                >
               </div>
             </div>
           </div>
 
           <!-- Card Parametri Mutuo: Modalità Modifica Completa -->
-          <div class="card" id="mutuo-params-edit-card" style="display: none;">
+          <div class="card" id="mutuo-params-edit-card" style="display: none">
             <div class="mutuo-params-header">
               <h2 class="card-title" style="margin-bottom: 0">
                 Parametri Mutuo & Finanziamento
@@ -2975,7 +4894,6 @@
               </div>
             </div>
 
-            
             <div
               id="mutuo-singolo-intero-container"
               style="display: none; margin-top: 16px"
@@ -2993,15 +4911,33 @@
 
           <div class="dashboard-grid" id="mutuo-result-cards"></div>
 
-          <div class="card" id="mutuo-details-card" style="display: none; margin-top: 24px;">
+          <div
+            class="card"
+            id="mutuo-details-card"
+            style="display: none; margin-top: 24px"
+          >
             <div class="table-card-header">
-              <h2 class="card-title" style="margin: 0;">Dettaglio Ripartizione Mutuo & Liquidità</h2>
+              <h2 class="card-title" style="margin: 0">
+                Dettaglio Ripartizione Mutuo & Liquidità
+              </h2>
               <div class="table-view-toggle" data-table="mutuo-utenti">
-                <button type="button" class="btn-toggle active" data-view="cards" onclick="setTableViewMode('cards')" title="Visualizza come Schede">
+                <button
+                  type="button"
+                  class="btn-toggle active"
+                  data-view="cards"
+                  onclick="setTableViewMode('cards')"
+                  title="Visualizza come Schede"
+                >
                   <span class="material-symbols-outlined">grid_view</span>
                   <span>Schede</span>
                 </button>
-                <button type="button" class="btn-toggle" data-view="table" onclick="setTableViewMode('table')" title="Visualizza come Tabella">
+                <button
+                  type="button"
+                  class="btn-toggle"
+                  data-view="table"
+                  onclick="setTableViewMode('table')"
+                  title="Visualizza come Tabella"
+                >
                   <span class="material-symbols-outlined">table_chart</span>
                   <span>Tabella</span>
                 </button>
@@ -3029,16 +4965,35 @@
           </div>
 
           <!-- SEZIONE SALVAGUARDIA LIQUIDITÀ & ANTICIPO MASSIMO IMMOBILE (CARD DEDICATA) -->
-          <div class="card" id="mutuo-liquidity-guard-container" style="margin-top: 24px;">
-            <div style="margin-bottom: 16px;">
-              <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-                <div style="display: flex; align-items: center; gap: 8px;">
+          <div
+            class="card"
+            id="mutuo-liquidity-guard-container"
+            style="margin-top: 24px"
+          >
+            <div style="margin-bottom: 16px">
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  flex-wrap: wrap;
+                  gap: 8px;
+                "
+              >
+                <div style="display: flex; align-items: center; gap: 8px">
                   <span
                     class="material-symbols-outlined"
-                    style="color: var(--md-sys-color-primary); font-size: 26px;"
+                    style="color: var(--md-sys-color-primary); font-size: 26px"
                     >account_balance_wallet</span
                   >
-                  <h2 style="font-size: 18px; font-weight: 700; margin: 0; color: var(--md-sys-color-on-surface);">
+                  <h2
+                    style="
+                      font-size: 18px;
+                      font-weight: 700;
+                      margin: 0;
+                      color: var(--md-sys-color-on-surface);
+                    "
+                  >
                     Piano di Saldo & Esborso Liquidità (Fondi Propri)
                   </h2>
                 </div>
@@ -3052,7 +5007,10 @@
                   max-width: 820px;
                 "
               >
-                Calcolo dell'esborso effettivo necessario da versare di tasca propria per saldare l'immobile (al netto del mutuo erogato dalla banca) e le spese extra non mutuabili, verificando la liquidità residua che ti rimane per arredamento e altre spese.
+                Calcolo dell'esborso effettivo necessario da versare di tasca
+                propria per saldare l'immobile (al netto del mutuo erogato dalla
+                banca) e le spese extra non mutuabili, verificando la liquidità
+                residua che ti rimane per arredamento e altre spese.
               </p>
             </div>
 
@@ -3060,10 +5018,16 @@
             <div class="liquidity-kpi-grid" id="liquidity-kpi-grid"></div>
 
             <!-- Banner Liquidità Residua a tutta larghezza -->
-            <div id="liquidity-residua-banner" style="margin-bottom: 20px;"></div>
+            <div
+              id="liquidity-residua-banner"
+              style="margin-bottom: 20px"
+            ></div>
 
             <!-- Sezione Multiselezione Voci Extra Espandibile -->
-            <div id="extra-cost-selection-container" style="margin-bottom: 20px;"></div>
+            <div
+              id="extra-cost-selection-container"
+              style="margin-bottom: 20px"
+            ></div>
 
             <!-- Tabella Ripartizione Costi & Anticipo per Quota (%) (senza card) -->
             <div id="liquidity-split-container"></div>
@@ -3073,19 +5037,53 @@
         <!-- DEBITI & FINANZIAMENTI -->
         <div id="view-debiti" class="view-section">
           <!-- Header Sezione con Azioni e Titoli -->
-          <div class="view-header-bar" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-bottom: 20px;">
+          <div
+            class="view-header-bar"
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-start;
+              flex-wrap: wrap;
+              gap: 16px;
+              margin-bottom: 20px;
+            "
+          >
             <div>
-              <h1 class="view-page-title" style="margin: 0 0 6px 0; display: flex; align-items: center; gap: 10px; font-size: 24px; color: var(--md-sys-color-on-surface);">
-                <span class="material-symbols-outlined" style="color: var(--md-sys-color-primary); font-size: 30px;">credit_card_off</span>
+              <h1
+                class="view-page-title"
+                style="
+                  margin: 0 0 6px 0;
+                  display: flex;
+                  align-items: center;
+                  gap: 10px;
+                  font-size: 24px;
+                  color: var(--md-sys-color-on-surface);
+                "
+              >
+                <span
+                  class="material-symbols-outlined"
+                  style="color: var(--md-sys-color-primary); font-size: 30px"
+                  >credit_card_off</span
+                >
                 Debiti & Finanziamenti
               </h1>
-              <p style="margin: 0; font-size: 13px; color: var(--md-sys-color-outline); max-width: 800px;">
-                Gestione dei finanziamenti e delle rate attive. Il debito residuo viene sincronizzato automaticamente come valore negativo nel budget dell'intestatario finché non arriva a 0.
+              <p
+                style="
+                  margin: 0;
+                  font-size: 13px;
+                  color: var(--md-sys-color-outline);
+                  max-width: 800px;
+                "
+              >
+                Gestione dei finanziamenti e delle rate attive. Il debito
+                residuo viene sincronizzato automaticamente come valore negativo
+                nel budget dell'intestatario finché non arriva a 0.
               </p>
             </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px">
               <button class="btn btn-filled" onclick="openAddDebitoModal()">
-                <span class="material-symbols-outlined">add</span> Nuovo Finanziamento
+                <span class="material-symbols-outlined">add</span> Nuovo
+                Finanziamento
               </button>
             </div>
           </div>
@@ -3094,9 +5092,24 @@
           <div id="debiti-kpi-grid" class="dashboard-grid"></div>
 
           <!-- Barra Filtro Partecipante -->
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
-            <div id="debiti-user-filter-chips" style="display: flex; gap: 8px; flex-wrap: wrap;"></div>
-            <div id="debiti-count-indicator" style="font-size: 13px; color: var(--md-sys-color-outline);"></div>
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              flex-wrap: wrap;
+              gap: 12px;
+              margin-bottom: 16px;
+            "
+          >
+            <div
+              id="debiti-user-filter-chips"
+              style="display: flex; gap: 8px; flex-wrap: wrap"
+            ></div>
+            <div
+              id="debiti-count-indicator"
+              style="font-size: 13px; color: var(--md-sys-color-outline)"
+            ></div>
           </div>
 
           <!-- Contenitore Card Debiti -->
@@ -3427,7 +5440,7 @@
           <div class="card">
             <h2 class="card-title">Gestione Media, Render & Documenti</h2>
             <div class="input-group" style="align-items: flex-end">
-              <div class="input-field" style="flex: 1; min-width: 220px;">
+              <div class="input-field" style="flex: 1; min-width: 220px">
                 <label>Immagine di Copertina Home (URL, Drive o Foto)</label>
                 <input
                   type="url"
@@ -3439,13 +5452,15 @@
                 type="file"
                 id="hero-image-file-input"
                 accept="image/*"
-                style="display: none;"
+                style="display: none"
                 onchange="handleHeroPhotoUpload(event)"
               />
               <button
                 type="button"
                 class="btn btn-tonal"
-                onclick="document.getElementById('hero-image-file-input').click()"
+                onclick="
+                  document.getElementById('hero-image-file-input').click()
+                "
                 title="Carica foto da PC o scatta da smartphone"
               >
                 <span class="material-symbols-outlined">add_a_photo</span>
@@ -3485,9 +5500,14 @@
                 </select>
               </div>
             </div>
-            <div class="input-group" style="align-items: flex-end; gap: 8px; flex-wrap: wrap;">
-              <div class="input-field" style="flex: 1; min-width: 220px;">
-                <label id="new-render-url-label">Link File (URL, Drive o Foto)</label>
+            <div
+              class="input-group"
+              style="align-items: flex-end; gap: 8px; flex-wrap: wrap"
+            >
+              <div class="input-field" style="flex: 1; min-width: 220px">
+                <label id="new-render-url-label"
+                  >Link File (URL, Drive o Foto)</label
+                >
                 <input
                   type="url"
                   id="new-render-url"
@@ -3498,14 +5518,16 @@
                 type="file"
                 id="new-render-file-input"
                 accept="image/*"
-                style="display: none;"
+                style="display: none"
                 onchange="handleRenderPhotoUpload(event)"
               />
               <button
                 type="button"
                 class="btn btn-tonal"
                 id="btn-render-photo-upload"
-                onclick="document.getElementById('new-render-file-input').click()"
+                onclick="
+                  document.getElementById('new-render-file-input').click()
+                "
                 title="Scegli foto o scatta da smartphone (per Render o Piantine)"
               >
                 <span class="material-symbols-outlined">add_a_photo</span>
@@ -3516,8 +5538,18 @@
                 Aggiungi Elemento
               </button>
             </div>
-            <div id="render-file-hint" style="font-size: 12px; color: var(--md-sys-color-outline); margin-top: -6px; margin-bottom: 12px;">
-              💡 <b>Foto e Piantine:</b> puoi caricarle direttamente da PC/mobile o inserire un link. <b>Documenti PDF:</b> inserisci il link Google Drive / URL.
+            <div
+              id="render-file-hint"
+              style="
+                font-size: 12px;
+                color: var(--md-sys-color-outline);
+                margin-top: -6px;
+                margin-bottom: 12px;
+              "
+            >
+              💡 <b>Foto e Piantine:</b> puoi caricarle direttamente da
+              PC/mobile o inserire un link. <b>Documenti PDF:</b> inserisci il
+              link Google Drive / URL.
             </div>
 
             <div id="settings-gallery-edit" class="gallery-grid-settings"></div>
@@ -3696,13 +5728,13 @@
             <a href="https://giovannilamarmora.github.io/" target="_blank"
               >Giovanni Lamarmora</a
             >
-            <span class="version-number">v1.9.15</span>
+            <span class="version-number">v1.9.16</span>
           </h4>
         </div>
       </div>
     </div>
 
-    <!-- Script modulari dell'applicazione (v1.9.15) -->
+    <!-- Script modulari dell'applicazione (v1.9.16) -->
     <script src="./js/config.js"></script>
     <script src="./js/ui.js"></script>
     <script src="./js/storage.js"></script>

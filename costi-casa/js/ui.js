@@ -469,6 +469,10 @@ function renderHeaderAndSettings() {
 
   settingsUsers = JSON.parse(JSON.stringify(appData.settings.users));
   renderSettingsUsers();
+
+  document.querySelectorAll(".version-number, #drawer-version-badge").forEach((el) => {
+    el.textContent = `v${APP_VERSION}`;
+  });
 }
 
 /**
@@ -993,7 +997,7 @@ function updateTableViewModeUI() {
 
 /**
  * ============================================================================== 
- * EDITOR DI TESTO FORMATTATO (RICH TEXT) - v1.9.15
+ * EDITOR DI TESTO FORMATTATO (RICH TEXT) - v1.9.16
  * ============================================================================== 
  */
 
