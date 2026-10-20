@@ -1,4 +1,4 @@
-const CACHE_NAME = "casa-app-v1.9.18"; // Incrementa ad ogni rilascio di codice
+const CACHE_NAME = "casa-app-v1.9.20"; // Incrementa ad ogni rilascio di codice
 const MEDIA_CACHE = "casa-media-v1"; // Does not get deleted on version bumps
 
 const urlsToCache = [
@@ -53,12 +53,13 @@ self.addEventListener("fetch", (event) => {
 
   const url = new URL(event.request.url);
 
-  // Asset principali dell'app: index, script, fogli di stile e manifest
+  // Asset principali dell'app: index, tutti gli script JS modulari (/js/*.js), fogli di stile e manifest
   const isCoreAsset =
     event.request.mode === "navigate" ||
     url.pathname.endsWith("/index.html") ||
     url.pathname.endsWith("/") ||
-    url.pathname.endsWith("/app.js") ||
+    url.pathname.includes("/js/") ||
+    url.pathname.endsWith(".js") ||
     url.pathname.endsWith("/style.css") ||
     url.pathname.endsWith("/manifest.json");
 
