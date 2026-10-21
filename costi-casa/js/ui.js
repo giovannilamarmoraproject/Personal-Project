@@ -742,9 +742,98 @@ function switchTab(tabId, pageTitle) {
       renderSavingsSection();
     } else if (tabId === "debiti") {
       renderDebitiSection();
+    } else if (tabId === "settings") {
+      if (window.innerWidth <= 768) {
+        showSettingsMasterList();
+      } else {
+        // Su schermi tablet/desktop, assicura che una sezione sia attiva nella sidebar
+        const hasActive = document.querySelector(".settings-nav-item.active");
+        if (!hasActive) {
+          const firstNav = document.querySelector(".settings-nav-item");
+          if (firstNav) {
+            const sec = firstNav.getAttribute("data-section") || "users";
+            switchSettingsSection(sec);
+          }
+        }
+      }
     }
   }, 50);
 }
+
+/**
+ * Gestisce il cambio di sezione attiva nel pannello Impostazioni (Tablet Master-Detail & Mobile drill-down).
+ * @param {'users'|'categories'|'rooms'|'media'|'drive'|'backup'} sectionKey
+ */
+function switchSettingsSection(sectionKey) {
+  const sectionTitles = {
+    users: "Utenti & Fondo",
+    categories: "Categorie Spese",
+    rooms: "Ambienti Casa",
+    media: "Media & Render",
+    drive: "Documenti Condivisi",
+    backup: "Dati & Backup",
+  };
+
+  // Aggiorna gli elementi della lista / sidebar
+  document.querySelectorAll(".settings-nav-item").forEach((btn) => {
+    if (btn.getAttribute("data-section") === sectionKey) {
+      btn.classList.add("active");
+    } else {
+      btn.classList.remove("active");
+    }
+  });
+
+  // Aggiorna i pannelli di contenuto
+  document.querySelectorAll(".settings-section-panel").forEach((panel) => {
+    if (panel.id === `settings-panel-${sectionKey}`) {
+      panel.classList.add("active");
+    } else {
+      panel.classList.remove("active");
+    }
+  });
+
+  // Aggiorna il titolo sulla top bar mobile
+  const mobileTitle = document.getElementById("settings-mobile-current-title");
+  if (mobileTitle && sectionTitles[sectionKey]) {
+    mobileTitle.textContent = sectionTitles[sectionKey];
+  }
+
+  // Su schermi mobile (< 769px), attiva la visualizzazione della sezione dettaglio
+  const layout = document.getElementById("settings-layout");
+  if (layout) {
+    layout.classList.add("mobile-detail-open");
+  }
+
+  // Riporta lo scroll in cima
+  const mainContainer = document.getElementById("main-scroll-container");
+  if (mainContainer) {
+    mainContainer.scrollTop = 0;
+  }
+}
+
+/**
+ * Torna all'elenco principale delle sezioni delle impostazioni (per dispositivi mobili).
+ */
+function showSettingsMasterList() {
+  const layout = document.getElementById("settings-layout");
+  if (layout) {
+    layout.classList.remove("mobile-detail-open");
+  }
+  // Su mobile, rimuove la classe active dai pulsanti della lista
+  if (window.innerWidth <= 768) {
+    document.querySelectorAll(".settings-nav-item").forEach((btn) => {
+      btn.classList.remove("active");
+    });
+  }
+  const mainContainer = document.getElementById("main-scroll-container");
+  if (mainContainer) {
+    mainContainer.scrollTop = 0;
+  }
+}
+
+// Esporta esplicitamente sullo scope globale window
+window.switchSettingsSection = switchSettingsSection;
+window.showSettingsMasterList = showSettingsMasterList;
 
 let currentLightboxImages = [];
 let currentLightboxIndex = 0;
@@ -997,7 +1086,7 @@ function updateTableViewModeUI() {
 
 /**
  * ============================================================================== 
- * EDITOR DI TESTO FORMATTATO (RICH TEXT) - v1.9.20
+ * EDITOR DI TESTO FORMATTATO (RICH TEXT) - v1.9.25
  * ============================================================================== 
  */
 

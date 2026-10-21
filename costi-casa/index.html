@@ -3147,7 +3147,7 @@
             <span class="nav-drawer-footer-label">Versione App</span>
           </div>
           <span class="nav-drawer-version-badge" id="drawer-version-badge"
-            >v1.9.20</span
+            >v1.9.25</span
           >
         </div>
       </div>
@@ -5251,443 +5251,590 @@
               >collections</span
             >
             <p style="margin: 12px 0 0 0">
-              Nessun render o documento presente. Aggiungili dalla sezione
-              Impostazioni.
+              Nessun render o documento presente. <a href="javascript:void(0)" onclick="switchTab('settings', 'Impostazioni Dati'); switchSettingsSection('media');" style="color: var(--md-sys-color-primary); font-weight: 600; text-decoration: underline;">Aggiungili dalla sezione Impostazioni</a>.
             </p>
           </div>
         </div>
 
         <!-- SETTINGS -->
         <div id="view-settings" class="view-section">
-          <div style="text-align: center; margin-bottom: 24px">
-            <img
-              src="./icon.jpg?v=1"
-              alt="Logo Costi Casa"
-              style="
-                width: 80px;
-                height: 80px;
-                border-radius: 16px;
-                margin-bottom: 8px;
-              "
-            />
-            <div
-              style="
-                font-size: 20px;
-                font-weight: 600;
-                color: var(--md-sys-color-on-surface);
-              "
-            >
-              Costi Casa
-            </div>
-            <div style="font-size: 14px; color: var(--md-sys-color-outline)">
-              Gestione e Budget
-            </div>
-          </div>
-          <div class="card">
-            <h2 class="card-title">
-              Configurazione Utenti & Fondo di Sicurezza
-            </h2>
-            <div
-              id="settings-users-container"
-              style="
-                display: flex;
-                flex-direction: column;
-                gap: 16px;
-                margin-bottom: 20px;
-              "
-            ></div>
-            <button
-              class="btn btn-tonal"
-              onclick="addSettingsUser()"
-              style="margin-bottom: 24px"
-            >
-              <span class="material-symbols-outlined">add</span> Aggiungi
-              Partecipante
-            </button>
-            <div style="display: flex; justify-content: flex-end">
-              <button class="btn btn-filled" onclick="saveSettingsUsers()">
-                <span class="material-symbols-outlined">save</span> Salva
-                Configurazione
-              </button>
-            </div>
-          </div>
-
-          <div class="card">
-            <h2 class="card-title">Link Documenti Condivisi</h2>
-            <div class="input-group" style="align-items: flex-end">
-              <div class="input-field" style="flex: 1">
-                <label>URL Cartella Google Drive</label>
-                <input
-                  type="url"
-                  id="settings-drive-url"
-                  placeholder="https://drive.google.com/drive/folders/..."
+          <div class="settings-layout" id="settings-layout">
+            <!-- MASTER SIDEBAR -->
+            <aside class="settings-sidebar" id="settings-sidebar">
+              <div class="settings-brand-header">
+                <img
+                  src="./icon.jpg?v=1"
+                  alt="Logo Costi Casa"
+                  class="settings-brand-img"
                 />
+                <div class="settings-brand-info">
+                  <div class="settings-brand-title">Costi Casa</div>
+                  <div class="settings-brand-subtitle">Impostazioni & Dati</div>
+                </div>
               </div>
-              <button class="btn btn-tonal" onclick="saveDriveLink()">
-                Salva Link
-              </button>
-            </div>
-          </div>
 
-          <div class="card">
-            <h2 class="card-title">Gestione Categorie Spese</h2>
-            <div class="input-group" style="align-items: flex-end">
-              <div class="input-field">
-                <label>Nome Categoria</label
-                ><input
-                  type="text"
-                  id="new-cat-name"
-                  placeholder="Nome Categoria"
-                />
-              </div>
-              <div class="input-field" style="max-width: 100px">
-                <label>Colore</label
-                ><input type="color" id="new-cat-color" value="#6750A4" />
-              </div>
-              <label
-                class="checkbox-field"
-                style="height: 48px; margin-bottom: 0"
+              <nav
+                class="settings-nav-list"
+                role="tablist"
+                aria-label="Sezioni Impostazioni"
               >
-                <input type="checkbox" id="new-cat-is-immobile" /> Immobile
-                (Mutuo)
-              </label>
-              <button class="btn btn-filled" onclick="addCategory()">
-                <span class="material-symbols-outlined">add</span> Aggiungi
-              </button>
-            </div>
-            <div
-              style="
-                margin-top: 24px;
-                display: flex;
-                flex-wrap: wrap;
-                gap: 12px;
-              "
-              id="categories-container"
-            ></div>
-          </div>
-
-          <div class="card">
-            <h2 class="card-title">Gestione Ambienti Render</h2>
-            <p
-              style="
-                font-size: 14px;
-                color: var(--md-sys-color-outline);
-                margin-top: -16px;
-                margin-bottom: 20px;
-              "
-            >
-              Personalizza gli ambienti in cui raggruppare i render e le foto
-              (es. Cucina, Soggiorno, Bagno...).
-            </p>
-            <div class="input-group" style="align-items: flex-end">
-              <div class="input-field">
-                <label>Nome Ambiente</label
-                ><input
-                  type="text"
-                  id="new-room-name"
-                  placeholder="Es. Bagno Padronale, Terrazzo..."
-                />
-              </div>
-              <button class="btn btn-filled" onclick="addRoomCategory()">
-                <span class="material-symbols-outlined">add</span> Aggiungi
-                Ambiente
-              </button>
-            </div>
-            <div
-              style="
-                margin-top: 20px;
-                display: flex;
-                flex-wrap: wrap;
-                gap: 10px;
-              "
-              id="rooms-container"
-            ></div>
-          </div>
-
-          <div class="card">
-            <h2 class="card-title">Gestione Media, Render & Documenti</h2>
-            <div class="input-group" style="align-items: flex-end">
-              <div class="input-field" style="flex: 1; min-width: 220px">
-                <label>Immagine di Copertina Home (URL, Drive o Foto)</label>
-                <input
-                  type="url"
-                  id="hero-image-url"
-                  placeholder="https://... oppure carica foto da PC/mobile"
-                />
-              </div>
-              <input
-                type="file"
-                id="hero-image-file-input"
-                accept="image/*"
-                style="display: none"
-                onchange="handleHeroPhotoUpload(event)"
-              />
-              <button
-                type="button"
-                class="btn btn-tonal"
-                onclick="
-                  document.getElementById('hero-image-file-input').click()
-                "
-                title="Carica foto da PC o scatta da smartphone"
-              >
-                <span class="material-symbols-outlined">add_a_photo</span>
-                Carica Foto
-              </button>
-              <button class="btn btn-filled" onclick="saveHeroImage()">
-                Salva Copertina
-              </button>
-            </div>
-            <hr
-              style="
-                border: 0;
-                border-top: 1px solid var(--md-sys-color-surface-container-high);
-                margin: 32px 0;
-              "
-            />
-
-            <div class="input-group">
-              <div class="input-field" style="flex: 2">
-                <label>Titolo / Descrizione</label
-                ><input
-                  type="text"
-                  id="new-render-title"
-                  placeholder="Es. Vista Angolare, Preventivo Arredo..."
-                />
-              </div>
-              <div class="input-field" style="flex: 1.5">
-                <label>Ambiente / Sezione</label>
-                <select id="new-render-room"></select>
-              </div>
-              <div class="input-field" style="flex: 1">
-                <label>Tipo File</label>
-                <select id="new-render-type" onchange="onRenderTypeChange()">
-                  <option value="image">Render / Foto</option>
-                  <option value="plan">Piantina / Schema Tecnico</option>
-                  <option value="pdf">Documento PDF (solo link Drive)</option>
-                </select>
-              </div>
-            </div>
-            <div
-              class="input-group"
-              style="align-items: flex-end; gap: 8px; flex-wrap: wrap"
-            >
-              <div class="input-field" style="flex: 1; min-width: 220px">
-                <label id="new-render-url-label"
-                  >Link File (URL, Drive o Foto)</label
-                >
-                <input
-                  type="url"
-                  id="new-render-url"
-                  placeholder="https://... oppure carica foto da PC/mobile"
-                />
-              </div>
-              <input
-                type="file"
-                id="new-render-file-input"
-                accept="image/*"
-                style="display: none"
-                onchange="handleRenderPhotoUpload(event)"
-              />
-              <button
-                type="button"
-                class="btn btn-tonal"
-                id="btn-render-photo-upload"
-                onclick="
-                  document.getElementById('new-render-file-input').click()
-                "
-                title="Scegli foto o scatta da smartphone (per Render o Piantine)"
-              >
-                <span class="material-symbols-outlined">add_a_photo</span>
-                Carica Foto
-              </button>
-              <button class="btn btn-filled" onclick="addRenderItem()">
-                <span class="material-symbols-outlined">add_to_photos</span>
-                Aggiungi Elemento
-              </button>
-            </div>
-            <div
-              id="render-file-hint"
-              style="
-                font-size: 12px;
-                color: var(--md-sys-color-outline);
-                margin-top: -6px;
-                margin-bottom: 12px;
-              "
-            >
-              💡 <b>Foto e Piantine:</b> puoi caricarle direttamente da
-              PC/mobile o inserire un link. <b>Documenti PDF:</b> inserisci il
-              link Google Drive / URL.
-            </div>
-
-            <div id="settings-gallery-edit" class="gallery-grid-settings"></div>
-          </div>
-
-          <div class="card">
-            <h2 class="card-title">Gestione Dati & Sincronizzazione</h2>
-            <p
-              style="
-                font-size: 14px;
-                color: var(--md-sys-color-outline);
-                margin-top: -16px;
-                margin-bottom: 20px;
-              "
-            >
-              Esporta i tuoi dati in un file statico, oppure sincronizzali
-              automaticamente sul cloud usando GitHub Gists.
-            </p>
-
-            <h3
-              style="
-                font-size: 16px;
-                margin-bottom: 12px;
-                color: var(--md-sys-color-primary);
-              "
-            >
-              Backup File Statico
-            </h3>
-            <div class="settings-action-buttons" style="margin-bottom: 32px">
-              <button class="btn btn-tonal" onclick="exportDataJSON()">
-                <span class="material-symbols-outlined">download</span> Esporta
-                Backup (JSON)
-              </button>
-              <button
-                class="btn btn-tonal"
-                onclick="document.getElementById('import-json-file').click()"
-              >
-                <span class="material-symbols-outlined">upload</span> Importa
-                Backup (JSON)
-              </button>
-              <input
-                type="file"
-                id="import-json-file"
-                accept=".json"
-                style="display: none"
-                onchange="importDataJSON(event)"
-              />
-            </div>
-
-            <hr
-              style="
-                border: 0;
-                border-top: 1px solid var(--md-sys-color-surface-container-high);
-                margin: 32px 0;
-              "
-            />
-
-            <h3
-              style="
-                font-size: 16px;
-                margin-bottom: 12px;
-                color: var(--md-sys-color-primary);
-              "
-            >
-              Sincronizzazione GitHub Gist
-            </h3>
-            <p
-              style="
-                font-size: 14px;
-                color: var(--md-sys-color-on-surface);
-                margin-top: 0;
-                margin-bottom: 16px;
-                line-height: 1.5;
-              "
-            >
-              Crea un token gratuito su
-              <a
-                href="https://github.com/settings/tokens/new?scopes=gist&description=CostiCasa"
-                target="_blank"
-                style="color: var(--md-sys-color-primary)"
-                >GitHub (con permessi 'gist')</a
-              >
-              e inseriscilo qui sotto per salvare in automatico il file online
-              (privatamente). Alla prima sincronizzazione verrà generato un
-              nuovo "Gist ID" (non dovrai farlo a mano). Puoi visualizzare i
-              tuoi file salvati direttamente su
-              <a
-                href="https://gist.github.com/"
-                target="_blank"
-                style="color: var(--md-sys-color-primary)"
-                >gist.github.com</a
-              >.
-            </p>
-            <label class="checkbox-field" style="margin-bottom: 16px">
-              <input
-                type="checkbox"
-                id="settings-github-enabled"
-                onchange="toggleGithubSettings()"
-              />
-              Abilita Sincronizzazione GitHub
-            </label>
-            <div
-              id="github-settings-container"
-              style="
-                display: none;
-                flex-direction: column;
-                gap: 16px;
-                padding: 16px;
-                background-color: var(--md-sys-color-surface-container-low);
-                border-radius: 12px;
-              "
-            >
-              <div class="input-field">
-                <label>GitHub Personal Access Token</label>
-                <input
-                  type="password"
-                  id="settings-github-token"
-                  placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
-                />
-              </div>
-              <div class="input-field">
-                <label>Gist ID (Viene generato in automatico se vuoto)</label>
-                <input
-                  type="text"
-                  id="settings-github-gistId"
-                  placeholder="Es. 1a2b3c4d5e..."
-                />
-              </div>
-              <a
-                id="link-to-my-gist"
-                href="#"
-                target="_blank"
-                style="
-                  display: none;
-                  color: var(--md-sys-color-primary);
-                  font-size: 14px;
-                  align-self: flex-start;
-                  margin-top: -8px;
-                  text-decoration: none;
-                  align-items: center;
-                  gap: 4px;
-                "
-              >
-                <span class="material-symbols-outlined" style="font-size: 16px"
-                  >open_in_new</span
-                >
-                Apri il mio Backup su GitHub
-              </a>
-              <div class="settings-action-buttons">
-                <button class="btn btn-tonal" onclick="saveGithubSettings()">
-                  <span class="material-symbols-outlined">save</span> Salva
-                  Configurazione
-                </button>
                 <button
-                  class="btn btn-tonal"
-                  onclick="forcePullFromGist()"
-                  id="btn-force-sync"
+                  type="button"
+                  class="settings-nav-item"
+                  data-section="users"
+                  onclick="switchSettingsSection('users')"
                 >
-                  <span class="material-symbols-outlined">sync</span>
-                  Sincronizza
+                  <div class="settings-nav-icon-box">
+                    <span class="material-symbols-outlined">manage_accounts</span>
+                  </div>
+                  <div class="settings-nav-text">
+                    <span class="settings-nav-title">Utenti & Fondo</span>
+                    <span class="settings-nav-desc">Quote e fondo sicurezza</span>
+                  </div>
+                  <span class="material-symbols-outlined settings-nav-chevron"
+                    >chevron_right</span
+                  >
                 </button>
+
                 <button
-                  class="btn btn-filled"
-                  onclick="forcePushToGist()"
-                  id="btn-force-push"
+                  type="button"
+                  class="settings-nav-item"
+                  data-section="categories"
+                  onclick="switchSettingsSection('categories')"
                 >
-                  <span class="material-symbols-outlined">cloud_upload</span>
-                  Salva su Gist
+                  <div class="settings-nav-icon-box">
+                    <span class="material-symbols-outlined">category</span>
+                  </div>
+                  <div class="settings-nav-text">
+                    <span class="settings-nav-title">Categorie Spese</span>
+                    <span class="settings-nav-desc">Voci di costo e colori</span>
+                  </div>
+                  <span class="material-symbols-outlined settings-nav-chevron"
+                    >chevron_right</span
+                  >
                 </button>
+
+                <button
+                  type="button"
+                  class="settings-nav-item"
+                  data-section="rooms"
+                  onclick="switchSettingsSection('rooms')"
+                >
+                  <div class="settings-nav-icon-box">
+                    <span class="material-symbols-outlined">meeting_room</span>
+                  </div>
+                  <div class="settings-nav-text">
+                    <span class="settings-nav-title">Ambienti Casa</span>
+                    <span class="settings-nav-desc">Stanze per foto e render</span>
+                  </div>
+                  <span class="material-symbols-outlined settings-nav-chevron"
+                    >chevron_right</span
+                  >
+                </button>
+
+                <button
+                  type="button"
+                  class="settings-nav-item"
+                  data-section="media"
+                  onclick="switchSettingsSection('media')"
+                >
+                  <div class="settings-nav-icon-box">
+                    <span class="material-symbols-outlined">photo_library</span>
+                  </div>
+                  <div class="settings-nav-text">
+                    <span class="settings-nav-title">Media & Render</span>
+                    <span class="settings-nav-desc">Copertina, foto e piantine</span>
+                  </div>
+                  <span class="material-symbols-outlined settings-nav-chevron"
+                    >chevron_right</span
+                  >
+                </button>
+
+                <button
+                  type="button"
+                  class="settings-nav-item"
+                  data-section="drive"
+                  onclick="switchSettingsSection('drive')"
+                >
+                  <div class="settings-nav-icon-box">
+                    <span class="material-symbols-outlined">folder_shared</span>
+                  </div>
+                  <div class="settings-nav-text">
+                    <span class="settings-nav-title">Documenti Condivisi</span>
+                    <span class="settings-nav-desc">Cartella Google Drive</span>
+                  </div>
+                  <span class="material-symbols-outlined settings-nav-chevron"
+                    >chevron_right</span
+                  >
+                </button>
+
+                <button
+                  type="button"
+                  class="settings-nav-item"
+                  data-section="backup"
+                  onclick="switchSettingsSection('backup')"
+                >
+                  <div class="settings-nav-icon-box">
+                    <span class="material-symbols-outlined">cloud_sync</span>
+                  </div>
+                  <div class="settings-nav-text">
+                    <span class="settings-nav-title">Dati & Backup</span>
+                    <span class="settings-nav-desc">File JSON e GitHub Gist</span>
+                  </div>
+                  <span class="material-symbols-outlined settings-nav-chevron"
+                    >chevron_right</span
+                  >
+                </button>
+              </nav>
+
+              <div class="settings-sidebar-footer">
+                <span class="settings-sidebar-label">Versione</span>
+                <span class="version-number">v1.9.25</span>
               </div>
-            </div>
+            </aside>
+
+            <!-- DETAIL CONTENT PANE -->
+            <main class="settings-content-pane" id="settings-content-pane">
+              <!-- Mobile Back Bar -->
+              <div class="settings-mobile-back-bar" id="settings-mobile-back-bar">
+                <button
+                  type="button"
+                  class="settings-mobile-back-btn"
+                  onclick="showSettingsMasterList()"
+                >
+                  <span class="material-symbols-outlined">arrow_back</span>
+                  <span>Tutte le impostazioni</span>
+                </button>
+                <span class="settings-mobile-badge" id="settings-mobile-current-title"
+                  >Utenti & Fondo</span
+                >
+              </div>
+
+              <!-- PANEL 1: UTENTI & FONDO -->
+              <div class="settings-section-panel active" id="settings-panel-users">
+                <div class="card" style="margin-bottom: 0">
+                  <h2 class="card-title">
+                    Configurazione Utenti & Fondo di Sicurezza
+                  </h2>
+                  <div
+                    id="settings-users-container"
+                    style="
+                      display: flex;
+                      flex-direction: column;
+                      gap: 16px;
+                      margin-bottom: 20px;
+                    "
+                  ></div>
+                  <button
+                    class="btn btn-tonal"
+                    onclick="addSettingsUser()"
+                    style="margin-bottom: 24px"
+                  >
+                    <span class="material-symbols-outlined">add</span> Aggiungi
+                    Partecipante
+                  </button>
+                  <div style="display: flex; justify-content: flex-end">
+                    <button class="btn btn-filled" onclick="saveSettingsUsers()">
+                      <span class="material-symbols-outlined">save</span> Salva
+                      Configurazione
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PANEL 2: CATEGORIE SPESE -->
+              <div class="settings-section-panel" id="settings-panel-categories">
+                <div class="card" style="margin-bottom: 0">
+                  <h2 class="card-title">Gestione Categorie Spese</h2>
+                  <div class="input-group" style="align-items: flex-end">
+                    <div class="input-field">
+                      <label>Nome Categoria</label
+                      ><input
+                        type="text"
+                        id="new-cat-name"
+                        placeholder="Nome Categoria"
+                      />
+                    </div>
+                    <div class="input-field" style="max-width: 100px">
+                      <label>Colore</label
+                      ><input type="color" id="new-cat-color" value="#6750A4" />
+                    </div>
+                    <label
+                      class="checkbox-field"
+                      style="height: 48px; margin-bottom: 0"
+                    >
+                      <input type="checkbox" id="new-cat-is-immobile" /> Immobile
+                      (Mutuo)
+                    </label>
+                    <button class="btn btn-filled" onclick="addCategory()">
+                      <span class="material-symbols-outlined">add</span> Aggiungi
+                    </button>
+                  </div>
+                  <div
+                    style="
+                      margin-top: 24px;
+                      display: flex;
+                      flex-wrap: wrap;
+                      gap: 12px;
+                    "
+                    id="categories-container"
+                  ></div>
+                </div>
+              </div>
+
+              <!-- PANEL 3: AMBIENTI CASA -->
+              <div class="settings-section-panel" id="settings-panel-rooms">
+                <div class="card" style="margin-bottom: 0">
+                  <h2 class="card-title">Gestione Ambienti Render</h2>
+                  <p
+                    style="
+                      font-size: 14px;
+                      color: var(--md-sys-color-outline);
+                      margin-top: -16px;
+                      margin-bottom: 20px;
+                    "
+                  >
+                    Personalizza gli ambienti in cui raggruppare i render e le foto
+                    (es. Cucina, Soggiorno, Bagno...).
+                  </p>
+                  <div class="input-group" style="align-items: flex-end">
+                    <div class="input-field">
+                      <label>Nome Ambiente</label
+                      ><input
+                        type="text"
+                        id="new-room-name"
+                        placeholder="Es. Bagno Padronale, Terrazzo..."
+                      />
+                    </div>
+                    <button class="btn btn-filled" onclick="addRoomCategory()">
+                      <span class="material-symbols-outlined">add</span> Aggiungi
+                      Ambiente
+                    </button>
+                  </div>
+                  <div
+                    style="
+                      margin-top: 20px;
+                      display: flex;
+                      flex-wrap: wrap;
+                      gap: 10px;
+                    "
+                    id="rooms-container"
+                  ></div>
+                </div>
+              </div>
+
+              <!-- PANEL 4: MEDIA & RENDER -->
+              <div class="settings-section-panel" id="settings-panel-media">
+                <div class="card" style="margin-bottom: 0">
+                  <h2 class="card-title">Gestione Media, Render & Documenti</h2>
+                  <div class="input-group" style="align-items: flex-end">
+                    <div class="input-field" style="flex: 1; min-width: 220px">
+                      <label>Immagine di Copertina Home (URL, Drive o Foto)</label>
+                      <input
+                        type="url"
+                        id="hero-image-url"
+                        placeholder="https://... oppure carica foto da PC/mobile"
+                      />
+                    </div>
+                    <input
+                      type="file"
+                      id="hero-image-file-input"
+                      accept="image/*"
+                      style="display: none"
+                      onchange="handleHeroPhotoUpload(event)"
+                    />
+                    <button
+                      type="button"
+                      class="btn btn-tonal"
+                      onclick="
+                        document.getElementById('hero-image-file-input').click()
+                      "
+                      title="Carica foto da PC o scatta da smartphone"
+                    >
+                      <span class="material-symbols-outlined">add_a_photo</span>
+                      Carica Foto
+                    </button>
+                    <button class="btn btn-filled" onclick="saveHeroImage()">
+                      Salva Copertina
+                    </button>
+                  </div>
+                  <hr
+                    style="
+                      border: 0;
+                      border-top: 1px solid var(--md-sys-color-surface-container-high);
+                      margin: 32px 0;
+                    "
+                  />
+
+                  <div class="input-group">
+                    <div class="input-field" style="flex: 2">
+                      <label>Titolo / Descrizione</label
+                      ><input
+                        type="text"
+                        id="new-render-title"
+                        placeholder="Es. Vista Angolare, Preventivo Arredo..."
+                      />
+                    </div>
+                    <div class="input-field" style="flex: 1.5">
+                      <label>Ambiente / Sezione</label>
+                      <select id="new-render-room"></select>
+                    </div>
+                    <div class="input-field" style="flex: 1">
+                      <label>Tipo File</label>
+                      <select id="new-render-type" onchange="onRenderTypeChange()">
+                        <option value="image">Render / Foto</option>
+                        <option value="plan">Piantina / Schema Tecnico</option>
+                        <option value="pdf">Documento PDF (solo link Drive)</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div
+                    class="input-group"
+                    style="align-items: flex-end; gap: 8px; flex-wrap: wrap"
+                  >
+                    <div class="input-field" style="flex: 1; min-width: 220px">
+                      <label id="new-render-url-label"
+                        >Link File (URL, Drive o Foto)</label
+                      >
+                      <input
+                        type="url"
+                        id="new-render-url"
+                        placeholder="https://... oppure carica foto da PC/mobile"
+                      />
+                    </div>
+                    <input
+                      type="file"
+                      id="new-render-file-input"
+                      accept="image/*"
+                      style="display: none"
+                      onchange="handleRenderPhotoUpload(event)"
+                    />
+                    <button
+                      type="button"
+                      class="btn btn-tonal"
+                      id="btn-render-photo-upload"
+                      onclick="
+                        document.getElementById('new-render-file-input').click()
+                      "
+                      title="Scegli foto o scatta da smartphone (per Render o Piantine)"
+                    >
+                      <span class="material-symbols-outlined">add_a_photo</span>
+                      Carica Foto
+                    </button>
+                    <button class="btn btn-filled" onclick="addRenderItem()">
+                      <span class="material-symbols-outlined">add_to_photos</span>
+                      Aggiungi Elemento
+                    </button>
+                  </div>
+                  <div
+                    id="render-file-hint"
+                    style="
+                      font-size: 12px;
+                      color: var(--md-sys-color-outline);
+                      margin-top: -6px;
+                      margin-bottom: 12px;
+                    "
+                  >
+                    💡 <b>Foto e Piantine:</b> puoi caricarle direttamente da
+                    PC/mobile o inserire un link. <b>Documenti PDF:</b> inserisci il
+                    link Google Drive / URL.
+                  </div>
+
+                  <div id="settings-gallery-edit" class="gallery-grid-settings"></div>
+                </div>
+              </div>
+
+              <!-- PANEL 5: DOCUMENTI CONDIVISI -->
+              <div class="settings-section-panel" id="settings-panel-drive">
+                <div class="card" style="margin-bottom: 0">
+                  <h2 class="card-title">Link Documenti Condivisi</h2>
+                  <div class="input-group" style="align-items: flex-end">
+                    <div class="input-field" style="flex: 1">
+                      <label>URL Cartella Google Drive</label>
+                      <input
+                        type="url"
+                        id="settings-drive-url"
+                        placeholder="https://drive.google.com/drive/folders/..."
+                      />
+                    </div>
+                    <button class="btn btn-tonal" onclick="saveDriveLink()">
+                      Salva Link
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PANEL 6: DATI & BACKUP -->
+              <div class="settings-section-panel" id="settings-panel-backup">
+                <div class="card" style="margin-bottom: 0">
+                  <h2 class="card-title">Gestione Dati & Sincronizzazione</h2>
+                  <p
+                    style="
+                      font-size: 14px;
+                      color: var(--md-sys-color-outline);
+                      margin-top: -16px;
+                      margin-bottom: 20px;
+                    "
+                  >
+                    Esporta i tuoi dati in un file statico, oppure sincronizzali
+                    automaticamente sul cloud usando GitHub Gists.
+                  </p>
+
+                  <h3
+                    style="
+                      font-size: 16px;
+                      margin-bottom: 12px;
+                      color: var(--md-sys-color-primary);
+                    "
+                  >
+                    Backup File Statico
+                  </h3>
+                  <div class="settings-action-buttons" style="margin-bottom: 32px">
+                    <button class="btn btn-tonal" onclick="exportDataJSON()">
+                      <span class="material-symbols-outlined">download</span> Esporta
+                      Backup (JSON)
+                    </button>
+                    <button
+                      class="btn btn-tonal"
+                      onclick="document.getElementById('import-json-file').click()"
+                    >
+                      <span class="material-symbols-outlined">upload</span> Importa
+                      Backup (JSON)
+                    </button>
+                    <input
+                      type="file"
+                      id="import-json-file"
+                      accept=".json"
+                      style="display: none"
+                      onchange="importDataJSON(event)"
+                    />
+                  </div>
+
+                  <hr
+                    style="
+                      border: 0;
+                      border-top: 1px solid var(--md-sys-color-surface-container-high);
+                      margin: 32px 0;
+                    "
+                  />
+
+                  <h3
+                    style="
+                      font-size: 16px;
+                      margin-bottom: 12px;
+                      color: var(--md-sys-color-primary);
+                    "
+                  >
+                    Sincronizzazione GitHub Gist
+                  </h3>
+                  <p
+                    style="
+                      font-size: 14px;
+                      color: var(--md-sys-color-on-surface);
+                      margin-top: 0;
+                      margin-bottom: 16px;
+                      line-height: 1.5;
+                    "
+                  >
+                    Crea un token gratuito su
+                    <a
+                      href="https://github.com/settings/tokens/new?scopes=gist&description=CostiCasa"
+                      target="_blank"
+                      style="color: var(--md-sys-color-primary)"
+                      >GitHub (con permessi 'gist')</a
+                    >
+                    e inseriscilo qui sotto per salvare in automatico il file online
+                    (privatamente). Alla prima sincronizzazione verrà generato un
+                    nuovo "Gist ID" (non dovrai farlo a mano). Puoi visualizzare i
+                    tuoi file salvati direttamente su
+                    <a
+                      href="https://gist.github.com/"
+                      target="_blank"
+                      style="color: var(--md-sys-color-primary)"
+                      >gist.github.com</a
+                    >.
+                  </p>
+                  <label class="checkbox-field" style="margin-bottom: 16px">
+                    <input
+                      type="checkbox"
+                      id="settings-github-enabled"
+                      onchange="toggleGithubSettings()"
+                    />
+                    Abilita Sincronizzazione GitHub
+                  </label>
+                  <div
+                    id="github-settings-container"
+                    style="
+                      display: none;
+                      flex-direction: column;
+                      gap: 16px;
+                      padding: 16px;
+                      background-color: var(--md-sys-color-surface-container-low);
+                      border-radius: 12px;
+                    "
+                  >
+                    <div class="input-field">
+                      <label>GitHub Personal Access Token</label>
+                      <input
+                        type="password"
+                        id="settings-github-token"
+                        placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+                      />
+                    </div>
+                    <div class="input-field">
+                      <label>Gist ID (Viene generato in automatico se vuoto)</label>
+                      <input
+                        type="text"
+                        id="settings-github-gistId"
+                        placeholder="Es. 1a2b3c4d5e..."
+                      />
+                    </div>
+                    <a
+                      id="link-to-my-gist"
+                      href="#"
+                      target="_blank"
+                      style="
+                        display: none;
+                        color: var(--md-sys-color-primary);
+                        font-size: 14px;
+                        align-self: flex-start;
+                        margin-top: -8px;
+                        text-decoration: none;
+                        align-items: center;
+                        gap: 4px;
+                      "
+                    >
+                      <span class="material-symbols-outlined" style="font-size: 16px"
+                        >open_in_new</span
+                      >
+                      Apri il mio Backup su GitHub
+                    </a>
+                    <div class="settings-action-buttons">
+                      <button class="btn btn-tonal" onclick="saveGithubSettings()">
+                        <span class="material-symbols-outlined">save</span> Salva
+                        Configurazione
+                      </button>
+                      <button
+                        class="btn btn-tonal"
+                        onclick="forcePullFromGist()"
+                        id="btn-force-sync"
+                      >
+                        <span class="material-symbols-outlined">sync</span>
+                        Sincronizza
+                      </button>
+                      <button
+                        class="btn btn-filled"
+                        onclick="forcePushToGist()"
+                        id="btn-force-push"
+                      >
+                        <span class="material-symbols-outlined">cloud_upload</span>
+                        Salva su Gist
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </main>
           </div>
 
           <h4 class="version">
@@ -5695,13 +5842,13 @@
             <a href="https://giovannilamarmora.github.io/" target="_blank"
               >Giovanni Lamarmora</a
             >
-            <span class="version-number">v1.9.20</span>
+            <span class="version-number">v1.9.25</span>
           </h4>
         </div>
       </div>
     </div>
 
-    <!-- Script modulari dell'applicazione (v1.9.20) -->
+    <!-- Script modulari dell'applicazione (v1.9.25) -->
     <script src="./js/config.js"></script>
     <script src="./js/ui.js"></script>
     <script src="./js/storage.js"></script>
