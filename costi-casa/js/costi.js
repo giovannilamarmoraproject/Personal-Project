@@ -949,22 +949,59 @@ function renderCategoriesSection() {
   if (ctxCat) {
     if (catBarChartInstance) catBarChartInstance.destroy();
     const barBg = isDark ? "#332D41" : "#ECE6F0";
+
+    // Funzione per mandare a capo i testi delle etichette (es. "Spese Acquisto" -> ["Spese", "Acquisto"])
+    const wrapChartLabel = (label, maxChars = 10) => {
+      if (!label || typeof label !== "string") return label;
+      if (!label.includes(" ")) return label;
+      const words = label.trim().split(/\s+/);
+      if (words.length === 1) return label;
+      if (words.length === 2) return words;
+      const lines = [];
+      let cur = "";
+      words.forEach((w) => {
+        if (!cur) {
+          cur = w;
+        } else if ((cur + " " + w).length <= maxChars) {
+          cur += " " + w;
+        } else {
+          lines.push(cur);
+          cur = w;
+        }
+      });
+      if (cur) lines.push(cur);
+      return lines.length > 1 ? lines : label;
+    };
+
+    const isMobile = window.innerWidth <= 768;
+    const formattedLabels = chartLabels.map((lbl) => wrapChartLabel(lbl, isMobile ? 9 : 12));
+
+    // Altezza dinamica per evitare che le barre si schiaccino se ci sono molte categorie
+    const dynHeight = Math.max(280, chartLabels.length * 56);
+    if (ctxCat.parentElement) {
+      ctxCat.parentElement.style.height = `${dynHeight}px`;
+    }
+
     catBarChartInstance = new Chart(ctxCat.getContext("2d"), {
       type: "bar",
       data: {
-        labels: chartLabels,
+        labels: formattedLabels,
         datasets: [
           {
             label: "Pagato Finora (€)",
             data: chartDataPaid,
             backgroundColor: chartColors,
             borderRadius: 6,
+            categoryPercentage: 0.85,
+            barPercentage: 0.9,
           },
           {
             label: "Costo Totale (€)",
             data: chartDataTotal,
             backgroundColor: barBg,
             borderRadius: 6,
+            categoryPercentage: 0.85,
+            barPercentage: 0.9,
           },
         ],
       },
@@ -972,12 +1009,38 @@ function renderCategoriesSection() {
         indexAxis: "y",
         responsive: true,
         maintainAspectRatio: false,
+        layout: {
+          padding: {
+            left: 8,
+            right: 8,
+            top: 4,
+            bottom: 4,
+          },
+        },
         plugins: {
           legend: {
             position: "top",
             labels: {
-              font: { family: "'Google Sans Flex', sans-serif" },
+              font: { family: "'Google Sans Flex', sans-serif", size: isMobile ? 12 : 13 },
               color: textColor,
+              padding: 12,
+            },
+          },
+          tooltip: {
+            callbacks: {
+              title: function (items) {
+                if (!items || !items.length) return "";
+                const raw = chartLabels[items[0].dataIndex];
+                return Array.isArray(raw) ? raw.join(" ") : raw;
+              },
+              label: function (context) {
+                let label = context.dataset.label || "";
+                if (label) label += ": ";
+                if (context.parsed.x !== null) {
+                  label += formatter.format(context.parsed.x);
+                }
+                return label;
+              },
             },
           },
         },
@@ -985,9 +1048,40 @@ function renderCategoriesSection() {
           x: {
             beginAtZero: true,
             grid: { color: gridColor },
-            ticks: { color: textColor },
+            ticks: {
+              color: textColor,
+              maxRotation: 0,
+              minRotation: 0,
+              autoSkip: true,
+              font: {
+                family: "'Google Sans Flex', sans-serif",
+                size: isMobile ? 10.5 : 11.5,
+              },
+              callback: function (value) {
+                if (value === 0) return "0 €";
+                if (value >= 1000000) return (value / 1000000).toLocaleString("it-IT") + "M €";
+                if (value >= 1000) return (value / 1000).toLocaleString("it-IT") + "k €";
+                return value + " €";
+              },
+            },
           },
-          y: { grid: { display: false }, ticks: { color: textColor } },
+          y: {
+            grid: { display: false },
+            ticks: {
+              color: textColor,
+              font: {
+                family: "'Google Sans Flex', sans-serif",
+                size: isMobile ? 11 : 12,
+                weight: 500,
+              },
+              padding: 4,
+              lineHeight: 1.2,
+              autoSkip: false,
+            },
+            afterFit: function (axis) {
+              axis.width += 22;
+            },
+          },
         },
       },
     });
@@ -1179,7 +1273,9 @@ function updateChartsAndStats() {
     barChartInstance = new Chart(ctxBar.getContext("2d"), {
       type: "bar",
       data: {
-        labels: ["Budget Totale", "Costo Stimato", "Speso", "Da Pagare"],
+        labels: (window.innerWidth <= 600)
+          ? [["Budget", "Totale"], ["Costo", "Stimato"], "Speso", ["Da", "Pagare"]]
+          : ["Budget Totale", "Costo Stimato", "Speso", "Da Pagare"],
         datasets: [
           {
             label: "Importo in €",
@@ -1215,7 +1311,15 @@ function updateChartsAndStats() {
           },
           x: {
             grid: { display: false },
-            ticks: { color: textColor },
+            ticks: {
+              color: textColor,
+              maxRotation: 0,
+              minRotation: 0,
+              font: {
+                family: "'Google Sans Flex', sans-serif",
+                size: (window.innerWidth <= 600) ? 11 : 12,
+              },
+            },
           },
         },
       },

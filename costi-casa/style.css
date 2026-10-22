@@ -1361,6 +1361,32 @@ input[type="color"] {
     order: 1;
     padding-bottom: 96px;
   }
+
+  /* Allarga i box dei grafici su mobile all'interno delle card */
+  .chart-box {
+    margin-left: -14px;
+    margin-right: -14px;
+    width: calc(100% + 28px) !important;
+    box-sizing: border-box;
+  }
+
+  /* Allarga le card interne di categorie, QA, task e appunti su mobile */
+  .categories-grid,
+  #qa-container,
+  #task-container,
+  #completed-task-container,
+  #notes-container {
+    margin-left: -12px;
+    margin-right: -12px;
+    width: calc(100% + 24px) !important;
+    box-sizing: border-box;
+  }
+
+  .cat-stat-card,
+  .qa-card {
+    padding: 16px 14px !important;
+    box-sizing: border-box;
+  }
   .hero-header {
     height: 180px;
     border-radius: 0 0 var(--md-sys-shape-corner-extra-large)
@@ -4037,6 +4063,10 @@ body.dark-mode .table-view-toggle .btn-toggle:hover {
 
   body:not(.mobile-table-as-table) .table-container {
     overflow-x: visible;
+    margin-left: -12px;
+    margin-right: -12px;
+    width: calc(100% + 24px);
+    box-sizing: border-box;
   }
 
   body:not(.mobile-table-as-table) #table-costi,
@@ -4080,10 +4110,10 @@ body.dark-mode .table-view-toggle .btn-toggle:hover {
   body:not(.mobile-table-as-table) #table-mutuo-utenti > tbody > tr,
   body:not(.mobile-table-as-table) .liquidity-split-table > tbody > tr {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px 10px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 8px;
     position: relative;
-    padding: 14px;
+    padding: 12px 10px;
     background: var(--md-sys-color-surface-container-low, #f7f3ed);
     border: 1px solid var(--md-sys-color-outline-variant, rgba(0, 0, 0, 0.08));
     border-radius: 16px;
@@ -4162,7 +4192,7 @@ body.dark-mode .table-view-toggle .btn-toggle:hover {
   body:not(.mobile-table-as-table) .col-metric {
     background: var(--md-sys-color-surface-container, #ece7e0);
     border-radius: 10px;
-    padding: 8px 10px;
+    padding: 8px 14px 8px 10px !important;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -4171,6 +4201,8 @@ body.dark-mode .table-view-toggle .btn-toggle:hover {
     min-height: 52px;
     box-sizing: border-box;
     white-space: nowrap;
+    min-width: 0 !important;
+    overflow: hidden;
   }
 
   body.dark-mode:not(.mobile-table-as-table) .col-metric-box,
@@ -4183,7 +4215,7 @@ body.dark-mode .table-view-toggle .btn-toggle:hover {
     background: var(--md-sys-color-surface-container-high, #2b2930);
   }
 
-  /* Mini etichetta sopra il valore generata da data-label */
+  /* Mini etichetta sopra il valore generata da data-label con spazio a destra garantito */
   body:not(.mobile-table-as-table) .col-prezzo::before,
   body:not(.mobile-table-as-table) .col-user::before,
   body:not(.mobile-table-as-table) .col-restante::before,
@@ -4191,16 +4223,48 @@ body.dark-mode .table-view-toggle .btn-toggle:hover {
   body:not(.mobile-table-as-table) .col-totale::before,
   body:not(.mobile-table-as-table) .col-metric::before {
     content: attr(data-label);
-    font-size: 11px;
-    font-weight: 500;
+    font-size: 10px;
+    font-weight: 600;
     color: var(--md-sys-color-outline);
     text-transform: uppercase;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.2px;
     margin-bottom: 2px;
     display: block;
     line-height: 1.2;
     text-align: left !important;
     width: 100%;
+    max-width: 100%;
+    padding-right: 6px;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Valori delle card con prezzi: dimensione armoniosa e spazio a destra */
+  body:not(.mobile-table-as-table) .col-prezzo,
+  body:not(.mobile-table-as-table) .col-user,
+  body:not(.mobile-table-as-table) .col-restante,
+  body:not(.mobile-table-as-table) .col-totale,
+  body:not(.mobile-table-as-table) .col-metric {
+    font-size: 13.5px;
+    font-weight: 600;
+  }
+
+  body:not(.mobile-table-as-table) .col-prezzo .sensitive-value,
+  body:not(.mobile-table-as-table) .col-user .sensitive-value,
+  body:not(.mobile-table-as-table) .col-restante .sensitive-value,
+  body:not(.mobile-table-as-table) .col-totale .sensitive-value,
+  body:not(.mobile-table-as-table) .col-metric .sensitive-value,
+  body:not(.mobile-table-as-table) .col-stato .badge,
+  body:not(.mobile-table-as-table) .col-stato .status-badge {
+    max-width: 100%;
+    padding-right: 4px;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
   }
 
   /* Allineamento a sinistra forzato per tutti i contenuti interni delle card */
@@ -4351,7 +4415,7 @@ body.dark-mode .table-view-toggle .btn-toggle:hover {
 }
 
 /* ==============================================================================
-   RICH TEXT EDITOR & RENDERED CONTENT (v1.9.28)
+   RICH TEXT EDITOR & RENDERED CONTENT (v1.9.39)
    ============================================================================== */
 
 .rich-editor-wrapper {

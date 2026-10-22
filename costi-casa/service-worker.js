@@ -1,4 +1,4 @@
-const CACHE_NAME = "casa-app-v1.9.28"; // Incrementa ad ogni rilascio di codice
+const CACHE_NAME = "casa-app-v1.9.39"; // Incrementa ad ogni rilascio di codice
 const MEDIA_CACHE = "casa-media-v1"; // Does not get deleted on version bumps
 
 const urlsToCache = [
@@ -87,7 +87,7 @@ self.addEventListener("fetch", (event) => {
           return networkResponse;
         })
         .catch(() => {
-          return caches.match(event.request).then((cachedResponse) => {
+          return caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
             if (cachedResponse) {
               return cachedResponse;
             }
@@ -109,7 +109,7 @@ self.addEventListener("fetch", (event) => {
 
   // 2. STRATEGIA CACHE-FIRST per immagini, Google Fonts e CDN esterni (SweetAlert2)
   event.respondWith(
-    caches.match(event.request).then((response) => {
+    caches.match(event.request, { ignoreSearch: true }).then((response) => {
       if (response) {
         return response;
       }
