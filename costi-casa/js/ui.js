@@ -1086,7 +1086,7 @@ function updateTableViewModeUI() {
 
 /**
  * ============================================================================== 
- * EDITOR DI TESTO FORMATTATO (RICH TEXT) - v1.9.25
+ * EDITOR DI TESTO FORMATTATO (RICH TEXT) - v1.9.28
  * ============================================================================== 
  */
 
@@ -1157,7 +1157,7 @@ function getRichEditorHTML(editorId) {
  */
 function isRichHTML(str) {
   if (!str) return false;
-  return /<(\/)?(p|div|br|b|strong|i|em|u|s|strike|del|h[1-6]|small|mark|ul|ol|li|blockquote|font|span|a)\b/i.test(String(str));
+  return /<(\/)?(p|div|br|b|strong|i|em|u|s|strike|del|h[1-6]|small|mark|ul|ol|li|blockquote|font|span|a|table|tbody|thead|tfoot|tr|th|td)\b/i.test(String(str));
 }
 
 /**
@@ -1220,6 +1220,22 @@ function renderRichContent(content, itemType = "", itemId = 0, fieldName = "") {
     a.setAttribute("target", "_blank");
     a.setAttribute("rel", "noopener noreferrer");
     a.setAttribute("onclick", "event.stopPropagation();");
+  });
+
+  // Gestione responsive e scroll orizzontale fluido per tabelle inserite nelle note
+  container.querySelectorAll("table").forEach((tbl) => {
+    tbl.removeAttribute("width");
+    tbl.style.maxWidth = "100%";
+    if (tbl.style.width && tbl.style.width.includes("px") && parseInt(tbl.style.width, 10) > 300) {
+      tbl.style.width = "100%";
+    }
+    if (!tbl.parentElement.classList.contains("rich-table-wrapper")) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "rich-table-wrapper";
+      wrapper.setAttribute("onclick", "event.stopPropagation();");
+      tbl.parentNode.insertBefore(wrapper, tbl);
+      wrapper.appendChild(tbl);
+    }
   });
 
   const checkboxes = container.querySelectorAll('.rich-checklist input[type="checkbox"]');
@@ -1442,6 +1458,9 @@ function updateRichToolbarActiveStates(editor) {
         case "createLink":
           isActive = isInsideTag(anchorNode, editor, ["A"]);
           break;
+        case "tableMenu":
+          isActive = isInsideTag(anchorNode, editor, ["TABLE", "TH", "TD"]);
+          break;
         default:
           isActive = false;
           break;
@@ -1620,6 +1639,406 @@ function toggleOrInsertRichChecklist(editor) {
   updateRichToolbarActiveStates(editor);
 }
 
+
+/**
+ * Sposta il cursore e il focus all'interno di una cella di una tabella rich text.
+ * @param {HTMLTableCellElement} cell - Cella th o td da selezionare.
+ */
+function focusRichTableCell(cell) {
+  if (!cell) return;
+  const sel = window.getSelection();
+  const range = document.createRange();
+  range.selectNodeContents(cell);
+  range.collapse(false);
+  sel.removeAllRanges();
+  sel.addRange(range);
+  const editor = cell.closest(".rich-editor-content");
+  if (editor) {
+    editor.focus();
+    updateRichToolbarActiveStates(editor);
+  }
+}
+
+/**
+ * Inserisce una nuova tabella nel punto corrente del cursore all'interno dell'editor rich text.
+ * @param {HTMLElement} editor - Elemento contenteditable.
+ * @param {number} rows - Numero di righe del corpo dati.
+ * @param {number} cols - Numero di colonne.
+ * @param {boolean} hasHeader - Se includere una riga di intestazione thead/th.
+ */
+function insertRichTable(editor, rows = 3, cols = 3, hasHeader = true) {
+  editor.focus();
+  const safeRows = Math.max(1, Math.min(parseInt(rows, 10) || 3, 25));
+  const safeCols = Math.max(1, Math.min(parseInt(cols, 10) || 3, 10));
+
+  let tableHtml = '<div class="rich-table-wrapper" onclick="event.stopPropagation();"><table>';
+  if (hasHeader) {
+    tableHtml += '<thead><tr>';
+    for (let c = 0; c < safeCols; c++) {
+      tableHtml += `<th>Intestazione ${c + 1}</th>`;
+    }
+    tableHtml += '</tr></thead>';
+  }
+  tableHtml += '<tbody>';
+  for (let r = 0; r < safeRows; r++) {
+    tableHtml += '<tr>';
+    for (let c = 0; c < safeCols; c++) {
+      tableHtml += '<td>&nbsp;</td>';
+    }
+    tableHtml += '</tr>';
+  }
+  tableHtml += '</tbody></table></div><p><br></p>';
+
+  const sel = window.getSelection();
+  let inserted = false;
+  try {
+    inserted = document.execCommand("insertHTML", false, tableHtml);
+  } catch (e) {
+    inserted = false;
+  }
+
+  if (!inserted && sel && sel.rangeCount > 0) {
+    const range = sel.getRangeAt(0);
+    const temp = document.createElement("div");
+    temp.innerHTML = tableHtml;
+    const frag = document.createDocumentFragment();
+    let node;
+    while ((node = temp.firstChild)) {
+      frag.appendChild(node);
+    }
+    range.deleteContents();
+    range.insertNode(frag);
+  }
+
+  const allTables = editor.querySelectorAll("table");
+  if (allTables.length > 0) {
+    const lastTable = allTables[allTables.length - 1];
+    const firstCell = lastTable.querySelector("th, td");
+    if (firstCell) {
+      focusRichTableCell(firstCell);
+    }
+  }
+}
+
+/**
+ * Mostra il popup M3Swal per configurare e inserire una nuova tabella nell'editor.
+ * @param {HTMLElement} editor - Elemento contenteditable.
+ */
+async function promptInsertRichTable(editor) {
+  editor.focus();
+  const htmlContent = `
+    <div style="text-align: left; display: flex; flex-direction: column; gap: 14px; margin-top: 10px;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div>
+          <label style="font-size: 12px; font-weight: 600; color: var(--md-sys-color-primary); display: block; margin-bottom: 4px;">Colonne</label>
+          <input id="swal-table-cols" type="number" min="1" max="10" value="3" class="swal2-input" style="margin: 0; width: 100%; box-sizing: border-box; font-size: 14px; height: 42px;">
+        </div>
+        <div>
+          <label style="font-size: 12px; font-weight: 600; color: var(--md-sys-color-primary); display: block; margin-bottom: 4px;">Righe</label>
+          <input id="swal-table-rows" type="number" min="1" max="25" value="3" class="swal2-input" style="margin: 0; width: 100%; box-sizing: border-box; font-size: 14px; height: 42px;">
+        </div>
+      </div>
+      <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; user-select: none;">
+        <input id="swal-table-header" type="checkbox" checked style="width: 18px; height: 18px; accent-color: var(--md-sys-color-primary);">
+        <span>Includi riga di intestazione</span>
+      </label>
+    </div>
+  `;
+
+  const result = await M3Swal.fire({
+    title: "Inserisci Tabella",
+    html: htmlContent,
+    showCancelButton: true,
+    confirmButtonText: "Inserisci",
+    cancelButtonText: "Annulla",
+    reverseButtons: true,
+    customClass: {
+      popup: "m3-swal-popup",
+      title: "m3-swal-title",
+      htmlContainer: "m3-swal-html",
+      actions: "m3-swal-actions",
+      confirmButton: "btn btn-filled",
+      cancelButton: "btn btn-tonal",
+    },
+    preConfirm: () => {
+      const cols = parseInt(document.getElementById("swal-table-cols").value, 10) || 3;
+      const rows = parseInt(document.getElementById("swal-table-rows").value, 10) || 3;
+      const hasHeader = document.getElementById("swal-table-header").checked;
+      if (cols < 1 || cols > 10) {
+        Swal.showValidationMessage("Il numero di colonne deve essere tra 1 e 10");
+        return false;
+      }
+      if (rows < 1 || rows > 25) {
+        Swal.showValidationMessage("Il numero di righe deve essere tra 1 e 25");
+        return false;
+      }
+      return { cols, rows, hasHeader };
+    },
+  });
+
+  if (result.isConfirmed && result.value) {
+    insertRichTable(editor, result.value.rows, result.value.cols, result.value.hasHeader);
+  }
+}
+
+/**
+ * Aggiunge una nuova riga sopra o sotto la cella specificata.
+ * @param {HTMLTableCellElement} cell - Cella di riferimento.
+ * @param {"above"|"below"} position - Posizione di inserimento.
+ */
+function insertRichTableRow(cell, position = "below") {
+  if (!cell) return;
+  const tr = cell.closest("tr");
+  const table = cell.closest("table");
+  if (!tr || !table) return;
+
+  const colCount = Math.max(tr.cells.length, (table.rows[0] && table.rows[0].cells.length) || 1);
+  const newTr = document.createElement("tr");
+  for (let i = 0; i < colCount; i++) {
+    const td = document.createElement("td");
+    td.innerHTML = "&nbsp;";
+    newTr.appendChild(td);
+  }
+
+  if (position === "above") {
+    tr.before(newTr);
+  } else {
+    if (tr.parentElement && tr.parentElement.tagName === "THEAD") {
+      let tbody = table.querySelector("tbody");
+      if (!tbody) {
+        tbody = document.createElement("tbody");
+        table.appendChild(tbody);
+      }
+      tbody.insertBefore(newTr, tbody.firstChild);
+    } else {
+      tr.after(newTr);
+    }
+  }
+
+  focusRichTableCell(newTr.cells[0]);
+}
+
+/**
+ * Elimina la riga contenente la cella specificata.
+ * Se è l'unica riga della tabella, elimina l'intera tabella.
+ * @param {HTMLTableCellElement} cell - Cella di riferimento.
+ */
+function deleteRichTableRow(cell) {
+  if (!cell) return;
+  const tr = cell.closest("tr");
+  const table = cell.closest("table");
+  if (!tr || !table) return;
+
+  const totalRows = table.querySelectorAll("tr").length;
+  if (totalRows <= 1) {
+    deleteRichTable(table);
+    return;
+  }
+
+  const nextRow = tr.nextElementSibling || tr.previousElementSibling || (tr.parentElement.tagName === "TBODY" ? table.querySelector("thead tr") : null);
+  const colIndex = cell.cellIndex;
+  tr.remove();
+
+  if (nextRow && nextRow.cells.length > 0) {
+    const targetCell = nextRow.cells[Math.min(colIndex, nextRow.cells.length - 1)];
+    focusRichTableCell(targetCell);
+  }
+}
+
+/**
+ * Aggiunge una nuova colonna a sinistra o a destra della cella specificata.
+ * @param {HTMLTableCellElement} cell - Cella di riferimento.
+ * @param {"left"|"right"} position - Posizione di inserimento.
+ */
+function insertRichTableColumn(cell, position = "right") {
+  if (!cell) return;
+  const tr = cell.closest("tr");
+  const table = cell.closest("table");
+  if (!tr || !table) return;
+
+  const colIndex = cell.cellIndex;
+  const targetIndex = position === "right" ? colIndex + 1 : colIndex;
+
+  const rows = table.querySelectorAll("tr");
+  rows.forEach((row) => {
+    const isHead = row.parentElement && row.parentElement.tagName === "THEAD";
+    const newCell = document.createElement(isHead ? "th" : "td");
+    newCell.innerHTML = isHead ? "Intestazione" : "&nbsp;";
+    if (targetIndex >= row.children.length) {
+      row.appendChild(newCell);
+    } else {
+      row.insertBefore(newCell, row.children[targetIndex]);
+    }
+  });
+
+  if (tr.children[targetIndex]) {
+    focusRichTableCell(tr.children[targetIndex]);
+  }
+}
+
+/**
+ * Elimina la colonna contenente la cella specificata.
+ * Se è l'unica colonna, elimina l'intera tabella.
+ * @param {HTMLTableCellElement} cell - Cella di riferimento.
+ */
+function deleteRichTableColumn(cell) {
+  if (!cell) return;
+  const tr = cell.closest("tr");
+  const table = cell.closest("table");
+  if (!tr || !table) return;
+
+  const colIndex = cell.cellIndex;
+  const rows = Array.from(table.querySelectorAll("tr"));
+  const maxCols = Math.max(...rows.map((r) => r.children.length));
+
+  if (maxCols <= 1) {
+    deleteRichTable(table);
+    return;
+  }
+
+  rows.forEach((row) => {
+    if (row.children[colIndex]) {
+      row.children[colIndex].remove();
+    }
+  });
+
+  const remainingCells = tr.children;
+  if (remainingCells.length > 0) {
+    const targetCell = remainingCells[Math.min(colIndex, remainingCells.length - 1)];
+    focusRichTableCell(targetCell);
+  }
+}
+
+/**
+ * Rimuove completamente la tabella e il relativo contenitore dall'editor.
+ * @param {HTMLTableElement} table - Elemento tabella da rimuovere.
+ */
+function deleteRichTable(table) {
+  if (!table) return;
+  const editor = table.closest(".rich-editor-content");
+  const wrapper = table.closest(".rich-table-wrapper");
+  if (wrapper && wrapper.parentElement) {
+    wrapper.remove();
+  } else {
+    table.remove();
+  }
+  if (editor) {
+    editor.focus();
+    updateRichToolbarActiveStates(editor);
+  }
+}
+
+/**
+ * Mostra il menu contestuale con le azioni rapide per la tabella (Aggiungi/Elimina righe e colonne).
+ * @param {HTMLElement} editor - Elemento contenteditable.
+ * @param {HTMLTableCellElement} cell - Cella attualmente attiva.
+ */
+async function showRichTableContextMenu(editor, cell) {
+  const table = cell.closest("table");
+  if (!table) return;
+
+  const htmlContent = `
+    <div class="rich-table-menu-grid">
+      <button type="button" class="rich-table-menu-item" data-action="add-row-below">
+        <span class="material-symbols-outlined">add</span>
+        <span>Aggiungi Riga Sotto</span>
+      </button>
+      <button type="button" class="rich-table-menu-item" data-action="add-row-above">
+        <span class="material-symbols-outlined">add</span>
+        <span>Aggiungi Riga Sopra</span>
+      </button>
+      <button type="button" class="rich-table-menu-item" data-action="add-col-right">
+        <span class="material-symbols-outlined">add</span>
+        <span>Aggiungi Colonna a Destra</span>
+      </button>
+      <button type="button" class="rich-table-menu-item" data-action="add-col-left">
+        <span class="material-symbols-outlined">add</span>
+        <span>Aggiungi Colonna a Sinistra</span>
+      </button>
+      <button type="button" class="rich-table-menu-item" data-action="delete-row">
+        <span class="material-symbols-outlined" style="color: var(--md-sys-color-error, #ba1a1a);">table_rows</span>
+        <span>Elimina Riga Corrente</span>
+      </button>
+      <button type="button" class="rich-table-menu-item" data-action="delete-col">
+        <span class="material-symbols-outlined" style="color: var(--md-sys-color-error, #ba1a1a);">view_column</span>
+        <span>Elimina Colonna Corrente</span>
+      </button>
+      <button type="button" class="rich-table-menu-item rich-table-menu-danger" data-action="delete-table">
+        <span class="material-symbols-outlined">delete</span>
+        <span>Elimina Tutta la Tabella</span>
+      </button>
+    </div>
+  `;
+
+  let chosenAction = null;
+
+  await M3Swal.fire({
+    title: "Gestione Tabella",
+    html: htmlContent,
+    showConfirmButton: false,
+    showCancelButton: true,
+    cancelButtonText: "Chiudi",
+    customClass: {
+      popup: "m3-swal-popup",
+      title: "m3-swal-title",
+      htmlContainer: "m3-swal-html",
+      actions: "m3-swal-actions",
+      cancelButton: "btn btn-tonal",
+    },
+    didOpen: (popup) => {
+      popup.querySelectorAll(".rich-table-menu-item").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          chosenAction = btn.getAttribute("data-action");
+          M3Swal.close();
+        });
+      });
+    },
+  });
+
+  if (!chosenAction) return;
+
+  switch (chosenAction) {
+    case "add-row-below":
+      insertRichTableRow(cell, "below");
+      break;
+    case "add-row-above":
+      insertRichTableRow(cell, "above");
+      break;
+    case "add-col-right":
+      insertRichTableColumn(cell, "right");
+      break;
+    case "add-col-left":
+      insertRichTableColumn(cell, "left");
+      break;
+    case "delete-row":
+      deleteRichTableRow(cell);
+      break;
+    case "delete-col":
+      deleteRichTableColumn(cell);
+      break;
+    case "delete-table":
+      deleteRichTable(table);
+      break;
+  }
+}
+
+/**
+ * Gestisce il click sul pulsante "Tabella" della toolbar:
+ * Se il cursore è già in una tabella, apre il menu di modifica contestuale.
+ * Altrimenti, apre il dialogo per inserire una nuova tabella.
+ * @param {HTMLElement} editor - Elemento contenteditable.
+ */
+function handleRichTableToolbarClick(editor) {
+  editor.focus();
+  const sel = window.getSelection();
+  const cell = getAncestorTag(sel ? sel.anchorNode : null, editor, ["TD", "TH"]);
+  if (cell) {
+    showRichTableContextMenu(editor, cell);
+  } else {
+    promptInsertRichTable(editor);
+  }
+}
+
 /**
  * Inizializza le toolbar e i listener per tutti gli editor rich text dell'applicazione.
  */
@@ -1729,6 +2148,9 @@ function initRichTextEditors() {
         case "createLink":
           promptRichLink(editor);
           break;
+        case "tableMenu":
+          handleRichTableToolbarClick(editor);
+          break;
         case "removeFormat":
           document.execCommand("removeFormat", false, null);
           document.execCommand("formatBlock", false, "<p>");
@@ -1757,6 +2179,31 @@ function initRichTextEditors() {
     editor.addEventListener("click", onStateChange);
 
     editor.addEventListener("keydown", (e) => {
+            if (e.key === "Tab") {
+        const sel = window.getSelection();
+        const activeCell = getAncestorTag(sel ? sel.anchorNode : null, editor, ["TD", "TH"]);
+        if (activeCell) {
+          e.preventDefault();
+          const table = activeCell.closest("table");
+          if (!table) return;
+          const allCells = Array.from(table.querySelectorAll("th, td"));
+          const currentIndex = allCells.indexOf(activeCell);
+
+          if (e.shiftKey) {
+            if (currentIndex > 0) {
+              focusRichTableCell(allCells[currentIndex - 1]);
+            }
+          } else {
+            if (currentIndex < allCells.length - 1) {
+              focusRichTableCell(allCells[currentIndex + 1]);
+            } else {
+              insertRichTableRow(activeCell, "below");
+            }
+          }
+          return;
+        }
+      }
+
       if (e.key === "Enter") {
         const sel = window.getSelection();
         if (sel && sel.rangeCount > 0) {

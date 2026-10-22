@@ -4051,21 +4051,21 @@ body.dark-mode .table-view-toggle .btn-toggle:hover {
     border-spacing: 0;
   }
 
-  body:not(.mobile-table-as-table) #table-costi thead,
-  body:not(.mobile-table-as-table) #table-budget thead,
-  body:not(.mobile-table-as-table) #table-categories-summary thead,
-  body:not(.mobile-table-as-table) #table-savings-history thead,
-  body:not(.mobile-table-as-table) #table-mutuo-utenti thead,
-  body:not(.mobile-table-as-table) .liquidity-split-table thead {
+  body:not(.mobile-table-as-table) #table-costi > thead,
+  body:not(.mobile-table-as-table) #table-budget > thead,
+  body:not(.mobile-table-as-table) #table-categories-summary > thead,
+  body:not(.mobile-table-as-table) #table-savings-history > thead,
+  body:not(.mobile-table-as-table) #table-mutuo-utenti > thead,
+  body:not(.mobile-table-as-table) .liquidity-split-table > thead {
     display: none;
   }
 
-  body:not(.mobile-table-as-table) #table-costi tbody,
-  body:not(.mobile-table-as-table) #table-budget tbody,
-  body:not(.mobile-table-as-table) #table-categories-summary tbody,
-  body:not(.mobile-table-as-table) #table-savings-history tbody,
-  body:not(.mobile-table-as-table) #table-mutuo-utenti tbody,
-  body:not(.mobile-table-as-table) .liquidity-split-table tbody {
+  body:not(.mobile-table-as-table) #table-costi > tbody,
+  body:not(.mobile-table-as-table) #table-budget > tbody,
+  body:not(.mobile-table-as-table) #table-categories-summary > tbody,
+  body:not(.mobile-table-as-table) #table-savings-history > tbody,
+  body:not(.mobile-table-as-table) #table-mutuo-utenti > tbody,
+  body:not(.mobile-table-as-table) .liquidity-split-table > tbody {
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -4073,12 +4073,12 @@ body.dark-mode .table-view-toggle .btn-toggle:hover {
   }
 
   /* Card generica per ogni riga */
-  body:not(.mobile-table-as-table) #table-costi tbody tr,
-  body:not(.mobile-table-as-table) #table-budget tbody tr,
-  body:not(.mobile-table-as-table) #table-categories-summary tbody tr,
-  body:not(.mobile-table-as-table) #table-savings-history tbody tr,
-  body:not(.mobile-table-as-table) #table-mutuo-utenti tbody tr,
-  body:not(.mobile-table-as-table) .liquidity-split-table tbody tr {
+  body:not(.mobile-table-as-table) #table-costi > tbody > tr,
+  body:not(.mobile-table-as-table) #table-budget > tbody > tr,
+  body:not(.mobile-table-as-table) #table-categories-summary > tbody > tr,
+  body:not(.mobile-table-as-table) #table-savings-history > tbody > tr,
+  body:not(.mobile-table-as-table) #table-mutuo-utenti > tbody > tr,
+  body:not(.mobile-table-as-table) .liquidity-split-table > tbody > tr {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 8px 10px;
@@ -4093,23 +4093,23 @@ body.dark-mode .table-view-toggle .btn-toggle:hover {
     transition: background 0.15s ease, box-shadow 0.15s ease;
   }
 
-  body.dark-mode:not(.mobile-table-as-table) #table-costi tbody tr,
-  body.dark-mode:not(.mobile-table-as-table) #table-budget tbody tr,
-  body.dark-mode:not(.mobile-table-as-table) #table-categories-summary tbody tr,
-  body.dark-mode:not(.mobile-table-as-table) #table-savings-history tbody tr,
-  body.dark-mode:not(.mobile-table-as-table) #table-mutuo-utenti tbody tr,
-  body.dark-mode:not(.mobile-table-as-table) .liquidity-split-table tbody tr {
+  body.dark-mode:not(.mobile-table-as-table) #table-costi > tbody > tr,
+  body.dark-mode:not(.mobile-table-as-table) #table-budget > tbody > tr,
+  body.dark-mode:not(.mobile-table-as-table) #table-categories-summary > tbody > tr,
+  body.dark-mode:not(.mobile-table-as-table) #table-savings-history > tbody > tr,
+  body.dark-mode:not(.mobile-table-as-table) #table-mutuo-utenti > tbody > tr,
+  body.dark-mode:not(.mobile-table-as-table) .liquidity-split-table > tbody > tr {
     background: var(--md-sys-color-surface-container, #211f26);
     border-color: rgba(255, 255, 255, 0.08);
   }
 
   /* Reset padding e bordi celle nelle card */
-  body:not(.mobile-table-as-table) #table-costi tbody tr td,
-  body:not(.mobile-table-as-table) #table-budget tbody tr td,
-  body:not(.mobile-table-as-table) #table-categories-summary tbody tr td,
-  body:not(.mobile-table-as-table) #table-savings-history tbody tr td,
-  body:not(.mobile-table-as-table) #table-mutuo-utenti tbody tr td,
-  body:not(.mobile-table-as-table) .liquidity-split-table tbody tr td {
+  body:not(.mobile-table-as-table) #table-costi tbody > tr > td,
+  body:not(.mobile-table-as-table) #table-budget tbody > tr > td,
+  body:not(.mobile-table-as-table) #table-categories-summary tbody > tr > td,
+  body:not(.mobile-table-as-table) #table-savings-history tbody > tr > td,
+  body:not(.mobile-table-as-table) #table-mutuo-utenti tbody > tr > td,
+  body:not(.mobile-table-as-table) .liquidity-split-table tbody > tr > td {
     padding: 0;
     border: none;
   }
@@ -4214,6 +4214,11 @@ body.dark-mode .table-view-toggle .btn-toggle:hover {
   /* Note a tutta larghezza in fondo alla card */
   body:not(.mobile-table-as-table) .col-note {
     grid-column: 1 / -1;
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
     font-size: 12px;
     color: var(--md-sys-color-outline);
     padding-top: 6px;
@@ -4227,7 +4232,7 @@ body.dark-mode .table-view-toggle .btn-toggle:hover {
   }
 
   /* Tabella Storico Risparmi su Mobile */
-  body:not(.mobile-table-as-table) #table-savings-history tbody tr {
+  body:not(.mobile-table-as-table) #table-savings-history > tbody > tr {
     grid-template-columns: repeat(2, 1fr);
   }
   body:not(.mobile-table-as-table) #table-savings-history .col-savings-date {
@@ -4346,7 +4351,7 @@ body.dark-mode .table-view-toggle .btn-toggle:hover {
 }
 
 /* ==============================================================================
-   RICH TEXT EDITOR & RENDERED CONTENT (v1.9.25)
+   RICH TEXT EDITOR & RENDERED CONTENT (v1.9.28)
    ============================================================================== */
 
 .rich-editor-wrapper {
@@ -4661,6 +4666,154 @@ body.dark-mode .rich-text-rendered mark {
 }
 
 
+
+/* ==============================================================================
+   TABELLE NELLE NOTE & CONTENUTI RICH TEXT (ISOLAMENTO TOTALE)
+   ============================================================================== */
+
+/* Wrapper scrollabile orizzontalmente per qualsiasi tabella ricca */
+.rich-table-wrapper,
+.rich-text-rendered .rich-table-wrapper {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  margin: 10px 0 !important;
+  border: 1px solid var(--md-sys-color-surface-container-high, rgba(0, 0, 0, 0.12)) !important;
+  border-radius: 12px !important;
+  background: var(--md-sys-color-surface, #ffffff) !important;
+  box-sizing: border-box !important;
+}
+
+/* Tabella ricca: display table invariato e larghezza max-content */
+.rich-table-wrapper table,
+.rich-text-rendered table,
+.rich-editor-content table {
+  display: table !important;
+  width: 100% !important;
+  min-width: max-content !important;
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+  font-size: 12px !important;
+  line-height: 1.35 !important;
+  margin: 0 !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+/* Protezione specifica per evitare che i thead/tbody/tr vengano trasformati in card */
+.rich-table-wrapper thead,
+.rich-text-rendered table thead,
+.rich-editor-content table thead {
+  display: table-header-group !important;
+}
+
+.rich-table-wrapper tbody,
+.rich-text-rendered table tbody,
+.rich-editor-content table tbody {
+  display: table-row-group !important;
+  flex-direction: row !important;
+  gap: 0 !important;
+  width: auto !important;
+}
+
+.rich-table-wrapper tr,
+.rich-text-rendered table tr,
+.rich-editor-content table tr {
+  display: table-row !important;
+  grid-template-columns: none !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  width: auto !important;
+}
+
+.rich-table-wrapper th,
+.rich-table-wrapper td,
+.rich-text-rendered table th,
+.rich-text-rendered table td,
+.rich-editor-content table th,
+.rich-editor-content table td {
+  display: table-cell !important;
+  padding: 8px 12px !important;
+  border: 1px solid var(--md-sys-color-surface-container-high, rgba(0, 0, 0, 0.12)) !important;
+  text-align: left !important;
+  vertical-align: middle !important;
+  white-space: nowrap !important;
+  font-size: 12px !important;
+  color: var(--md-sys-color-on-surface) !important;
+  box-sizing: border-box !important;
+}
+
+.rich-table-wrapper th,
+.rich-text-rendered table th,
+.rich-editor-content table th {
+  background-color: var(--md-sys-color-surface-container-high, #ece6f0) !important;
+  font-weight: 700 !important;
+  color: var(--md-sys-color-on-surface) !important;
+}
+
+.rich-table-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+.rich-table-wrapper::-webkit-scrollbar-track {
+  background: var(--md-sys-color-surface-container-low, rgba(0, 0, 0, 0.03));
+  border-radius: 0 0 12px 12px;
+}
+.rich-table-wrapper::-webkit-scrollbar-thumb {
+  background: var(--md-sys-color-outline-variant, rgba(0, 0, 0, 0.25));
+  border-radius: 6px;
+}
+
+body.dark-mode .rich-table-wrapper {
+  background: var(--md-sys-color-surface-container, #211f26) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+body.dark-mode .rich-table-wrapper::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.03);
+}
+body.dark-mode .rich-table-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+body.dark-mode .rich-table-wrapper th,
+body.dark-mode .rich-text-rendered table th,
+body.dark-mode .rich-editor-content table th {
+  background-color: var(--md-sys-color-surface-container-highest, #36343b) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+}
+
+body.dark-mode .rich-table-wrapper td,
+body.dark-mode .rich-text-rendered table td,
+body.dark-mode .rich-editor-content table td {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.rich-table-wrapper tr:nth-child(even) td,
+.rich-text-rendered table tr:nth-child(even) td {
+  background-color: var(--md-sys-color-surface-container-lowest, rgba(0, 0, 0, 0.02)) !important;
+}
+
+body.dark-mode .rich-table-wrapper tr:nth-child(even) td,
+body.dark-mode .rich-text-rendered table tr:nth-child(even) td {
+  background-color: rgba(255, 255, 255, 0.025) !important;
+}
+
+.rich-text-rendered {
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.rich-editor-content {
+  overflow-x: auto;
+}
+
 @media (max-width: 600px) {
   .rich-editor-toolbar {
     padding: 6px 6px;
@@ -4684,4 +4837,77 @@ body.dark-mode .rich-text-rendered mark {
     font-size: 14px;
     min-height: 80px;
   }
+}
+
+/* ==============================================================================
+   MENU CONTESTUALE GESTIONE TABELLA RICH TEXT (MD3)
+   ============================================================================== */
+.rich-table-menu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+@media (max-width: 480px) {
+  .rich-table-menu-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.rich-table-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--md-sys-color-surface-container-high, rgba(0, 0, 0, 0.12));
+  background: var(--md-sys-color-surface-container-low, #f7f2fa);
+  color: var(--md-sys-color-on-surface, #1d1b20);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+.rich-table-menu-item:hover,
+.rich-table-menu-item:focus-visible {
+  background: var(--md-sys-color-surface-container-high, #ece6f0);
+}
+.rich-table-menu-item:active {
+  transform: scale(0.98);
+}
+.rich-table-menu-item .material-symbols-outlined {
+  font-size: 20px;
+  color: var(--md-sys-color-primary, #6750a4);
+}
+.rich-table-menu-danger {
+  grid-column: 1 / -1;
+  background: var(--md-sys-color-error-container, #ffdad6);
+  color: var(--md-sys-color-on-error-container, #410002);
+  border-color: transparent;
+}
+.rich-table-menu-danger .material-symbols-outlined {
+  color: var(--md-sys-color-error, #ba1a1a);
+}
+.rich-table-menu-danger:hover,
+.rich-table-menu-danger:focus-visible {
+  background: #ffb4ab;
+}
+
+body.dark-mode .rich-table-menu-item {
+  background: var(--md-sys-color-surface-container, #211f26);
+  color: var(--md-sys-color-on-surface, #e6e0e9);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+body.dark-mode .rich-table-menu-item:hover,
+body.dark-mode .rich-table-menu-item:focus-visible {
+  background: var(--md-sys-color-surface-container-highest, #36343b);
+}
+body.dark-mode .rich-table-menu-danger {
+  background: rgba(147, 0, 10, 0.35);
+  color: #ffdad6;
+  border-color: rgba(255, 180, 171, 0.2);
+}
+body.dark-mode .rich-table-menu-danger .material-symbols-outlined {
+  color: #ffb4ab;
 }
