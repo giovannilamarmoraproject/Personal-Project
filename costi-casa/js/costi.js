@@ -591,7 +591,7 @@ function buildDynamicForms() {
   let costiHead = `
                 <th style="width: 40px;"></th>
                 <th class="sortable" onclick="sortTable('costi', 'cat')">Categoria <span class="material-symbols-outlined sort-icon">sort</span></th>
-                <th class="sortable" onclick="sortTable('costi', 'desc')">Descrizione <span class="material-symbols-outlined sort-icon">sort</span></th>
+                <th class="sortable col-desc" onclick="sortTable('costi', 'desc')">Descrizione <span class="material-symbols-outlined sort-icon">sort</span></th>
                 <th class="sortable" onclick="sortTable('costi', 'prezzo')">Prezzo <span class="material-symbols-outlined sort-icon">sort</span></th>
             `;
   appData.settings.users.forEach((u) => {
@@ -600,7 +600,7 @@ function buildDynamicForms() {
   costiHead += `
                 <th class="sortable" onclick="sortTable('costi', 'restante')">Restante <span class="material-symbols-outlined sort-icon">sort</span></th>
                 <th class="sortable" onclick="sortTable('costi', 'confermato')">Stato <span class="material-symbols-outlined sort-icon">sort</span></th>
-                <th>Note</th>
+                <th class="col-note">Note</th>
                 <th style="width: 80px; text-align: center;">Azioni</th>
             `;
   let thCosti = document.getElementById("table-costi-header");
@@ -608,14 +608,14 @@ function buildDynamicForms() {
 
   let budgetHead = `
                 <th style="width: 40px;"></th>
-                <th class="sortable" onclick="sortTable('budget', 'desc')">Descrizione <span class="material-symbols-outlined sort-icon">sort</span></th>
+                <th class="sortable col-desc" onclick="sortTable('budget', 'desc')">Descrizione <span class="material-symbols-outlined sort-icon">sort</span></th>
             `;
   appData.settings.users.forEach((u) => {
     budgetHead += `<th class="sortable" onclick="sortTable('budget', '${u.id}')">${u.name} (€) <span class="material-symbols-outlined sort-icon">sort</span></th>`;
   });
   budgetHead += `
                 <th class="sortable" onclick="sortTable('budget', 'totale')">Totale (€) <span class="material-symbols-outlined sort-icon">sort</span></th>
-                <th>Note</th>
+                <th class="col-note">Note</th>
                 <th style="width: 80px; text-align: center;">Azioni</th>
             `;
   let thBudget = document.getElementById("table-budget-header");
@@ -1544,7 +1544,7 @@ function renderDetailView(item) {
   const restante = (item.prezzo || 0) - sumPaid;
 
   const isConfermato = item.confermato === true;
-  const statusBadgeHTML = `<span class="status-badge ${isConfermato ? "confermato" : "non-confermato"}" style="cursor: pointer; margin-left: 8px;" title="Clicca per invertire lo stato" onclick="toggleCostoConfermato(${item.id})"><span class="material-symbols-outlined">${isConfermato ? "check_circle" : "cancel"}</span> ${isConfermato ? "Confermato" : "Non confermato"}</span>`;
+  const statusBadgeHTML = `<span class="status-badge ${isConfermato ? "confermato" : "non-confermato"}" style="cursor: pointer; margin-left: 8px;" title="Clicca per invertire lo stato" onclick="toggleCostoConfermato(${item.id})"><span class="material-symbols-outlined">${isConfermato ? "check_circle" : "cancel"}</span><span class="status-text">${isConfermato ? "Confermato" : "Non confermato"}</span></span>`;
   const isPagato = restante <= 0.005 && ((item.prezzo || 0) > 0 || sumPaid > 0);
   const pagatoBadgeHTML = isPagato ? `<span class="badge-pagato" style="margin-left: 8px;"><span class="material-symbols-outlined">check_circle</span> Pagato</span>` : "";
 
@@ -2267,7 +2267,7 @@ function renderTables() {
 
       // Stato Confermato / Non Confermato
       const isConfermato = c.confermato === true;
-      const statusBadge = `<span class="status-badge ${isConfermato ? "confermato" : "non-confermato"}" title="Clicca per invertire lo stato" onclick="event.stopPropagation(); toggleCostoConfermato(${c.id})"><span class="material-symbols-outlined">${isConfermato ? "check_circle" : "cancel"}</span> ${isConfermato ? "Confermato" : "Non confermato"}</span>`;
+      const statusBadge = `<span class="status-badge ${isConfermato ? "confermato" : "non-confermato"}" title="Clicca per invertire lo stato" onclick="event.stopPropagation(); toggleCostoConfermato(${c.id})"><span class="material-symbols-outlined">${isConfermato ? "check_circle" : "cancel"}</span><span class="status-text">${isConfermato ? "Confermato" : "Non confermato"}</span></span>`;
 
       // Badge Pagato nella colonna Restante: se saldato mostra direttamente il badge Pagato
       const isPagato = restante <= 0.005 && ((c.prezzo || 0) > 0 || sumPaid > 0);
@@ -2285,7 +2285,7 @@ function renderTables() {
       });
       rowHtml += `<td class="col-restante" data-label="Restante" style="font-weight: 500; white-space: nowrap;">${restanteHtml}</td>
                   <td class="col-stato" data-label="Stato">${statusBadge}</td>
-                  <td class="col-note ${hasNote ? "" : "col-note-empty"}" data-label="Note" style="white-space: pre-wrap;">${renderRichContent(c.note, "costi", c.id, "note")}</td>
+                  <td class="col-note ${hasNote ? "" : "col-note-empty"}" data-label="Note">${renderRichContent(c.note, "costi", c.id, "note")}</td>
                   <td class="col-actions" data-label="Azioni" style="white-space: nowrap;"><div style="display: inline-flex; align-items: center; gap: 4px;">${warningIcon}<button class="btn-icon" title="Modifica voce" onclick="event.stopPropagation(); openEditModal('costo', ${c.id})"><span class="material-symbols-outlined">edit</span></button><button class="btn-icon" title="Elimina voce" onclick="event.stopPropagation(); deleteCostItem(${c.id})"><span class="material-symbols-outlined" style="color: var(--md-sys-color-error);">delete</span></button></div></td>`;
       tr.innerHTML = rowHtml;
       tCosti.appendChild(tr);
@@ -2316,7 +2316,7 @@ function renderTables() {
         rowHtml += `<td class="col-user" data-user="${u.id}" data-label="Quota ${u.name}">${formatColoredCurrency(b[u.id] || 0)}</td>`;
       });
       rowHtml += `<td class="col-totale" data-label="Totale" style="font-weight: 500;">${formatColoredCurrency(sumB)}</td>
-                  <td class="col-note ${hasNoteB ? "" : "col-note-empty"}" data-label="Note" style="white-space: pre-wrap;">${renderRichContent(b.note, "budget", b.id, "note")}</td>
+                  <td class="col-note ${hasNoteB ? "" : "col-note-empty"}" data-label="Note">${renderRichContent(b.note, "budget", b.id, "note")}</td>
                   <td class="col-actions" data-label="Azioni" style="white-space: nowrap;"><div style="display: inline-flex; align-items: center; gap: 4px;">${b.isDebito ? `<button class="btn-icon" title="Modifica debito nella sezione Debiti" onclick="openEditDebitoModal(${b.debitoId})"><span class="material-symbols-outlined">edit</span></button><button class="btn-icon" title="Elimina debito" onclick="deleteDebito(${b.debitoId})"><span class="material-symbols-outlined" style="color: var(--md-sys-color-error);">delete</span></button>` : `<button class="btn-icon" title="Modifica voce" onclick="openEditModal('budget', ${b.id})"><span class="material-symbols-outlined">edit</span></button><button class="btn-icon" title="Elimina voce" onclick="deleteBudgetItem(${b.id})"><span class="material-symbols-outlined" style="color: var(--md-sys-color-error);">delete</span></button>`}</div></td>`;
       tr.innerHTML = rowHtml;
       tBudget.appendChild(tr);
@@ -2344,7 +2344,7 @@ function renderTables() {
       });
       rRow += `
         <td class="col-totale" data-label="Totale" style="font-weight: 500;">${formatColoredCurrency(totRisparmi)}</td>
-        <td class="col-note" data-label="Note" style="white-space: pre-wrap;"><small>Dal monitoraggio risparmio</small></td>
+        <td class="col-note" data-label="Note"><small>Dal monitoraggio risparmio</small></td>
         <td class="col-actions" data-label="Azioni"><button class="btn-icon" onclick="nav('savings')" title="Voce bloccata (gestita nel monitoraggio risparmi)"><span class="material-symbols-outlined" style="color: var(--md-sys-color-outline);">lock</span></button></td>
       </tr>`;
       tBudget.insertAdjacentHTML("beforeend", rRow);

@@ -1,10 +1,22 @@
-const CACHE_NAME = "casa-app-v1.9.39"; // Incrementa ad ogni rilascio di codice
+const CACHE_NAME = "casa-app-v1.9.40"; // Incrementa ad ogni rilascio di codice
 const MEDIA_CACHE = "casa-media-v1"; // Does not get deleted on version bumps
 
 const urlsToCache = [
   "./",
   "./index.html",
   "./style.css",
+  "./font/fonts.css",
+  "./font/google-sans-flex-latin.woff2",
+  "./font/google-sans-flex-latin-ext.woff2",
+  "./font/google-sans-flex-vietnamese.woff2",
+  "./font/google-sans-flex-tifinagh.woff2",
+  "./font/google-sans-flex-syriac.woff2",
+  "./font/google-sans-flex-symbols.woff2",
+  "./font/google-sans-flex-nushu.woff2",
+  "./font/google-sans-flex-math.woff2",
+  "./font/google-sans-flex-cherokee.woff2",
+  "./font/google-sans-flex-canadian-aboriginal.woff2",
+  "./font/material-symbols-outlined.woff2",
   "./js/config.js",
   "./js/ui.js",
   "./js/storage.js",
@@ -61,6 +73,8 @@ self.addEventListener("fetch", (event) => {
     url.pathname.includes("/js/") ||
     url.pathname.endsWith(".js") ||
     url.pathname.endsWith("/style.css") ||
+    url.pathname.includes("/font/") ||
+    url.pathname.endsWith(".woff2") ||
     url.pathname.endsWith("/manifest.json");
 
   // 1. STRATEGIA NETWORK-FIRST per i file di logica e interfaccia

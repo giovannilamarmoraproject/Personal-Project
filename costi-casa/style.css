@@ -666,6 +666,31 @@ th {
   color: var(--md-sys-color-outline);
   font-size: 13px;
 }
+
+/* Protezione tabelle su schermi desktop compatti / laptop (previene lo schiacciamento della colonna Note) */
+#table-costi,
+#table-budget,
+#table-savings-history {
+  min-width: 1040px;
+}
+
+th.col-desc,
+td.col-desc {
+  min-width: 180px;
+  max-width: 320px;
+  white-space: normal !important;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+th.col-note,
+td.col-note {
+  min-width: 240px;
+  max-width: 440px;
+  white-space: normal !important;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
 th.sortable {
   cursor: pointer;
   user-select: none;
@@ -1847,9 +1872,10 @@ input[type="color"] {
 
 /* Badge Stato Confermato / Non Confermato nella tabella Costi */
 .status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center;
+  gap: 5px;
   font-size: 11px;
   font-weight: 600;
   padding: 3px 9px;
@@ -1858,10 +1884,25 @@ input[type="color"] {
   user-select: none;
   white-space: nowrap;
   transition: all 0.2s ease;
-  line-height: 1.2;
+  line-height: 1;
+  vertical-align: middle;
+  box-sizing: border-box;
 }
 .status-badge .material-symbols-outlined {
-  font-size: 13px;
+  font-size: 13.5px;
+  width: 14px;
+  height: 14px;
+  line-height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+.status-badge .status-text {
+  line-height: 1;
+  display: inline-block;
+  vertical-align: middle;
 }
 .status-badge.confermato {
   background-color: rgba(46, 125, 50, 0.12);
@@ -4077,6 +4118,7 @@ body.dark-mode .table-view-toggle .btn-toggle:hover {
   body:not(.mobile-table-as-table) .liquidity-split-table {
     display: block;
     width: 100%;
+    min-width: 0 !important;
     border-collapse: separate;
     border-spacing: 0;
   }
@@ -4256,8 +4298,7 @@ body.dark-mode .table-view-toggle .btn-toggle:hover {
   body:not(.mobile-table-as-table) .col-restante .sensitive-value,
   body:not(.mobile-table-as-table) .col-totale .sensitive-value,
   body:not(.mobile-table-as-table) .col-metric .sensitive-value,
-  body:not(.mobile-table-as-table) .col-stato .badge,
-  body:not(.mobile-table-as-table) .col-stato .status-badge {
+  body:not(.mobile-table-as-table) .col-stato .badge {
     max-width: 100%;
     padding-right: 4px;
     box-sizing: border-box;
@@ -4265,6 +4306,15 @@ body.dark-mode .table-view-toggle .btn-toggle:hover {
     text-overflow: ellipsis;
     white-space: nowrap;
     display: inline-block;
+  }
+
+  body:not(.mobile-table-as-table) .col-stato .status-badge {
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-flex !important;
   }
 
   /* Allineamento a sinistra forzato per tutti i contenuti interni delle card */
@@ -4415,7 +4465,7 @@ body.dark-mode .table-view-toggle .btn-toggle:hover {
 }
 
 /* ==============================================================================
-   RICH TEXT EDITOR & RENDERED CONTENT (v1.9.39)
+   RICH TEXT EDITOR & RENDERED CONTENT (v1.9.40)
    ============================================================================== */
 
 .rich-editor-wrapper {
@@ -4680,7 +4730,9 @@ body.dark-mode .rich-text-rendered mark {
   line-height: 1.4;
   color: var(--md-sys-color-on-surface);
   text-align: left;
-  white-space: pre-wrap;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: break-word;
 }
 
 .col-note .rich-text-rendered h3,

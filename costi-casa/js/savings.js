@@ -864,7 +864,7 @@ function renderSavingsHistoryTable(userId) {
       <td class="col-metric" data-label="Risparmio Netto" style="font-weight: 600; color: ${isNettoPos ? 'var(--md-sys-color-success)' : 'var(--md-sys-color-error)'};">${formatCurrency(snap.risultati.risparmioNetto)}</td>
       <td class="col-metric" data-label="Variazione (Δ)">${deltaHtml}</td>
       <td class="col-metric" data-label="Liquidità Netta" style="font-weight: 600;">${formatCurrency(snap.risultati.liquiditaNetta)}</td>
-      <td class="col-note ${hasNoteS ? "" : "col-note-empty"}" data-label="Note" style="font-size: 12px; color: var(--md-sys-color-outline); white-space: pre-wrap;">${renderRichContent(snap.note, "savings", snap.id, "note")}</td>
+      <td class="col-note ${hasNoteS ? "" : "col-note-empty"}" data-label="Note" style="font-size: 12px; color: var(--md-sys-color-outline);">${renderRichContent(snap.note, "savings", snap.id, "note")}</td>
       <td class="col-actions" data-label="Azioni" style="white-space: nowrap;">
         <button class="btn-icon" title="Modifica punto di storico" onclick="openEditSavingsSnapshot('${snap.id}')" style="margin-right: 4px;">
           <span class="material-symbols-outlined" style="font-size: 18px; color: var(--md-sys-color-primary);">edit</span>
