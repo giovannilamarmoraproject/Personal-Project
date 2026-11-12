@@ -48,6 +48,37 @@ function importDataJSON(event) {
   reader.readAsText(file);
 }
 
+async function fetchGistFileContent(fileObj) {
+  if (!fileObj) return null;
+  if (fileObj.truncated && fileObj.raw_url) {
+    const rawRes = await fetch(`${fileObj.raw_url}?t=${Date.now()}`, {
+      cache: "no-store",
+    });
+    if (!rawRes.ok) {
+      throw new Error("Errore download contenuto completo da raw_url");
+    }
+    return await rawRes.text();
+  }
+  return fileObj.content || null;
+}
+
+function safeSaveCasaData() {
+  try {
+    localStorage.setItem("casaData", JSON.stringify(appData));
+    return true;
+  } catch (e) {
+    console.error("Errore salvataggio localStorage (possibile limite spazio):", e);
+    if (typeof showNotification === "function") {
+      showNotification(
+        "Spazio locale esaurito",
+        "Troppe foto salvate in locale (~5MB max). Usa link Google Drive per evitare blocchi.",
+        "warning",
+      );
+    }
+    return false;
+  }
+}
+
 async function wizardSyncFromGist() {
   const token = document.getElementById("wizard-github-token").value.trim();
   const gistId = document.getElementById("wizard-github-gistId").value.trim();
@@ -77,7 +108,7 @@ async function wizardSyncFromGist() {
 
     if (response.ok) {
       const data = await response.json();
-      const content = data.files["casaData.json"]?.content;
+      const content = await fetchGistFileContent(data.files["casaData.json"]);
       if (content) {
         const parsed = JSON.parse(content);
         appData = parsed;
@@ -87,7 +118,7 @@ async function wizardSyncFromGist() {
         casaGithubConfig.token = token;
         casaGithubConfig.gistId = gistId;
         saveGithubConfig();
-        localStorage.setItem("casaData", JSON.stringify(appData));
+        safeSaveCasaData();
 
         closeModalOverlay("wizardModal");
         renderAll();
@@ -231,7 +262,7 @@ async function syncToGist(forcePull = false, manualAction = false) {
         );
         if (response.ok) {
           const data = await response.json();
-          const content = data.files["casaData.json"]?.content;
+          const content = await fetchGistFileContent(data.files["casaData.json"]);
           if (content) {
             const parsed = JSON.parse(content);
             const remoteTime = parsed.lastUpdated || 0;
@@ -240,7 +271,7 @@ async function syncToGist(forcePull = false, manualAction = false) {
             if (remoteTime > localTime) {
               appData = parsed;
               sanitizeData();
-              localStorage.setItem("casaData", JSON.stringify(appData));
+              safeSaveCasaData();
               renderAll();
               showNotification("Dati scaricati e sincronizzati da GitHub!");
             } else if (localTime > remoteTime) {
@@ -308,7 +339,7 @@ function saveDataLocally(skipTimestamp = false) {
   if (!skipTimestamp) {
     appData.lastUpdated = Date.now();
   }
-  localStorage.setItem("casaData", JSON.stringify(appData));
+  safeSaveCasaData();
   renderAll();
 
   // Background sync

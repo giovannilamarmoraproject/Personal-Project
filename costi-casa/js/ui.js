@@ -267,7 +267,7 @@ async function handleHeroPhotoUpload(event) {
   if (!file) return;
 
   try {
-    const compressedUrl = await compressImageFile(file, 1920, 1080, 0.82);
+    const compressedUrl = await compressImageFile(file, 1600, 900, 0.74, 180);
     appData.settings.heroImage = compressedUrl;
     const urlInput = document.getElementById("hero-image-url");
     if (urlInput) urlInput.value = compressedUrl;
@@ -429,7 +429,7 @@ function renderHeaderAndSettings() {
         } else {
           let badgeTag = isPlan ? "Piantina" : item.room;
           divEdit.innerHTML = `
-                                <img src="${fileInfo.url}" alt="${item.title}">
+                                <img src="${fileInfo.url}" alt="${escapeHTML(item.title)}" referrerpolicy="no-referrer" onerror="if(this.dataset.fb)return;this.dataset.fb='1';var m=this.src.match(/[?&]id=([^&]+)/);if(m)this.src='https://lh3.googleusercontent.com/d/'+m[1]+'=w2000';">
                                 <span style="position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.65); color:#fff; font-size:11px; padding:4px 8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                                     ${item.title} (${badgeTag})
                                 </span>

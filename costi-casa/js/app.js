@@ -1,6 +1,6 @@
 /**
  * ============================================================================== 
- * APPLICATION ENTRY POINT, AGGREGATORE VISTE & AVVIO PWA (v1.9.40)
+ * APPLICATION ENTRY POINT, AGGREGATORE VISTE & AVVIO PWA (v1.9.42)
  * ============================================================================== 
  */
 

@@ -1,5 +1,5 @@
-const CACHE_NAME = "casa-app-v1.9.40"; // Incrementa ad ogni rilascio di codice
-const MEDIA_CACHE = "casa-media-v1"; // Does not get deleted on version bumps
+const CACHE_NAME = "casa-app-v1.9.42"; // Incrementa ad ogni rilascio di codice
+const MEDIA_CACHE = "casa-media-v2"; // Does not get deleted on version bumps unless bumped
 
 const urlsToCache = [
   "./",
@@ -122,8 +122,9 @@ self.addEventListener("fetch", (event) => {
     event.request.url.includes("googleusercontent.com");
 
   // 2. STRATEGIA CACHE-FIRST per immagini, Google Fonts e CDN esterni (SweetAlert2)
+  // IMPORTANTE: NON usare ignoreSearch:true qui, altrimenti tutte le immagini Google Drive (/thumbnail?id=...) vengono confuse tra loro!
   event.respondWith(
-    caches.match(event.request, { ignoreSearch: true }).then((response) => {
+    caches.match(event.request).then((response) => {
       if (response) {
         return response;
       }

@@ -13,7 +13,7 @@ async function handleRenderPhotoUpload(event) {
   const typeSelect = document.getElementById("new-render-type");
 
   try {
-    const compressedUrl = await compressImageFile(file, 1920, 1920, 0.8);
+    const compressedUrl = await compressImageFile(file, 1440, 1440, 0.74, 180);
     if (urlInput) urlInput.value = compressedUrl;
     if (titleInput && !titleInput.value.trim()) {
       const cleanName = file.name.replace(/\.[^/.]+$/, "").replace(/[_-]/g, " ");
@@ -1197,11 +1197,72 @@ let currentNoteImages = [];
  * Comprime un'immagine lato client su canvas prima del salvataggio.
  * Riduce la risoluzione max a 1280px e converte in JPEG con qualità 0.8 per limitare la dimensione a ~80-150KB.
  */
+/**
+ * Comprime una stringa DataURL ridimensionandola e convertendola in WebP (con fallback JPEG)
+ * riducendo progressivamente la qualità se supera `targetMaxKB`.
+ */
+function compressImageFromDataUrl(
+  srcDataUrl,
+  maxWidth = 1024,
+  maxHeight = 1024,
+  quality = 0.72,
+  targetMaxKB = 120,
+) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      let width = img.width;
+      let height = img.height;
+
+      if (width > maxWidth || height > maxHeight) {
+        if (width / height > maxWidth / maxHeight) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        } else {
+          width = Math.round((width * maxHeight) / height);
+          height = maxHeight;
+        }
+      }
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // Usa WebP se supportato dal browser (30-45% più leggero di JPEG a parità di nitidezza)
+      let mime = "image/webp";
+      let testUrl = canvas.toDataURL(mime, quality);
+      if (!testUrl.startsWith("data:image/webp")) {
+        mime = "image/jpeg";
+        testUrl = canvas.toDataURL(mime, quality);
+      }
+
+      let curQuality = quality;
+      let bestUrl = testUrl;
+      const maxBytes = targetMaxKB * 1024;
+      const calcBytes = (u) => Math.round((u.length * 3) / 4);
+
+      while (calcBytes(bestUrl) > maxBytes && curQuality > 0.44) {
+        curQuality = Math.max(0.42, curQuality - 0.08);
+        bestUrl = canvas.toDataURL(mime, curQuality);
+      }
+
+      resolve(bestUrl);
+    };
+    img.onerror = (err) => reject(err);
+    img.src = srcDataUrl;
+  });
+}
+
 function compressImageFile(
   file,
-  maxWidth = 1280,
-  maxHeight = 1280,
-  quality = 0.8,
+  maxWidth = 1024,
+  maxHeight = 1024,
+  quality = 0.72,
+  targetMaxKB = 120,
 ) {
   return new Promise((resolve, reject) => {
     if (!file || !file.type.startsWith("image/")) {
@@ -1210,36 +1271,95 @@ function compressImageFile(
     }
     const reader = new FileReader();
     reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        let width = img.width;
-        let height = img.height;
-
-        if (width > maxWidth || height > maxHeight) {
-          if (width / height > maxWidth / maxHeight) {
-            height = Math.round((height * maxWidth) / width);
-            width = maxWidth;
-          } else {
-            width = Math.round((width * maxHeight) / height);
-            height = maxHeight;
-          }
-        }
-
-        const canvas = document.createElement("canvas");
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, width, height);
-
-        const dataUrl = canvas.toDataURL("image/jpeg", quality);
-        resolve(dataUrl);
-      };
-      img.onerror = (err) => reject(err);
-      img.src = e.target.result;
+      compressImageFromDataUrl(
+        e.target.result,
+        maxWidth,
+        maxHeight,
+        quality,
+        targetMaxKB,
+      )
+        .then(resolve)
+        .catch(reject);
     };
     reader.onerror = (err) => reject(err);
     reader.readAsDataURL(file);
   });
+}
+
+/**
+ * Ricomprime in blocco tutte le immagini base64 già salvate nell'app (Galleria, Appunti, Q&A, Task, Copertina).
+ */
+async function optimizeAllStoredImages() {
+  const isDataImg = (s) => typeof s === "string" && s.startsWith("data:image/");
+  let count = 0;
+  let bytesBefore = 0;
+  let bytesAfter = 0;
+
+  const tryOptimize = async (orig, maxW, maxH, q, maxKB) => {
+    if (!isDataImg(orig)) return orig;
+    bytesBefore += orig.length;
+    try {
+      const next = await compressImageFromDataUrl(orig, maxW, maxH, q, maxKB);
+      if (next && next.length < orig.length) {
+        count++;
+        bytesAfter += next.length;
+        return next;
+      }
+    } catch (e) {
+      console.warn("Impossibile ottimizzare immagine:", e);
+    }
+    bytesAfter += orig.length;
+    return orig;
+  };
+
+  if (appData.settings && isDataImg(appData.settings.heroImage)) {
+    appData.settings.heroImage = await tryOptimize(
+      appData.settings.heroImage,
+      1600,
+      900,
+      0.74,
+      180,
+    );
+  }
+
+  if (appData.settings && Array.isArray(appData.settings.renders)) {
+    for (const r of appData.settings.renders) {
+      if (r && isDataImg(r.url)) {
+        r.url = await tryOptimize(r.url, 1440, 1440, 0.74, 180);
+      }
+    }
+  }
+
+  for (const list of [appData.notes, appData.qa, appData.tasks]) {
+    if (!Array.isArray(list)) continue;
+    for (const item of list) {
+      if (!item || !Array.isArray(item.images)) continue;
+      for (let i = 0; i < item.images.length; i++) {
+        if (isDataImg(item.images[i])) {
+          item.images[i] = await tryOptimize(
+            item.images[i],
+            1024,
+            1024,
+            0.72,
+            120,
+          );
+        }
+      }
+    }
+  }
+
+  if (count > 0) {
+    saveDataLocally();
+    const mbBefore = (bytesBefore / (1024 * 1024)).toFixed(2);
+    const mbAfter = (bytesAfter / (1024 * 1024)).toFixed(2);
+    M3Swal.fire(
+      "Immagini Ottimizzate",
+      `Compresse ${count} immagini: peso ridotto da ${mbBefore} MB a ${mbAfter} MB.`,
+      "success",
+    );
+  } else {
+    showNotification("Tutte le immagini sono già ottimizzate!", "", "info");
+  }
 }
 
 async function handleNoteImageUpload(event) {
@@ -1773,7 +1893,7 @@ function renderGalleryView() {
         .map(
           (item) => `
                         <div class="gallery-item" onclick="openLightbox('${item.fileInfo.url}')">
-                            <img src="${item.fileInfo.url}" alt="${item.title}">
+                            <img src="${item.fileInfo.url}" alt="${escapeHTML(item.title)}" referrerpolicy="no-referrer" onerror="if(this.dataset.fb)return;this.dataset.fb='1';var m=this.src.match(/[?&]id=([^&]+)/);if(m)this.src='https://lh3.googleusercontent.com/d/'+m[1]+'=w2000';">
                             <span style="position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.65); color:#fff; font-size:12px; padding:6px 12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                                 ${item.title}
                             </span>
@@ -1808,7 +1928,7 @@ function renderGalleryView() {
         .map(
           (item) => `
                         <div class="gallery-item" onclick="openLightbox('${item.fileInfo.url}')">
-                            <img src="${item.fileInfo.url}" alt="${item.title}">
+                            <img src="${item.fileInfo.url}" alt="${escapeHTML(item.title)}" referrerpolicy="no-referrer" onerror="if(this.dataset.fb)return;this.dataset.fb='1';var m=this.src.match(/[?&]id=([^&]+)/);if(m)this.src='https://lh3.googleusercontent.com/d/'+m[1]+'=w2000';">
                             <span style="position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,0.65); color:#fff; font-size:12px; padding:6px 12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                                 ${item.title}
                             </span>
