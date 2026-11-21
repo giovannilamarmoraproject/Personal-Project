@@ -46,5 +46,13 @@
     "image": "https://img.magnific.com/free-vector/abstract-background-with-network-communications-design_1048-19058.jpg?semt=ais_hybrid&w=740&q=80",
     "url": "./linkatutto/?demo=true",
     "tags": ["Gateway", "Microservices", "Registry"]
+  },
+  {
+    "title": "Andrea Rausa",
+    "category": "Fun & Personal",
+    "description": "Personal website for Andrea Rausa, showcasing his work and providing a platform for connecting with him.",
+    "image": "https://projects.giovannilamarmora.com/andrea-rausa/assets/images/logo/andrea-logo-dark.svg",
+    "url": "./andrea-rausa/",
+    "tags": ["Web Design", "Personal", "Portfolio"]
   }
 ]
