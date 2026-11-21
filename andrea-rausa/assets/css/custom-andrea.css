@@ -204,3 +204,41 @@
     padding-bottom: 20px !important;
 }
 
+/* Language Switcher IT / EN */
+.lang-switcher {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+    padding: 3px;
+    gap: 2px;
+}
+.lang-switch-btn {
+    border: none;
+    background: transparent;
+    color: #bbb;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    padding: 5px 11px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    line-height: 1;
+}
+.lang-switch-btn:hover {
+    color: #fff;
+}
+.lang-switch-btn.active {
+    background: #FF014F;
+    color: #fff;
+    box-shadow: 0 2px 10px rgba(255, 1, 79, 0.35);
+}
+.tmp-header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+
