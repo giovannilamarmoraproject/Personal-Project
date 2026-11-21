@@ -1,3 +1,5 @@
+import { extractAndStoreStrapiToken } from "./strapi-token.js";
+
 (async function initialize() {
   const DEFAULT_STYLE_CSS =
     "align-items: cover; background-repeat: no-repeat; background-color: #323232;";
@@ -14,7 +16,8 @@
           logo: "https://raw.githubusercontent.com/giovannilamarmoraproject/MoneyStats/master/.github/assets/img/MoneyStats.png",
           link: {
             "Web App": "https://moneystats.giovannilamarmora.com",
-            Swagger: "https://moneystats.service.giovannilamarmora.com/swagger-ui/index.html",
+            Swagger:
+              "https://moneystats.service.giovannilamarmora.com/swagger-ui/index.html",
             GitHub: "https://github.com/giovannilamarmoraproject/MoneyStats",
           },
           style_css: DEFAULT_STYLE_CSS,
@@ -42,7 +45,8 @@
           logo: "https://strapi.giovannilamarmora.com/uploads/material_home_assistant_18ab2c869d.png",
           link: {
             Website: "https://materialhomeassistant.com/",
-            GitHub: "https://github.com/giovannilamarmoraproject/Material-Home-Assistant",
+            GitHub:
+              "https://github.com/giovannilamarmoraproject/Material-Home-Assistant",
           },
           style_css: DEFAULT_STYLE_CSS,
         },
@@ -140,11 +144,20 @@
    * ------------------------------
    */
   document.addEventListener("ACCESS_SPHERE_AUTH", (event) => {
+    console.log(
+      "🔑 [Linkatutto] Access Sphere Auth Event received:",
+      event.detail,
+    );
     const { success, data, error } = event.detail;
     if (success && !error) {
+      extractAndStoreStrapiToken(data, urlConfig?.client_id);
       getDatas();
     } else {
-      localStorage.setItem("errorMessage", error.error.message);
+      const msg =
+        (error && error.error && error.error.message) ||
+        (error && error.message) ||
+        "Authentication error";
+      localStorage.setItem("errorMessage", msg);
       window.location.href = window.location.origin + "/forbidden.html";
     }
   });
@@ -155,11 +168,22 @@
    * ------------------------------
    */
   document.addEventListener("ACCESS_SPHERE_TOKEN", (event) => {
+    console.log(
+      "🔑 [Linkatutto] Access Sphere Token Event received:",
+      event.detail,
+    );
     const { success, data, error } = event.detail;
     if (success && !error) {
+      console.log("💾 [Linkatutto] Access Sphere Token received:", data);
+      extractAndStoreStrapiToken(data, urlConfig?.client_id);
       getDatas();
     } else {
-      localStorage.setItem("errorMessage", error.error.message);
+      console.error("❌ [Linkatutto] Access Sphere Token Event error:", error);
+      const msg =
+        (error && error.error && error.error.message) ||
+        (error && error.message) ||
+        "Authentication error";
+      localStorage.setItem("errorMessage", msg);
       window.location.href = window.location.origin + "/forbidden.html";
     }
   });
@@ -170,12 +194,17 @@
    * ------------------------------
    */
   function getDatas() {
-    const token = localStorage.getItem(urlConfig.client_id + "_strapi-token");
+    const token =
+      localStorage.getItem(urlConfig.client_id + "_strapi-token") ||
+      localStorage.getItem("strapi-token");
     getStrapiData(urlConfig.strapi_url + urlConfig.linkatutto_datas, token)
       .then((data) => {
         if (data.error != null) {
           localStorage.clear();
-          localStorage.setItem("errorMessage", error.toString());
+          localStorage.setItem(
+            "errorMessage",
+            (data.error.message || error || "Strapi API error").toString(),
+          );
           window.location.href = window.location.origin + "/forbidden.html";
           return;
         }
@@ -193,7 +222,9 @@
   }
 
   function getSingleDatas() {
-    const token = localStorage.getItem(urlConfig.client_id + "_strapi-token");
+    const token =
+      localStorage.getItem(urlConfig.client_id + "_strapi-token") ||
+      localStorage.getItem("strapi-token");
     getStrapiData(urlConfig.strapi_url + urlConfig.linkatutto_data, token)
       .then((data) => {
         if (data.error != null) {
@@ -400,6 +431,8 @@ function logout() {
   }
 }
 
+window.logout = logout;
+
 /**
  * ------------------------------
  * Mobile Hamburger Menu Toggle
@@ -577,4 +610,3 @@ if (document.readyState === "loading") {
   initCardFlip();
   initCardTextToggle();
 }
-

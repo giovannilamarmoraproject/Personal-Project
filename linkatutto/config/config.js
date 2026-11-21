@@ -1,7 +1,7 @@
 const localConfig = {
   baseUrl: "http://localhost:8081",
   client_id: "LINKATUTTO-AUTH-TEST",
-  redirect_uri: "http://localhost:5501/index.html",
+  redirect_uri: "http://localhost:5500/linkatutto/index.html",
   access_sphere_script: "/app/authentication/auth.js",
   strapi_url: "https://strapi.giovannilamarmora.com",
   linkatutto_datas: "/api/hostwebservers?populate=*&pagination[pageSize]=100",
@@ -29,6 +29,7 @@ async function init() {
   window.accessSphereConfig = {
     client_id: configuration.client_id,
     redirect_uri: configuration.redirect_uri,
+    include_user_data: true,
   };
   initScriptAccessSphere(configuration);
 }
@@ -86,6 +87,7 @@ function initScriptAccessSphere(config) {
   window.accessSphereConfig = {
     client_id: config.client_id,
     redirect_uri: config.redirect_uri,
+    include_user_data: true,
   };
   loadScript(config.baseUrl + config.access_sphere_script, function () {
     console.log("✅ Access Sphere Script loaded successfully!");
