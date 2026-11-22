@@ -1,10 +1,10 @@
 /**
  * ============================================================================== 
- * CONFIGURAZIONI & STATO GLOBALE APPLICAZIONE (v1.9.42)
+ * CONFIGURAZIONI & STATO GLOBALE APPLICAZIONE (v1.9.43)
  * ============================================================================== 
  */
 
-const APP_VERSION = "1.9.42";
+const APP_VERSION = "1.9.43";
 
 // Formattatore di valuta per la lingua italiana (€)
 const formatter = new Intl.NumberFormat("it-IT", {
@@ -340,6 +340,7 @@ function sanitizeData() {
     if (d.giornoPagamento !== undefined) d.giornoPagamento = parseInt(d.giornoPagamento, 10) || 1;
     if (!d.userId && appData.settings.users[0]) d.userId = appData.settings.users[0].id;
     if (d.totaleInizialeMesi === undefined) d.totaleInizialeMesi = d.mesiRimanenti;
+    if (!Array.isArray(d.pagamenti)) d.pagamenti = [];
   });
   syncDebitiToBudget();
 

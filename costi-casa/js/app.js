@@ -1,6 +1,6 @@
 /**
  * ============================================================================== 
- * APPLICATION ENTRY POINT, AGGREGATORE VISTE & AVVIO PWA (v1.9.42)
+ * APPLICATION ENTRY POINT, AGGREGATORE VISTE & AVVIO PWA (v1.9.43)
  * ============================================================================== 
  */
 
@@ -53,6 +53,14 @@ function renderAll() {
       renderDetailView(curCost);
     } else {
       closeDetailView();
+    }
+  }
+  if (typeof currentDebitoDetailId !== "undefined" && currentDebitoDetailId !== null) {
+    const curDebito = (appData.debiti || []).find((d) => d.id === currentDebitoDetailId);
+    if (curDebito) {
+      renderDebitoDetailView(curDebito);
+    } else {
+      closeDebitoDetailView();
     }
   }
 }

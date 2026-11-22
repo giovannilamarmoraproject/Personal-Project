@@ -4,6 +4,10 @@
  * ============================================================================== 
  */
 
+let currentDebitoDetailId = null;
+let debitoDoughnutChart = null;
+let debitoProjectionChart = null;
+
 function getProssimaScadenzaDebito(giornoPagamento, mesiRimanenti) {
   const mesi = parseInt(mesiRimanenti, 10) || 0;
   if (mesi <= 0) {
@@ -317,7 +321,7 @@ function renderDebitiSection() {
     }
 
     cardsHtml += `
-      <div class="debito-card ${isSaldato ? 'saldato' : ''}">
+      <div class="debito-card ${isSaldato ? 'saldato' : ''}" onclick="handleDebitoCardClick(event, ${d.id})" title="Clicca per dettagli, storico rate e grafici">
         <!-- Header con Icona, Titolo e Badge Stato -->
         <div class="debito-header">
           <div class="debito-title-group">
@@ -400,12 +404,10 @@ function renderDebitiSection() {
           </div>
         </div>
 
-        <!-- Note se presenti -->
+        <!-- Note compatte se presenti -->
         ${
-          d.note
-            ? `<div style="font-size: 12px; color: var(--md-sys-color-outline); background: var(--md-sys-color-surface-container-lowest); padding: 8px 10px; border-radius: 6px; border-left: 3px solid var(--md-sys-color-primary); white-space: pre-wrap;">
-                ${renderRichContent(d.note, "debiti", d.id, "note")}
-              </div>`
+          d.note && d.note.replace(/<[^>]*>/g, "").trim()
+            ? `<div class="debito-note-preview">${renderRichContent(d.note, "debiti", d.id, "note")}</div>`
             : ""
         }
 
@@ -663,8 +665,10 @@ async function decrementaRataDebito(id) {
   const currentMonthName = now.toLocaleDateString("it-IT", { month: "long" });
   const capMonth = currentMonthName.charAt(0).toUpperCase() + currentMonthName.slice(1);
 
+  const isExtra = debito.ultimoPagamentoMese === currentMonthKey;
+
   // Controllo Soluzione A: Rata del mese corrente già registrata
-  if (debito.ultimoPagamentoMese === currentMonthKey) {
+  if (isExtra) {
     const confirmResult = await M3Swal.fire({
       title: "Rata già registrata",
       html: `Hai già segnato la rata di <b>${capMonth}</b> per "<b>${debito.desc}</b>"${
@@ -685,6 +689,16 @@ async function decrementaRataDebito(id) {
 
   debito.ultimoPagamentoMese = currentMonthKey;
   debito.ultimoPagamentoData = now.toLocaleDateString("it-IT", { day: "numeric", month: "short" });
+
+  // Registra nello storico pagamenti del debito
+  if (!Array.isArray(debito.pagamenti)) debito.pagamenti = [];
+  debito.pagamenti.push({
+    id: Date.now(),
+    data: now.toISOString().split("T")[0],
+    importo: parseFloat(debito.rata) || 0,
+    meseRiferimento: currentMonthKey,
+    nota: isExtra ? "Rata extra / anticipata" : `Rata di ${capMonth} ${now.getFullYear()}`
+  });
 
   saveDataLocally();
 
@@ -715,8 +729,23 @@ async function ripristinaRataDebito(id) {
     if (debito.totaleInizialeMesi && debito.totaleInizialeMesi < debito.mesiRimanenti) {
       debito.totaleInizialeMesi = debito.mesiRimanenti;
     }
-    debito.ultimoPagamentoMese = null;
-    debito.ultimoPagamentoData = null;
+
+    if (Array.isArray(debito.pagamenti) && debito.pagamenti.length > 0) {
+      debito.pagamenti.pop();
+      const prev = debito.pagamenti[debito.pagamenti.length - 1];
+      if (prev) {
+        debito.ultimoPagamentoMese = prev.meseRiferimento || null;
+        debito.ultimoPagamentoData = prev.data
+          ? new Date(prev.data).toLocaleDateString("it-IT", { day: "numeric", month: "short" })
+          : null;
+      } else {
+        debito.ultimoPagamentoMese = null;
+        debito.ultimoPagamentoData = null;
+      }
+    } else {
+      debito.ultimoPagamentoMese = null;
+      debito.ultimoPagamentoData = null;
+    }
 
     saveDataLocally();
     showNotification(`Rata ripristinata (${debito.mesiRimanenti} rimaste)`);
@@ -732,5 +761,689 @@ async function deleteDebitoFromModal() {
   if (id) {
     await deleteDebito(id);
     closeDebitoModal();
+  }
+}
+
+// ==============================================================================
+// VISTA DETTAGLIO DEBITO / FINANZIAMENTO (STORICO RATE & GRAFICI)
+// ==============================================================================
+
+/**
+ * Gestisce il click su una card debito ignorando i click sui pulsanti d'azione interni.
+ */
+function handleDebitoCardClick(event, id) {
+  if (
+    event &&
+    event.target &&
+    event.target.closest("button, a, input, .debito-footer-actions")
+  ) {
+    return;
+  }
+  openDebitoDetailView(id);
+}
+
+/**
+ * Apre la pagina dedicata di dettaglio di un debito/finanziamento.
+ */
+function openDebitoDetailView(id) {
+  const debito = (appData.debiti || []).find((d) => d.id === id);
+  if (!debito) return;
+  if (!Array.isArray(debito.pagamenti)) debito.pagamenti = [];
+
+  currentDebitoDetailId = id;
+  renderDebitoDetailView(debito);
+
+  document
+    .querySelectorAll(".view-section")
+    .forEach((el) => el.classList.remove("active"));
+  const detailSection = document.getElementById("view-debito-detail");
+  if (detailSection) detailSection.classList.add("active");
+
+  document.title = `${debito.desc} | Debiti & Finanziamenti`;
+  const titleEl = document.getElementById("page-main-title");
+  if (titleEl) titleEl.innerText = debito.desc || "Dettaglio Finanziamento";
+
+  const mainContainer = document.getElementById("main-scroll-container");
+  if (mainContainer) mainContainer.scrollTop = 0;
+}
+
+/**
+ * Chiude la pagina dettaglio debito e torna alla panoramica Debiti & Finanziamenti.
+ */
+function closeDebitoDetailView() {
+  currentDebitoDetailId = null;
+  if (debitoDoughnutChart) {
+    debitoDoughnutChart.destroy();
+    debitoDoughnutChart = null;
+  }
+  if (debitoProjectionChart) {
+    debitoProjectionChart.destroy();
+    debitoProjectionChart = null;
+  }
+
+  const detailSection = document.getElementById("view-debito-detail");
+  if (detailSection) detailSection.classList.remove("active");
+  document
+    .querySelectorAll(".view-section")
+    .forEach((el) => el.classList.remove("active"));
+  const debitiView = document.getElementById("view-debiti");
+  if (debitiView) debitiView.classList.add("active");
+
+  document.title = "Debiti & Finanziamenti | Costi Casa";
+  const titleEl = document.getElementById("page-main-title");
+  if (titleEl) titleEl.innerText = "Debiti & Finanziamenti";
+
+  const mainContainer = document.getElementById("main-scroll-container");
+  if (mainContainer) mainContainer.scrollTop = 0;
+}
+
+/**
+ * Calcola la data stimata di estinzione e il calendario delle prossime rate.
+ */
+function getDebitoSchedulePreview(debito, maxItems = 12) {
+  const rateLeft = Math.max(0, parseInt(debito.mesiRimanenti, 10) || 0);
+  const rataVal = parseFloat(debito.rata) || 0;
+  if (rateLeft <= 0) {
+    return { extinctionLabel: "Saldato", upcoming: [] };
+  }
+
+  const scad = getProssimaScadenzaDebito(debito.giornoPagamento, rateLeft);
+  const start = scad.targetDate ? new Date(scad.targetDate) : new Date();
+  const day = Math.min(31, Math.max(1, parseInt(debito.giornoPagamento, 10) || 1));
+
+  const upcoming = [];
+  let residuo = rateLeft * rataVal;
+  let lastDate = start;
+
+  for (let i = 0; i < rateLeft; i++) {
+    const y = start.getFullYear();
+    const m = start.getMonth() + i;
+    const maxD = new Date(y, m + 1, 0).getDate();
+    const dt = new Date(y, m, Math.min(day, maxD));
+    lastDate = dt;
+    residuo = Math.max(0, residuo - rataVal);
+
+    if (i < maxItems) {
+      const mName = dt.toLocaleDateString("it-IT", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+      upcoming.push({
+        num: i + 1,
+        dateLabel: mName,
+        importo: rataVal,
+        residuoDopo: residuo,
+      });
+    }
+  }
+
+  const extMonth = lastDate.toLocaleDateString("it-IT", {
+    month: "long",
+    year: "numeric",
+  });
+  const extinctionLabel = extMonth.charAt(0).toUpperCase() + extMonth.slice(1);
+  return { extinctionLabel, upcoming };
+}
+
+/**
+ * Renderizza l'intera vista di dettaglio di un debito (KPI, grafici, note, storico pagamenti e scadenze).
+ */
+function renderDebitoDetailView(d) {
+  const container = document.getElementById("debito-detail-content");
+  if (!container || !d) return;
+
+  if (!Array.isArray(d.pagamenti)) d.pagamenti = [];
+
+  const users = appData.settings.users || [];
+  const userObj = users.find((u) => u.id === d.userId);
+  const userName = userObj
+    ? userObj.name
+    : d.userId === "all"
+      ? "Tutti (Condiviso)"
+      : "Partecipante";
+
+  const rateLeft = Math.max(0, parseInt(d.mesiRimanenti, 10) || 0);
+  const rataVal = parseFloat(d.rata) || 0;
+  const totIniziale = Math.max(rateLeft, parseInt(d.totaleInizialeMesi, 10) || rateLeft);
+  const ratePagate = Math.max(0, totIniziale - rateLeft);
+  const isSaldato = rateLeft <= 0;
+
+  const debitoResiduo = rateLeft * rataVal;
+  const importoPagatoStimato = ratePagate * rataVal;
+  const importoTotalePiano = totIniziale * rataVal;
+  const percProgresso =
+    totIniziale > 0 ? Math.min(100, Math.round((ratePagate / totIniziale) * 100)) : 100;
+
+  const scad = getProssimaScadenzaDebito(d.giornoPagamento, rateLeft);
+  const schedule = getDebitoSchedulePreview(d, 12);
+
+  let iconName = "credit_card";
+  const lowerDesc = (d.desc || "").toLowerCase();
+  if (
+    lowerDesc.includes("auto") ||
+    lowerDesc.includes("macchina") ||
+    lowerDesc.includes("moto") ||
+    lowerDesc.includes("veicolo")
+  ) {
+    iconName = "directions_car";
+  } else if (
+    lowerDesc.includes("casa") ||
+    lowerDesc.includes("ristruttur") ||
+    lowerDesc.includes("arredo")
+  ) {
+    iconName = "home";
+  } else if (
+    lowerDesc.includes("elettro") ||
+    lowerDesc.includes("telefono") ||
+    lowerDesc.includes("pc")
+  ) {
+    iconName = "devices";
+  }
+
+  // Ordina storico pagamenti dal più recente
+  const sortedPayments = [...d.pagamenti].sort((a, b) => {
+    const da = a.data || "";
+    const db = b.data || "";
+    if (db !== da) return db.localeCompare(da);
+    return (b.id || 0) - (a.id || 0);
+  });
+
+  const untrackedPaidCount = Math.max(0, ratePagate - sortedPayments.length);
+  const hasNote = d.note && d.note.replace(/<[^>]*>/g, "").trim().length > 0;
+
+  container.innerHTML = `
+    <!-- Barra Superiore Navigazione & Azioni -->
+    <div class="debito-detail-topbar">
+      <button class="btn btn-tonal" onclick="closeDebitoDetailView()">
+        <span class="material-symbols-outlined">arrow_back</span> Torna ai Debiti
+      </button>
+      <div class="debito-detail-top-actions">
+        ${
+          !isSaldato
+            ? `<button class="btn btn-filled" onclick="decrementaRataDebito(${d.id})">
+                <span class="material-symbols-outlined">check_circle</span> Segna Rata Pagata
+              </button>`
+            : ""
+        }
+        <button class="btn btn-tonal" onclick="openEditDebitoModal(${d.id})">
+          <span class="material-symbols-outlined">edit</span> Modifica
+        </button>
+        <button class="btn-icon" onclick="deleteDebito(${d.id})" title="Elimina finanziamento">
+          <span class="material-symbols-outlined" style="color: var(--md-sys-color-error);">delete</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Header Principale Card -->
+    <div class="card debito-detail-hero-card">
+      <div class="debito-detail-hero-header">
+        <div class="debito-title-group">
+          <div class="debito-icon-avatar" style="width: 52px; height: 52px; border-radius: 16px;">
+            <span class="material-symbols-outlined" style="font-size: 28px;">${isSaldato ? "check_circle" : iconName}</span>
+          </div>
+          <div style="min-width: 0;">
+            <h2 style="margin: 0; font-size: 22px; color: var(--md-sys-color-on-surface); word-break: break-word;">${escapeHTML(d.desc)}</h2>
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 6px;">
+              <span class="debito-user-tag" style="margin-top: 0; font-size: 12px;">
+                <span class="material-symbols-outlined" style="font-size: 15px;">person</span>
+                <span>Intestatario: <b>${escapeHTML(userName)}</b></span>
+              </span>
+              ${
+                isSaldato
+                  ? '<span class="debito-status-badge debito-status-saldato">Saldato</span>'
+                  : '<span class="debito-status-badge debito-status-attivo">In Corso</span>'
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Barra Avanzamento Globale -->
+      <div class="debito-progress-container" style="margin-top: 18px;">
+        <div class="debito-progress-header" style="font-size: 13px;">
+          <span>Avanzamento Rimborso Complessivo</span>
+          <strong>${ratePagate} / ${totIniziale} rate (${percProgresso}%)</strong>
+        </div>
+        <div class="debito-progress-track" style="height: 10px;">
+          <div class="debito-progress-fill" style="width: ${percProgresso}%;"></div>
+        </div>
+      </div>
+
+      <!-- Pillole Parametri -->
+      <div class="debito-detail-params-grid">
+        <div class="debito-detail-param-pill">
+          <span class="debito-metric-label">Rata Mensile</span>
+          <strong class="sensitive-value">${formatCurrency(rataVal)} / mese</strong>
+        </div>
+        <div class="debito-detail-param-pill">
+          <span class="debito-metric-label">Giorno Addebito</span>
+          <strong>Giorno ${d.giornoPagamento || 1} del mese</strong>
+        </div>
+        <div class="debito-detail-param-pill">
+          <span class="debito-metric-label">Prossimo Addebito</span>
+          <strong style="color: ${scad.isSoon ? "var(--md-sys-color-error)" : "var(--md-sys-color-on-surface)"};">${scad.label}</strong>
+        </div>
+        <div class="debito-detail-param-pill">
+          <span class="debito-metric-label">Estinzione Stimata</span>
+          <strong style="color: var(--md-sys-color-primary);">${schedule.extinctionLabel}</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI Economici -->
+    <div class="dashboard-grid" style="margin-bottom: 24px;">
+      <div class="stat-card" style="background: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface);">
+        <span style="font-size: 12px; font-weight: 600; color: var(--md-sys-color-outline); text-transform: uppercase;">Totale Piano (${totIniziale} rate)</span>
+        <div class="stat-value sensitive-value" style="font-weight: 700;">${formatCurrency(importoTotalePiano)}</div>
+      </div>
+      <div class="stat-card" style="background: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface);">
+        <span style="font-size: 12px; font-weight: 600; color: var(--md-sys-color-outline); text-transform: uppercase;">Già Rimborsato (${ratePagate} rate)</span>
+        <div class="stat-value sensitive-value" style="color: var(--md-sys-color-success); font-weight: 700;">${formatCurrency(importoPagatoStimato)}</div>
+      </div>
+      <div class="stat-card" style="background: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface);">
+        <span style="font-size: 12px; font-weight: 600; color: var(--md-sys-color-outline); text-transform: uppercase;">Debito Residuo (${rateLeft} rate)</span>
+        <div class="stat-value sensitive-value" style="color: ${isSaldato ? "var(--md-sys-color-success)" : "var(--md-sys-color-error)"}; font-weight: 700;">
+          ${isSaldato ? "0,00 €" : "- " + formatCurrency(debitoResiduo)}
+        </div>
+      </div>
+    </div>
+
+    <!-- Grafici Rimborso & Proiezione -->
+    <div class="charts-container" style="margin-top: 0; margin-bottom: 24px;">
+      <div class="card" style="margin-bottom: 0;">
+        <h3 class="card-title" style="font-size: 16px; margin-bottom: 12px;">Ripartizione Pagato vs Residuo</h3>
+        <div class="chart-box" style="height: 250px;">
+          <canvas id="debitoDetailDoughnutChart"></canvas>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom: 0;">
+        <h3 class="card-title" style="font-size: 16px; margin-bottom: 12px;">Proiezione Abbattimento Debito</h3>
+        <div class="chart-box" style="height: 250px;">
+          <canvas id="debitoDetailProjectionChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    ${
+      hasNote
+        ? `<div class="card">
+            <h3 class="card-title" style="font-size: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+              <span class="material-symbols-outlined">notes</span> Descrizione & Note Complete
+            </h3>
+            <div class="debito-detail-full-note">
+              ${renderRichContent(d.note, "debiti", d.id, "note")}
+            </div>
+          </div>`
+        : ""
+    }
+
+    <!-- Storico Pagamenti Effettuati -->
+    <div class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+        <div>
+          <h3 class="card-title" style="margin: 0; font-size: 17px; display: flex; align-items: center; gap: 8px;">
+            <span class="material-symbols-outlined">receipt_long</span> Storico Pagamenti Effettuati
+          </h3>
+          <p style="margin: 4px 0 0 0; font-size: 12.5px; color: var(--md-sys-color-outline);">
+            Elenco cronologico delle rate registrate per questo finanziamento.
+          </p>
+        </div>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="btn btn-tonal" onclick="openAddDebitoPaymentModal(${d.id})">
+            <span class="material-symbols-outlined">add_card</span> Registra Pagamento
+          </button>
+        </div>
+      </div>
+
+      ${
+        untrackedPaidCount > 0
+          ? `<div style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 10px; background: var(--md-sys-color-surface-container); font-size: 12.5px; color: var(--md-sys-color-outline); margin-bottom: 14px;">
+              <span class="material-symbols-outlined" style="font-size: 18px; color: var(--md-sys-color-primary);">info</span>
+              <span><b>${untrackedPaidCount}</b> ${untrackedPaidCount === 1 ? "rata precedente risulta" : "rate precedenti risultano"} già contabilizzate prima della registrazione dettagliata nello storico (puoi aggiungerle manualmente con "Registra Pagamento").</span>
+            </div>`
+          : ""
+      }
+
+      ${
+        sortedPayments.length === 0
+          ? `<div style="text-align: center; padding: 28px 16px; color: var(--md-sys-color-outline);">
+              <span class="material-symbols-outlined" style="font-size: 40px; opacity: 0.45;">history</span>
+              <p style="margin: 8px 0 0 0; font-size: 13px;">Nessun pagamento registrato nello storico. Clicca su <b>Segna Rata Pagata</b> o <b>Registra Pagamento</b> per iniziare.</p>
+            </div>`
+          : `<div class="debito-payments-list">
+              ${sortedPayments
+                .map((p) => {
+                  const dateFormatted = p.data
+                    ? new Date(p.data + "T00:00:00").toLocaleDateString("it-IT", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })
+                    : "Data n/d";
+                  return `
+                    <div class="debito-payment-row">
+                      <div class="debito-payment-left">
+                        <div class="debito-payment-icon">
+                          <span class="material-symbols-outlined">check</span>
+                        </div>
+                        <div style="min-width: 0;">
+                          <div style="font-weight: 600; font-size: 14px; color: var(--md-sys-color-on-surface);">${escapeHTML(p.nota || "Rata pagata")}</div>
+                          <div style="font-size: 12px; color: var(--md-sys-color-outline);">${dateFormatted}</div>
+                        </div>
+                      </div>
+                      <div class="debito-payment-right">
+                        <span class="sensitive-value" style="font-weight: 700; font-size: 14.5px; color: var(--md-sys-color-success);">${formatCurrency(p.importo || rataVal)}</span>
+                        <button class="btn-icon" onclick="deleteDebitoPaymentRecord(${d.id}, ${p.id})" title="Rimuovi dallo storico">
+                          <span class="material-symbols-outlined" style="font-size: 18px; color: var(--md-sys-color-error);">delete</span>
+                        </button>
+                      </div>
+                    </div>
+                  `;
+                })
+                .join("")}
+            </div>`
+      }
+    </div>
+
+    <!-- Prossime Rate in Scadenza -->
+    ${
+      schedule.upcoming.length > 0
+        ? `<div class="card">
+            <h3 class="card-title" style="font-size: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+              <span class="material-symbols-outlined">calendar_month</span> Prossime Rate in Scadenza (${schedule.upcoming.length}${rateLeft > schedule.upcoming.length ? ` di ${rateLeft}` : ""})
+            </h3>
+            <div class="debito-schedule-list">
+              ${schedule.upcoming
+                .map(
+                  (u) => `
+                <div class="debito-schedule-row">
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <span class="debito-schedule-num">#${ratePagate + u.num}</span>
+                    <span style="font-size: 13.5px; font-weight: 500;">${u.dateLabel}</span>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: flex-end;">
+                    <span class="sensitive-value" style="font-size: 13.5px; font-weight: 600; color: var(--md-sys-color-primary);">${formatCurrency(u.importo)}</span>
+                    <span class="sensitive-value" style="font-size: 12px; color: var(--md-sys-color-outline);">Residuo: ${formatCurrency(u.residuoDopo)}</span>
+                  </div>
+                </div>
+              `,
+                )
+                .join("")}
+            </div>
+          </div>`
+        : ""
+    }
+  `;
+
+  // Render grafici Chart.js nel frame successivo
+  requestAnimationFrame(() => {
+    renderDebitoDetailCharts(d, ratePagate, rateLeft, rataVal);
+  });
+}
+
+/**
+ * Renderizza i due grafici (Doughnut Pagato/Residuo e Line Chart Proiezione) nella pagina dettaglio debito.
+ */
+function renderDebitoDetailCharts(d, ratePagate, rateLeft, rataVal) {
+  const isDark = document.body.classList.contains("dark-mode");
+  const textColor = isDark ? "#E6E1E5" : "#1C1B1F";
+  const gridColor = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)";
+  const isMobile = window.innerWidth <= 768;
+
+  // 1. Doughnut Chart: Pagato vs Residuo
+  const ctxDoughnut = document.getElementById("debitoDetailDoughnutChart");
+  if (ctxDoughnut) {
+    if (debitoDoughnutChart) debitoDoughnutChart.destroy();
+    const paidVal = ratePagate * rataVal;
+    const remVal = rateLeft * rataVal;
+    debitoDoughnutChart = new Chart(ctxDoughnut.getContext("2d"), {
+      type: "doughnut",
+      data: {
+        labels: ["Già Rimborsato (€)", "Debito Residuo (€)"],
+        datasets: [
+          {
+            data: [paidVal, remVal],
+            backgroundColor: ["#22C55E", "#EF4444"],
+            borderWidth: 0,
+            hoverOffset: 6,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: "66%",
+        plugins: {
+          legend: {
+            position: "bottom",
+            labels: {
+              color: textColor,
+              font: { family: "'Google Sans Flex', sans-serif", size: 12 },
+              padding: 14,
+            },
+          },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => `${ctx.label}: ${formatter.format(ctx.parsed || 0)}`,
+            },
+          },
+        },
+      },
+    });
+  }
+
+  // 2. Line Chart: Proiezione Abbattimento Debito mese per mese
+  const ctxProj = document.getElementById("debitoDetailProjectionChart");
+  if (ctxProj) {
+    if (debitoProjectionChart) debitoProjectionChart.destroy();
+
+    const labels = [];
+    const values = [];
+    const now = new Date();
+    const totalPoints = Math.max(1, rateLeft);
+
+    labels.push("Oggi");
+    values.push(rateLeft * rataVal);
+
+    // Se ci sono molte rate, campioniamo in modo pulito mantenendo sempre il punto finale 0 €
+    const step = totalPoints > 24 ? Math.ceil(totalPoints / 18) : 1;
+    for (let i = step; i <= rateLeft; i += step) {
+      const dt = new Date(now.getFullYear(), now.getMonth() + i, 1);
+      labels.push(
+        dt.toLocaleDateString("it-IT", { month: "short", year: "2-digit" }),
+      );
+      values.push(Math.max(0, (rateLeft - i) * rataVal));
+    }
+    if (rateLeft > 0 && values[values.length - 1] !== 0) {
+      const dtEnd = new Date(now.getFullYear(), now.getMonth() + rateLeft, 1);
+      labels.push(
+        dtEnd.toLocaleDateString("it-IT", { month: "short", year: "2-digit" }),
+      );
+      values.push(0);
+    }
+
+    debitoProjectionChart = new Chart(ctxProj.getContext("2d"), {
+      type: "line",
+      data: {
+        labels,
+        datasets: [
+          {
+            label: "Debito Residuo (€)",
+            data: values,
+            borderColor: "#6750A4",
+            backgroundColor: isDark
+              ? "rgba(208, 188, 255, 0.16)"
+              : "rgba(103, 80, 164, 0.14)",
+            fill: true,
+            tension: 0.25,
+            pointRadius: values.length > 15 ? 2 : 3.5,
+            pointBackgroundColor: "#6750A4",
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (ctx) => `Residuo: ${formatter.format(ctx.parsed.y || 0)}`,
+            },
+          },
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: {
+              color: textColor,
+              maxRotation: 0,
+              autoSkip: true,
+              font: {
+                family: "'Google Sans Flex', sans-serif",
+                size: isMobile ? 10 : 11,
+              },
+            },
+          },
+          y: {
+            beginAtZero: true,
+            grid: { color: gridColor },
+            ticks: {
+              color: textColor,
+              font: {
+                family: "'Google Sans Flex', sans-serif",
+                size: isMobile ? 10 : 11,
+              },
+              callback: (val) => {
+                if (val === 0) return "0 €";
+                if (val >= 1000) return (val / 1000).toLocaleString("it-IT") + "k €";
+                return val + " €";
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+}
+
+/**
+ * Apre una finestra per registrare un pagamento personalizzato o storico nel debito.
+ */
+async function openAddDebitoPaymentModal(debitoId) {
+  const debito = (appData.debiti || []).find((d) => d.id === debitoId);
+  if (!debito) return;
+
+  const todayISO = new Date().toISOString().split("T")[0];
+  const defaultImporto = parseFloat(debito.rata) || 0;
+
+  const result = await M3Swal.fire({
+    title: "Registra Pagamento Rata",
+    html: `
+      <div style="display: flex; flex-direction: column; gap: 12px; text-align: left; margin-top: 8px;">
+        <div class="input-field">
+          <label>Data Pagamento</label>
+          <input type="date" id="swal-deb-pay-date" value="${todayISO}" />
+        </div>
+        <div class="input-field">
+          <label>Importo (€)</label>
+          <input type="number" step="0.01" id="swal-deb-pay-amount" value="${defaultImporto}" />
+        </div>
+        <div class="input-field">
+          <label>Nota / Descrizione</label>
+          <input type="text" id="swal-deb-pay-note" placeholder="Es. Rata mensile, rata pregressa..." value="Rata mensile" />
+        </div>
+        <label class="checkbox-field" style="margin-top: 4px; font-size: 13px;">
+          <input type="checkbox" id="swal-deb-pay-decrement" ${debito.mesiRimanenti > 0 ? "checked" : ""} />
+          Scala anche 1 rata rimanente dal residuo
+        </label>
+      </div>
+    `,
+    showCancelButton: true,
+    confirmButtonText: "Salva Pagamento",
+    cancelButtonText: "Annulla",
+    preConfirm: () => {
+      const data = document.getElementById("swal-deb-pay-date").value;
+      const importo = parseFloat(document.getElementById("swal-deb-pay-amount").value);
+      const nota = document.getElementById("swal-deb-pay-note").value.trim();
+      const decrement = document.getElementById("swal-deb-pay-decrement").checked;
+      if (!data) {
+        Swal.showValidationMessage("Inserisci una data valida");
+        return false;
+      }
+      if (isNaN(importo) || importo <= 0) {
+        Swal.showValidationMessage("Inserisci un importo maggiore di 0");
+        return false;
+      }
+      return { data, importo, nota, decrement };
+    },
+  });
+
+  if (result.isConfirmed && result.value) {
+    const { data, importo, nota, decrement } = result.value;
+    if (!Array.isArray(debito.pagamenti)) debito.pagamenti = [];
+
+    const mKey = data.slice(0, 7);
+    debito.pagamenti.push({
+      id: Date.now(),
+      data,
+      importo,
+      meseRiferimento: mKey,
+      nota: nota || "Rata mensile",
+    });
+
+    if (decrement && debito.mesiRimanenti > 0) {
+      debito.mesiRimanenti = Math.max(0, debito.mesiRimanenti - 1);
+      if (!debito.totaleInizialeMesi || debito.totaleInizialeMesi <= debito.mesiRimanenti) {
+        debito.totaleInizialeMesi = debito.mesiRimanenti + 1;
+      }
+      debito.ultimoPagamentoMese = mKey;
+      debito.ultimoPagamentoData = new Date(data + "T00:00:00").toLocaleDateString(
+        "it-IT",
+        { day: "numeric", month: "short" },
+      );
+    }
+
+    saveDataLocally();
+    showNotification("Pagamento registrato nello storico!");
+  }
+}
+
+/**
+ * Elimina un singolo pagamento dallo storico del debito.
+ */
+async function deleteDebitoPaymentRecord(debitoId, paymentId) {
+  const debito = (appData.debiti || []).find((d) => d.id === debitoId);
+  if (!debito || !Array.isArray(debito.pagamenti)) return;
+
+  const result = await M3Swal.fire({
+    title: "Rimuovere questo pagamento?",
+    html: `
+      <p style="margin: 0 0 12px 0; font-size: 13.5px;">Il pagamento verrà eliminato dallo storico.</p>
+      <label class="checkbox-field" style="justify-content: center; font-size: 13px;">
+        <input type="checkbox" id="swal-deb-del-restore" />
+        Ripristina anche +1 rata rimanente
+      </label>
+    `,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Elimina",
+    cancelButtonText: "Annulla",
+    preConfirm: () => ({
+      restore: document.getElementById("swal-deb-del-restore").checked,
+    }),
+  });
+
+  if (result.isConfirmed) {
+    debito.pagamenti = debito.pagamenti.filter((p) => p.id !== paymentId);
+    if (result.value && result.value.restore) {
+      debito.mesiRimanenti = (parseInt(debito.mesiRimanenti, 10) || 0) + 1;
+      if (debito.totaleInizialeMesi && debito.totaleInizialeMesi < debito.mesiRimanenti) {
+        debito.totaleInizialeMesi = debito.mesiRimanenti;
+      }
+    }
+    saveDataLocally();
+    showNotification("Pagamento rimosso dallo storico");
   }
 }

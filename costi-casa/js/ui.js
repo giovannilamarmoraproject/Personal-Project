@@ -679,6 +679,7 @@ function getContrastYIQ(hexcolor) {
  * @param {string} pageTitle - Titolo testuale visualizzato nell'header.
  */
 function switchTab(tabId, pageTitle) {
+  if (typeof currentDebitoDetailId !== "undefined") currentDebitoDetailId = null;
   document
     .querySelectorAll(".nav-item")
     .forEach((el) => el.classList.remove("active"));

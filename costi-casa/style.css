@@ -3822,6 +3822,7 @@ body.dark-mode .mutuo-param-pill {
    SEZIONE DEBITI & FINANZIAMENTI
    ======================================================== */
 .debito-card {
+  cursor: pointer;
   background: var(--md-sys-color-surface-container-low);
   border: 1px solid var(--md-sys-color-surface-container-high);
   border-radius: var(--md-sys-shape-corner-large);
@@ -3834,6 +3835,7 @@ body.dark-mode .mutuo-param-pill {
 }
 
 .debito-card:hover {
+  transform: translateY(-2px);
   border-color: var(--md-sys-color-outline-variant);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
@@ -3986,6 +3988,160 @@ body.dark-mode .mutuo-param-pill {
   gap: 8px;
   padding-top: 10px;
   border-top: 1px solid var(--md-sys-color-surface-container-high);
+}
+
+/* Anteprima compatta delle note nelle card Debiti (evita altezza eccessiva) */
+.debito-note-preview {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--md-sys-color-outline);
+  background: var(--md-sys-color-surface-container-lowest);
+  padding: 8px 10px;
+  border-radius: 8px;
+  border-left: 3px solid var(--md-sys-color-primary);
+  max-height: 58px;
+  overflow: hidden;
+  position: relative;
+  white-space: normal;
+  word-break: break-word;
+}
+.debito-note-preview::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 18px;
+  background: linear-gradient(transparent, var(--md-sys-color-surface-container-lowest));
+  pointer-events: none;
+}
+.debito-note-preview .rich-text-rendered,
+.debito-note-preview p,
+.debito-note-preview div,
+.debito-note-preview ul,
+.debito-note-preview ol {
+  margin: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  font-size: 12px !important;
+  line-height: 1.38 !important;
+}
+
+/* ========================================================
+   VISTA DETTAGLIO DEBITO / FINANZIAMENTO
+   ======================================================== */
+.debito-detail-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.debito-detail-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.debito-detail-params-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.debito-detail-param-pill {
+  background: var(--md-sys-color-surface-container);
+  border: 1px solid var(--md-sys-color-surface-container-high);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13.5px;
+}
+
+.debito-detail-full-note {
+  background: var(--md-sys-color-surface-container-lowest);
+  border: 1px solid var(--md-sys-color-surface-container-high);
+  border-left: 3px solid var(--md-sys-color-primary);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--md-sys-color-on-surface);
+  white-space: normal;
+  word-break: break-word;
+}
+
+.debito-payments-list,
+.debito-schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.debito-payment-row,
+.debito-schedule-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--md-sys-color-surface-container-low);
+  border: 1px solid var(--md-sys-color-surface-container-high);
+}
+
+.debito-payment-left,
+.debito-payment-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.debito-payment-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: rgba(34, 197, 94, 0.14);
+  color: var(--md-sys-color-success, #22c55e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.debito-payment-icon .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.debito-schedule-num {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+@media (max-width: 900px) {
+  .debito-detail-params-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .debito-detail-params-grid {
+    grid-template-columns: 1fr;
+  }
+  .debito-payment-row,
+  .debito-schedule-row {
+    flex-wrap: wrap;
+  }
 }
 
 .debito-filter-chip {
