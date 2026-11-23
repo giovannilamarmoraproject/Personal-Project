@@ -44,9 +44,14 @@ function showConfirm(title, text, confirmBtnText = "Elimina") {
  * Salva la preferenza all'interno del localStorage.
  */
 function toggleDarkMode() {
-  const isDark = document.body.classList.toggle("dark-mode");
-  localStorage.setItem("casaDarkMode", isDark ? "true" : "false");
-  updateThemeIcons(isDark);
+  const nextDark = !document.body.classList.contains("dark-mode");
+  if (typeof setThemeMode === "function") {
+    setThemeMode(nextDark ? "dark" : "light");
+  } else {
+    document.body.classList.toggle("dark-mode", nextDark);
+    localStorage.setItem("casaDarkMode", nextDark ? "true" : "false");
+    updateThemeIcons(nextDark);
+  }
 }
 
 /**
@@ -705,12 +710,15 @@ function switchTab(tabId, pageTitle) {
 
   const mainContainer = document.getElementById("main-scroll-container");
   if (mainContainer) mainContainer.scrollTop = 0;
+  const progressBar = document.getElementById("scroll-progress-bar");
+  if (progressBar) progressBar.style.width = "0%";
 
   if (pageTitle) {
     document.title = pageTitle + " | Costi Casa";
     const titleEl = document.getElementById("page-main-title");
     if (titleEl) {
       titleEl.innerText = pageTitle;
+      if (typeof animatePageTitle === "function") animatePageTitle();
     }
   }
 
@@ -744,6 +752,7 @@ function switchTab(tabId, pageTitle) {
     } else if (tabId === "debiti") {
       renderDebitiSection();
     } else if (tabId === "settings") {
+      if (typeof syncAppearanceControlsUI === "function") syncAppearanceControlsUI();
       if (window.innerWidth <= 768) {
         showSettingsMasterList();
       } else {
@@ -752,11 +761,14 @@ function switchTab(tabId, pageTitle) {
         if (!hasActive) {
           const firstNav = document.querySelector(".settings-nav-item");
           if (firstNav) {
-            const sec = firstNav.getAttribute("data-section") || "users";
+            const sec = firstNav.getAttribute("data-section") || "appearance";
             switchSettingsSection(sec);
           }
         }
       }
+    }
+    if (typeof refreshScrollReveals === "function" && activeView) {
+      refreshScrollReveals(activeView);
     }
   }, 50);
 }
@@ -767,6 +779,7 @@ function switchTab(tabId, pageTitle) {
  */
 function switchSettingsSection(sectionKey) {
   const sectionTitles = {
+    appearance: "Aspetto & Tema",
     users: "Utenti & Fondo",
     categories: "Categorie Spese",
     rooms: "Ambienti Casa",

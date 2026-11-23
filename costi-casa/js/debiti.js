@@ -187,55 +187,56 @@ function renderDebitiSection() {
   const kpiGrid = document.getElementById("debiti-kpi-grid");
   if (kpiGrid) {
     kpiGrid.innerHTML = `
-      <div class="stat-card" style="background: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface);">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-          <span style="font-size: 13px; font-weight: 600; color: var(--md-sys-color-outline); text-transform: uppercase; letter-spacing: 0.5px;">Debito Totale Residuo</span>
-          <span class="material-symbols-outlined" style="color: var(--md-sys-color-error); font-size: 24px;">account_balance</span>
+      <div class="stat-card tone-due">
+        <div class="stat-card-header">
+          <span class="stat-card-label">Debito Totale Residuo</span>
+          <span class="stat-card-icon"><span class="material-symbols-outlined">account_balance</span></span>
         </div>
-        <div class="stat-value sensitive-value" style="color: var(--md-sys-color-error); font-weight: 700;">
+        <div class="stat-value sensitive-value" style="color: var(--md-sys-color-error);">
           ${totResiduo > 0 ? "- " + formatCurrency(totResiduo) : "0,00 €"}
         </div>
-        <div style="font-size: 12px; color: var(--md-sys-color-outline);">
-          ${totResiduo > 0 ? "Detratto dal budget disponibile" : "Nessun debito pendente"}
+        <div class="stat-card-footer">
+          <span>${totResiduo > 0 ? "Detratto dal budget disponibile" : "Nessun debito pendente"}</span>
         </div>
       </div>
 
-      <div class="stat-card" style="background: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface);">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-          <span style="font-size: 13px; font-weight: 600; color: var(--md-sys-color-outline); text-transform: uppercase; letter-spacing: 0.5px;">Rata Mensile Totale</span>
-          <span class="material-symbols-outlined" style="color: var(--md-sys-color-primary); font-size: 24px;">payments</span>
+      <div class="stat-card tone-cost">
+        <div class="stat-card-header">
+          <span class="stat-card-label">Rata Mensile Totale</span>
+          <span class="stat-card-icon"><span class="material-symbols-outlined">payments</span></span>
         </div>
-        <div class="stat-value sensitive-value" style="color: var(--md-sys-color-primary); font-weight: 700;">
-          ${formatCurrency(totRateMensili)} <span style="font-size: 14px; font-weight: 500; color: var(--md-sys-color-outline);">/ mese</span>
+        <div class="stat-value sensitive-value" style="color: var(--md-sys-color-primary);">
+          ${formatCurrency(totRateMensili)} <span style="font-size: 13px; font-weight: 500 !important; color: var(--md-sys-color-outline);">/ mese</span>
         </div>
-        <div style="font-size: 12px; color: var(--md-sys-color-outline);">
-          Uscita fissa mensile complessiva
+        <div class="stat-card-footer">
+          <span>Uscita fissa mensile complessiva</span>
         </div>
       </div>
 
-      <div class="stat-card" style="background: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface);">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-          <span style="font-size: 13px; font-weight: 600; color: var(--md-sys-color-outline); text-transform: uppercase; letter-spacing: 0.5px;">Prossima Scadenza</span>
-          <span class="material-symbols-outlined" style="color: #f59e0b; font-size: 24px;">event</span>
+      <div class="stat-card tone-warn">
+        <div class="stat-card-header">
+          <span class="stat-card-label">Prossima Scadenza</span>
+          <span class="stat-card-icon"><span class="material-symbols-outlined">event</span></span>
         </div>
-        <div style="font-size: 16px; font-weight: 700; color: var(--md-sys-color-on-surface); line-height: 1.3;">
+        <div class="stat-value" style="font-size: clamp(16px, 1.3vw, 20px);">
           ${nextScadenzaLabel}
         </div>
-        <div style="font-size: 12px; color: var(--md-sys-color-outline); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-          ${nextScadenzaDebitoNome ? nextScadenzaDebitoNome : "Tutte le rate saldate"}
+        <div class="stat-card-footer">
+          <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${nextScadenzaDebitoNome ? nextScadenzaDebitoNome : "Tutte le rate saldate"}</span>
         </div>
       </div>
 
-      <div class="stat-card" style="background: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface);">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-          <span style="font-size: 13px; font-weight: 600; color: var(--md-sys-color-outline); text-transform: uppercase; letter-spacing: 0.5px;">Stato Finanziamenti</span>
-          <span class="material-symbols-outlined" style="color: var(--md-sys-color-success); font-size: 24px;">checklist</span>
+      <div class="stat-card tone-budget">
+        <div class="stat-card-header">
+          <span class="stat-card-label">Stato Finanziamenti</span>
+          <span class="stat-card-icon"><span class="material-symbols-outlined">checklist</span></span>
         </div>
-        <div class="stat-value" style="font-weight: 700;">
-          ${attiviCount} <span style="font-size: 15px; font-weight: 500; color: var(--md-sys-color-outline);">attivi</span>
+        <div class="stat-value">
+          ${attiviCount} <span style="font-size: 14px; font-weight: 500 !important; color: var(--md-sys-color-outline);">attivi</span>
         </div>
-        <div style="font-size: 12px; color: var(--md-sys-color-success); font-weight: 600;">
-          ${saldatiCount} ${saldatiCount === 1 ? "finanziamento saldato" : "finanziamenti saldati"}
+        <div class="stat-card-footer">
+          <span>Saldati</span>
+          <span class="stat-footer-pill pos">${saldatiCount} ${saldatiCount === 1 ? "saldato" : "saldati"}</span>
         </div>
       </div>
     `;
@@ -840,7 +841,7 @@ function closeDebitoDetailView() {
 /**
  * Calcola la data stimata di estinzione e il calendario delle prossime rate.
  */
-function getDebitoSchedulePreview(debito, maxItems = 12) {
+function getDebitoSchedulePreview(debito, maxItems = Infinity) {
   const rateLeft = Math.max(0, parseInt(debito.mesiRimanenti, 10) || 0);
   const rataVal = parseFloat(debito.rata) || 0;
   if (rateLeft <= 0) {
@@ -916,7 +917,7 @@ function renderDebitoDetailView(d) {
     totIniziale > 0 ? Math.min(100, Math.round((ratePagate / totIniziale) * 100)) : 100;
 
   const scad = getProssimaScadenzaDebito(d.giornoPagamento, rateLeft);
-  const schedule = getDebitoSchedulePreview(d, 12);
+  const schedule = getDebitoSchedulePreview(d);
 
   let iconName = "credit_card";
   const lowerDesc = (d.desc || "").toLowerCase();
@@ -1162,9 +1163,13 @@ function renderDebitoDetailView(d) {
                     <span class="debito-schedule-num">#${ratePagate + u.num}</span>
                     <span style="font-size: 13.5px; font-weight: 500;">${u.dateLabel}</span>
                   </div>
-                  <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap; justify-content: flex-end;">
+                  <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: flex-end;">
                     <span class="sensitive-value" style="font-size: 13.5px; font-weight: 600; color: var(--md-sys-color-primary);">${formatCurrency(u.importo)}</span>
-                    <span class="sensitive-value" style="font-size: 12px; color: var(--md-sys-color-outline);">Residuo: ${formatCurrency(u.residuoDopo)}</span>
+                    ${
+                      u.residuoDopo <= 0.01
+                        ? `<span class="stat-footer-pill pos">Ultima rata · 0,00 €</span>`
+                        : `<span class="sensitive-value" style="font-size: 12px; color: var(--md-sys-color-outline);">Residuo: ${formatCurrency(u.residuoDopo)}</span>`
+                    }
                   </div>
                 </div>
               `,
@@ -1186,9 +1191,10 @@ function renderDebitoDetailView(d) {
  * Renderizza i due grafici (Doughnut Pagato/Residuo e Line Chart Proiezione) nella pagina dettaglio debito.
  */
 function renderDebitoDetailCharts(d, ratePagate, rateLeft, rataVal) {
-  const isDark = document.body.classList.contains("dark-mode");
-  const textColor = isDark ? "#E6E1E5" : "#1C1B1F";
-  const gridColor = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)";
+  const m3 = typeof getM3ChartTheme === "function" ? getM3ChartTheme() : null;
+  const isDark = m3 ? m3.isDark : document.body.classList.contains("dark-mode");
+  const textColor = m3 ? m3.textColor : isDark ? "#E6E1E5" : "#1C1B1F";
+  const gridColor = m3 ? m3.gridColor : isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)";
   const isMobile = window.innerWidth <= 768;
 
   // 1. Doughnut Chart: Pagato vs Residuo
@@ -1204,26 +1210,32 @@ function renderDebitoDetailCharts(d, ratePagate, rateLeft, rataVal) {
         datasets: [
           {
             data: [paidVal, remVal],
-            backgroundColor: ["#22C55E", "#EF4444"],
+            backgroundColor: [isDark ? "#4ade80" : "#16a34a", isDark ? "#fb7185" : "#dc2626"],
             borderWidth: 0,
-            hoverOffset: 6,
+            borderRadius: 6,
+            spacing: 3,
+            hoverOffset: 10,
           },
         ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        cutout: "66%",
+        cutout: "70%",
+        animation: m3 ? m3.doughnutAnimation : undefined,
         plugins: {
           legend: {
             position: "bottom",
             labels: {
               color: textColor,
-              font: { family: "'Google Sans Flex', sans-serif", size: 12 },
+              usePointStyle: true,
+              pointStyle: "circle",
+              font: { family: "'Google Sans Flex', sans-serif", size: 12, weight: 600 },
               padding: 14,
             },
           },
           tooltip: {
+            ...(m3 ? m3.tooltip : {}),
             callbacks: {
               label: (ctx) => `${ctx.label}: ${formatter.format(ctx.parsed || 0)}`,
             },
@@ -1263,7 +1275,13 @@ function renderDebitoDetailCharts(d, ratePagate, rateLeft, rataVal) {
       values.push(0);
     }
 
-    debitoProjectionChart = new Chart(ctxProj.getContext("2d"), {
+    const lineCtx = ctxProj.getContext("2d");
+    const lineColor = m3 ? m3.primary : "#6750A4";
+    const fillGrad = lineCtx.createLinearGradient(0, 0, 0, 260);
+    fillGrad.addColorStop(0, lineColor + (isDark ? "44" : "33"));
+    fillGrad.addColorStop(1, lineColor + "00");
+
+    debitoProjectionChart = new Chart(lineCtx, {
       type: "line",
       data: {
         labels,
@@ -1271,23 +1289,27 @@ function renderDebitoDetailCharts(d, ratePagate, rateLeft, rataVal) {
           {
             label: "Debito Residuo (€)",
             data: values,
-            borderColor: "#6750A4",
-            backgroundColor: isDark
-              ? "rgba(208, 188, 255, 0.16)"
-              : "rgba(103, 80, 164, 0.14)",
+            borderColor: lineColor,
+            borderWidth: 2.5,
+            backgroundColor: fillGrad,
             fill: true,
-            tension: 0.25,
-            pointRadius: values.length > 15 ? 2 : 3.5,
-            pointBackgroundColor: "#6750A4",
+            tension: 0.32,
+            pointRadius: values.length > 15 ? 2.5 : 4,
+            pointHoverRadius: 6,
+            pointBackgroundColor: lineColor,
+            pointBorderColor: isDark ? "#161720" : "#ffffff",
+            pointBorderWidth: 2,
           },
         ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        animation: m3 ? m3.lineAnimation : undefined,
         plugins: {
           legend: { display: false },
           tooltip: {
+            ...(m3 ? m3.tooltip : {}),
             callbacks: {
               label: (ctx) => `Residuo: ${formatter.format(ctx.parsed.y || 0)}`,
             },

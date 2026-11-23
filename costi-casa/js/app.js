@@ -1,6 +1,6 @@
 /**
  * ============================================================================== 
- * APPLICATION ENTRY POINT, AGGREGATORE VISTE & AVVIO PWA (v1.9.43)
+ * APPLICATION ENTRY POINT, AGGREGATORE VISTE & AVVIO PWA (v2.0.0)
  * ============================================================================== 
  */
 
@@ -70,6 +70,7 @@ function renderAll() {
  */
 
 initPrivacyMode();
+if (typeof initExpressiveUI === "function") initExpressiveUI();
 checkWizard();
 switchTab("riepilogo", "Riepilogo Generale");
 renderAll();
