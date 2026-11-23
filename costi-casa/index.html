@@ -20,13 +20,14 @@
     <link rel="icon" href="./icon.jpg?v=1" />
 
     <!-- Font Locali: Google Sans Flex & Material Symbols -->
-    <link rel="stylesheet" href="./font/fonts.css?v=1.9.43" />
+    <link rel="stylesheet" href="./font/fonts.css?v=2.0.0" />
 
     <!-- Chart.js & SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <link rel="stylesheet" href="./style.css?v=1.9.43" />
+    <link rel="stylesheet" href="./style.css?v=2.0.0" />
+    <link rel="stylesheet" href="./theme-expressive.css?v=2.0.0" />
   </head>
   <body>
     <!-- WIZARD INIZIALE -->
@@ -179,6 +180,29 @@
             >
               <span class="material-symbols-outlined">cloud_download</span>
               Scarica e Accedi
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modale Dettaglio Completo (Domande, Task & Appunti) -->
+    <div id="itemDetailModal" class="modal-overlay" onclick="if(event.target === this) closeItemDetailModal()">
+      <div class="modal-content item-detail-modal-content">
+        <div id="item-detail-badges" class="item-detail-badges"></div>
+        <h2 id="item-detail-title" class="item-detail-title"></h2>
+        <div id="item-detail-linked" class="card-linked-costs" style="margin-bottom: 12px; display: none"></div>
+        <div id="item-detail-body" class="item-detail-body"></div>
+        <div id="item-detail-images" class="note-images-grid" style="margin-top: 14px; display: none"></div>
+        <div id="item-detail-extra"></div>
+        <div class="modal-actions" style="margin-top: 20px">
+          <div class="modal-actions-left" id="item-detail-actions-left"></div>
+          <div class="modal-actions-right">
+            <button type="button" class="btn btn-tonal" onclick="closeItemDetailModal()">
+              Chiudi
+            </button>
+            <button type="button" class="btn btn-filled" id="item-detail-edit-btn">
+              <span class="material-symbols-outlined">edit</span> Modifica
             </button>
           </div>
         </div>
@@ -2870,7 +2894,19 @@
     </div>
 
     <!-- Nav Rail Desktop -->
-    <div class="nav-rail">
+    <div class="nav-rail" id="desktop-nav-rail">
+      <button
+        type="button"
+        class="nav-rail-toggle-btn"
+        id="nav-rail-expand-btn"
+        onclick="toggleNavRailExpand()"
+        title="Espandi / Comprimi menu"
+        aria-label="Espandi o comprimi menu"
+      >
+        <span class="material-symbols-outlined" id="nav-rail-expand-icon">menu</span>
+        <span class="nav-item-label">Menu</span>
+      </button>
+      <div class="nav-rail-divider"></div>
       <div
         class="nav-item active"
         onclick="switchTab('riepilogo', 'Riepilogo Generale')"
@@ -2878,6 +2914,7 @@
         title="Riepilogo"
       >
         <span class="material-symbols-outlined">dashboard</span>
+        <span class="nav-item-label">Riepilogo</span>
       </div>
       <div
         class="nav-item"
@@ -2886,6 +2923,7 @@
         title="Costi Casa"
       >
         <span class="material-symbols-outlined">home_work</span>
+        <span class="nav-item-label">Costi Casa</span>
       </div>
       <div
         class="nav-item"
@@ -2894,6 +2932,7 @@
         title="Costi per Categoria"
       >
         <span class="material-symbols-outlined">pie_chart</span>
+        <span class="nav-item-label">Categorie</span>
       </div>
       <div
         class="nav-item"
@@ -2902,6 +2941,7 @@
         title="Budget"
       >
         <span class="material-symbols-outlined">account_balance_wallet</span>
+        <span class="nav-item-label">Budget</span>
       </div>
       <div
         class="nav-item"
@@ -2910,6 +2950,7 @@
         title="Monitoraggio Risparmio Netto"
       >
         <span class="material-symbols-outlined">trending_up</span>
+        <span class="nav-item-label">Risparmi</span>
       </div>
       <div
         class="nav-item"
@@ -2918,6 +2959,7 @@
         title="Calcolatore Mutuo"
       >
         <span class="material-symbols-outlined">calculate</span>
+        <span class="nav-item-label">Mutuo</span>
       </div>
       <div
         class="nav-item"
@@ -2926,6 +2968,7 @@
         title="Debiti & Finanziamenti"
       >
         <span class="material-symbols-outlined">credit_card_off</span>
+        <span class="nav-item-label">Debiti</span>
       </div>
       <div
         class="nav-item"
@@ -2934,6 +2977,7 @@
         title="Domande e Risposte"
       >
         <span class="material-symbols-outlined">quiz</span>
+        <span class="nav-item-label">Domande</span>
       </div>
       <div
         class="nav-item"
@@ -2943,13 +2987,14 @@
         style="position: relative"
       >
         <span class="material-symbols-outlined">task_alt</span>
+        <span class="nav-item-label">Task</span>
         <span
           id="task-badge-desktop"
           style="
             display: none;
             position: absolute;
-            top: 8px;
-            right: 8px;
+            top: 6px;
+            right: 6px;
             background-color: var(--md-sys-color-error);
             color: white;
             font-size: 10px;
@@ -2968,6 +3013,7 @@
         title="Appunti"
       >
         <span class="material-symbols-outlined">edit_note</span>
+        <span class="nav-item-label">Appunti</span>
       </div>
       <div
         class="nav-item"
@@ -2976,6 +3022,7 @@
         title="Galleria & Documenti"
       >
         <span class="material-symbols-outlined">collections</span>
+        <span class="nav-item-label">Galleria</span>
       </div>
       <div
         class="nav-item"
@@ -2984,6 +3031,7 @@
         title="Impostazioni"
       >
         <span class="material-symbols-outlined">settings_applications</span>
+        <span class="nav-item-label">Impostazioni</span>
       </div>
     </div>
 
@@ -3202,7 +3250,7 @@
             <span class="nav-drawer-footer-label">Versione App</span>
           </div>
           <span class="nav-drawer-version-badge" id="drawer-version-badge"
-            >v1.9.43</span
+            >v2.0.0</span
           >
         </div>
       </div>
@@ -3415,6 +3463,9 @@
             </button>
           </div>
         </div>
+        <div class="scroll-progress-track" aria-hidden="true">
+          <div class="scroll-progress-bar" id="scroll-progress-bar"></div>
+        </div>
       </div>
 
       <div id="hero-header" class="hero-header">
@@ -3425,68 +3476,119 @@
         <!-- RIEPILOGO -->
         <div id="view-riepilogo" class="view-section active">
           <div class="dashboard-grid">
-            <div class="stat-card">
-              <span style="font-size: 14px; opacity: 0.9"
-                >Budget Totale Disponibile</span
-              >
+            <div class="stat-card tone-budget">
+              <div class="stat-card-header">
+                <span class="stat-card-label">Budget Totale Disponibile</span>
+                <span class="stat-card-icon">
+                  <span class="material-symbols-outlined">account_balance_wallet</span>
+                </span>
+              </div>
               <div class="stat-value" id="stat-budget-tot">€ 0.00</div>
+              <div class="stat-card-footer" id="stat-budget-sub"></div>
             </div>
-            <div class="stat-card secondary">
-              <span style="font-size: 14px; opacity: 0.9"
-                >Costo Totale Stimato Progetto</span
-              >
+            <div class="stat-card tone-cost">
+              <div class="stat-card-header">
+                <span class="stat-card-label">Costo Totale Stimato Progetto</span>
+                <span class="stat-card-icon">
+                  <span class="material-symbols-outlined">home_work</span>
+                </span>
+              </div>
               <div class="stat-value" id="stat-costo-tot">€ 0.00</div>
+              <div class="stat-card-footer" id="stat-costo-sub"></div>
             </div>
-            <div class="stat-card tertiary">
-              <span style="font-size: 14px; opacity: 0.9"
-                >Capitale Restante da Pagare</span
-              >
+            <div class="stat-card tone-due">
+              <div class="stat-card-header">
+                <span class="stat-card-label">Capitale Restante da Pagare</span>
+                <span class="stat-card-icon">
+                  <span class="material-symbols-outlined">pending_actions</span>
+                </span>
+              </div>
               <div class="stat-value" id="stat-restante-tot">€ 0.00</div>
+              <div class="stat-card-footer" id="stat-restante-sub"></div>
             </div>
           </div>
 
           <div class="dashboard-grid dashboard-grid-riepilogo-secondary">
-            <div
-              class="stat-card stat-card-compact-mobile"
-              style="
-                background-color: var(--md-sys-color-surface-container-high);
-                color: var(--md-sys-color-on-surface);
-              "
-            >
-              <span
-                class="stat-card-label"
-                style="font-size: 14px; opacity: 0.9"
-                >% Spesa Effettuata</span
-              >
-              <div class="stat-value sensitive-value" id="stat-progresso">
-                0.0%
+            <div class="stat-card neutral stat-card-compact-mobile">
+              <div class="stat-card-header">
+                <span class="stat-card-label">% Spesa Effettuata</span>
+                <span class="stat-card-icon">
+                  <span class="material-symbols-outlined">donut_large</span>
+                </span>
+              </div>
+              <div class="stat-progresso-row">
+                <div class="stat-value sensitive-value" id="stat-progresso">
+                  0.0%
+                </div>
+                <span class="stat-progresso-paid sensitive-value" id="stat-progresso-sub"></span>
+              </div>
+              <div class="stat-mini-progress">
+                <div class="stat-mini-progress-fill" id="stat-progresso-bar"></div>
               </div>
             </div>
-            <div class="stat-card secondary stat-card-compact-mobile">
-              <span
-                class="stat-card-label"
-                style="font-size: 14px; opacity: 0.9"
-                >Bilancio Conguaglio</span
-              >
+            <div class="stat-card tone-cost stat-card-compact-mobile">
+              <div class="stat-card-header">
+                <span class="stat-card-label">Bilancio Conguaglio</span>
+                <span class="stat-card-icon">
+                  <span class="material-symbols-outlined">balance</span>
+                </span>
+              </div>
               <div class="stat-value" id="stat-conguaglio">€ 0.00</div>
             </div>
-            <div class="stat-card tertiary stat-card-full-mobile">
-              <span
-                class="stat-card-label"
-                style="font-size: 14px; opacity: 0.9"
-                >Liquidità Residua Reale</span
-              >
+            <div class="stat-card tone-budget stat-card-full-mobile">
+              <div class="stat-card-header">
+                <span class="stat-card-label">Liquidità Residua Reale</span>
+                <span class="stat-card-icon">
+                  <span class="material-symbols-outlined">savings</span>
+                </span>
+              </div>
               <div class="stat-value" id="stat-liquidita">€ 0.00</div>
+            </div>
+          </div>
+
+          <div class="riepilogo-insight-strip">
+            <div class="insight-pills-group" id="riepilogo-insight-pills"></div>
+            <div class="insight-quick-actions">
+              <button
+                type="button"
+                class="quick-action-chip"
+                onclick="switchTab('costi', 'Costi Casa')"
+              >
+                <span class="material-symbols-outlined">add_circle</span>
+                Costi
+              </button>
+              <button
+                type="button"
+                class="quick-action-chip"
+                onclick="switchTab('mutuo', 'Calcolatore Mutuo')"
+              >
+                <span class="material-symbols-outlined">calculate</span>
+                Mutuo
+              </button>
+              <button
+                type="button"
+                class="quick-action-chip"
+                onclick="switchTab('settings', 'Impostazioni Dati'); switchSettingsSection('appearance');"
+              >
+                <span class="material-symbols-outlined">palette</span>
+                Tema
+              </button>
             </div>
           </div>
 
           <div class="charts-container">
             <div class="card" style="margin-bottom: 0">
-              <h2 class="card-title">Stato Finanziario</h2>
+              <h2 class="card-title">
+                <span class="material-symbols-outlined">bar_chart</span>
+                Stato Finanziario
+              </h2>
               <div class="chart-box"><canvas id="barChart"></canvas></div>
             </div>
             <div class="card" style="margin-bottom: 0">
-              <h2 class="card-title">Ripartizione Spese per Utente</h2>
+              <h2 class="card-title">
+                <span class="material-symbols-outlined">donut_small</span>
+                Ripartizione Spese per Utente
+              </h2>
               <div class="chart-box"><canvas id="pieChart"></canvas></div>
               <div
                 id="riepilogo-users-totals"
@@ -3501,11 +3603,30 @@
               ></div>
             </div>
           </div>
+
+          <div class="card" id="riepilogo-top-categories-card" style="margin-top: var(--m3-grid-gap); margin-bottom: 0">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; flex-wrap: wrap">
+              <h2 class="card-title" style="margin-bottom: 0">
+                <span class="material-symbols-outlined">leaderboard</span>
+                Top Categorie di Spesa
+              </h2>
+              <button
+                type="button"
+                class="quick-action-chip"
+                onclick="switchTab('categorie', 'Costi per Categoria')"
+              >
+                <span class="material-symbols-outlined">open_in_new</span>
+                Vedi tutte
+              </button>
+            </div>
+            <div class="top-cat-list" id="riepilogo-top-categories-list"></div>
+          </div>
         </div>
 
         <!-- COSTI CASA -->
         <div id="view-costi" class="view-section">
           <div id="costi-top-cards" class="dashboard-grid"></div>
+          <div id="costi-summary-strip" class="mini-analytics-strip"></div>
 
           <!-- Bottone Mostra Form Aggiungi Costo -->
           <div
@@ -4120,6 +4241,27 @@
         <!-- BUDGET -->
         <div id="view-budget" class="view-section">
           <div id="budget-top-cards" class="dashboard-grid"></div>
+
+          <div class="charts-container" id="budget-charts-card" style="margin-bottom: var(--m3-grid-gap); margin-top: 0">
+            <div class="card" style="margin-bottom: 0">
+              <h2 class="card-title">
+                <span class="material-symbols-outlined">donut_small</span>
+                Composizione Fonti Budget
+              </h2>
+              <div class="chart-box" style="height: 240px">
+                <canvas id="budgetCompositionChart"></canvas>
+              </div>
+            </div>
+            <div class="card" style="margin-bottom: 0">
+              <h2 class="card-title">
+                <span class="material-symbols-outlined">stacked_bar_chart</span>
+                Budget vs Quota Costi per Partecipante
+              </h2>
+              <div class="chart-box" style="height: 240px">
+                <canvas id="budgetUsersChart"></canvas>
+              </div>
+            </div>
+          </div>
 
           <!-- Bottone Mostra Form Aggiungi Budget -->
           <div
@@ -4949,6 +5091,19 @@
 
           <div class="dashboard-grid" id="mutuo-result-cards"></div>
 
+          <div class="card" id="mutuo-charts-card" style="display: none">
+            <h2 class="card-title">
+              <span class="material-symbols-outlined">pie_chart</span>
+              Composizione Finanziamento: Anticipo, Capitale & Interessi
+            </h2>
+            <div class="mutuo-chart-layout">
+              <div class="chart-box" style="height: 220px">
+                <canvas id="mutuoBreakdownChart"></canvas>
+              </div>
+              <div class="mutuo-chart-metrics" id="mutuo-chart-metrics"></div>
+            </div>
+          </div>
+
           <div
             class="card"
             id="mutuo-details-card"
@@ -5357,6 +5512,24 @@
                 <button
                   type="button"
                   class="settings-nav-item"
+                  data-section="appearance"
+                  onclick="switchSettingsSection('appearance')"
+                >
+                  <div class="settings-nav-icon-box">
+                    <span class="material-symbols-outlined">palette</span>
+                  </div>
+                  <div class="settings-nav-text">
+                    <span class="settings-nav-title">Aspetto & Tema</span>
+                    <span class="settings-nav-desc">Dark mode, colori e animazioni</span>
+                  </div>
+                  <span class="material-symbols-outlined settings-nav-chevron"
+                    >chevron_right</span
+                  >
+                </button>
+
+                <button
+                  type="button"
+                  class="settings-nav-item"
                   data-section="users"
                   onclick="switchSettingsSection('users')"
                 >
@@ -5465,7 +5638,7 @@
 
               <div class="settings-sidebar-footer">
                 <span class="settings-sidebar-label">Versione</span>
-                <span class="version-number">v1.9.43</span>
+                <span class="version-number">v2.0.0</span>
               </div>
             </aside>
 
@@ -5484,6 +5657,177 @@
                 <span class="settings-mobile-badge" id="settings-mobile-current-title"
                   >Utenti & Fondo</span
                 >
+              </div>
+
+              <!-- PANEL 0: ASPETTO & TEMA (M3 EXPRESSIVE) -->
+              <div class="settings-section-panel" id="settings-panel-appearance">
+                <div class="card" style="margin-bottom: 0">
+                  <h2 class="card-title">
+                    <span class="material-symbols-outlined">palette</span>
+                    Aspetto, Tema & Material You
+                  </h2>
+
+                  <p class="appearance-section-label">Modalità Tema</p>
+                  <div class="theme-mode-grid">
+                    <button
+                      type="button"
+                      class="theme-mode-card"
+                      data-mode="light"
+                      onclick="setThemeMode('light')"
+                    >
+                      <span class="material-symbols-outlined">light_mode</span>
+                      <span>Chiaro</span>
+                    </button>
+                    <button
+                      type="button"
+                      class="theme-mode-card"
+                      data-mode="dark"
+                      onclick="setThemeMode('dark')"
+                    >
+                      <span class="material-symbols-outlined">dark_mode</span>
+                      <span>Scuro</span>
+                    </button>
+                    <button
+                      type="button"
+                      class="theme-mode-card"
+                      data-mode="auto"
+                      onclick="setThemeMode('auto')"
+                    >
+                      <span class="material-symbols-outlined">contrast</span>
+                      <span>Sistema</span>
+                    </button>
+                  </div>
+
+                  <p class="appearance-section-label">Palette Accento Material Expressive</p>
+                  <div class="accent-swatch-grid">
+                    <button
+                      type="button"
+                      class="accent-swatch-btn"
+                      data-accent="viola"
+                      onclick="setThemeAccent('viola')"
+                    >
+                      <span
+                        class="accent-swatch-dot"
+                        style="background: linear-gradient(135deg, #6750a4, #d0bcff)"
+                      ></span>
+                      <span>Viola M3</span>
+                    </button>
+                    <button
+                      type="button"
+                      class="accent-swatch-btn"
+                      data-accent="oceano"
+                      onclick="setThemeAccent('oceano')"
+                    >
+                      <span
+                        class="accent-swatch-dot"
+                        style="background: linear-gradient(135deg, #2563eb, #60a5fa)"
+                      ></span>
+                      <span>Oceano</span>
+                    </button>
+                    <button
+                      type="button"
+                      class="accent-swatch-btn"
+                      data-accent="smeraldo"
+                      onclick="setThemeAccent('smeraldo')"
+                    >
+                      <span
+                        class="accent-swatch-dot"
+                        style="background: linear-gradient(135deg, #0f766e, #34d399)"
+                      ></span>
+                      <span>Smeraldo</span>
+                    </button>
+                    <button
+                      type="button"
+                      class="accent-swatch-btn"
+                      data-accent="corallo"
+                      onclick="setThemeAccent('corallo')"
+                    >
+                      <span
+                        class="accent-swatch-dot"
+                        style="background: linear-gradient(135deg, #be185d, #fb7185)"
+                      ></span>
+                      <span>Corallo</span>
+                    </button>
+                    <button
+                      type="button"
+                      class="accent-swatch-btn"
+                      data-accent="ambra"
+                      onclick="setThemeAccent('ambra')"
+                    >
+                      <span
+                        class="accent-swatch-dot"
+                        style="background: linear-gradient(135deg, #b45309, #fbbf24)"
+                      ></span>
+                      <span>Ambra</span>
+                    </button>
+                  </div>
+
+                  <p class="appearance-section-label">Stile Barra Laterale (Desktop)</p>
+                  <div class="density-segmented" style="grid-template-columns: repeat(2, 1fr)">
+                    <button
+                      type="button"
+                      class="density-btn nav-style-btn"
+                      data-nav-style="floating"
+                      onclick="setNavStyle('floating')"
+                    >
+                      Fluttuante (Floating)
+                    </button>
+                    <button
+                      type="button"
+                      class="density-btn nav-style-btn"
+                      data-nav-style="docked"
+                      onclick="setNavStyle('docked')"
+                    >
+                      Classica Laterale
+                    </button>
+                  </div>
+
+                  <p class="appearance-section-label">Densità Card & Layout</p>
+                  <div class="density-segmented">
+                    <button
+                      type="button"
+                      class="density-btn"
+                      data-density="compact"
+                      onclick="setCardDensity('compact')"
+                    >
+                      Compatta
+                    </button>
+                    <button
+                      type="button"
+                      class="density-btn"
+                      data-density="comfortable"
+                      onclick="setCardDensity('comfortable')"
+                    >
+                      Standard
+                    </button>
+                    <button
+                      type="button"
+                      class="density-btn"
+                      data-density="spacious"
+                      onclick="setCardDensity('spacious')"
+                    >
+                      Ampia
+                    </button>
+                  </div>
+
+                  <p class="appearance-section-label">Movimento & Animazioni</p>
+                  <label class="motion-toggle-row" style="cursor: pointer">
+                    <div>
+                      <div style="font-weight: 600; font-size: 14px">
+                        Riduci animazioni e transizioni
+                      </div>
+                      <div style="font-size: 12.5px; color: var(--md-sys-color-outline)">
+                        Disattiva animazioni allo scroll, cambi pagina ed effetti elastici sui grafici
+                      </div>
+                    </div>
+                    <input
+                      type="checkbox"
+                      id="settings-reduced-motion"
+                      onchange="setReducedMotion(this.checked)"
+                      style="width: 20px; height: 20px; accent-color: var(--md-sys-color-primary); cursor: pointer"
+                    />
+                  </label>
+                </div>
               </div>
 
               <!-- PANEL 1: UTENTI & FONDO -->
@@ -5926,22 +6270,34 @@
             <a href="https://giovannilamarmora.github.io/" target="_blank"
               >Giovanni Lamarmora</a
             >
-            <span class="version-number">v1.9.43</span>
+            <span class="version-number">v2.0.0</span>
           </h4>
         </div>
       </div>
     </div>
 
-    <!-- Script modulari dell'applicazione (v1.9.43) -->
-    <script src="./js/config.js?v=1.9.43"></script>
-    <script src="./js/ui.js?v=1.9.43"></script>
-    <script src="./js/storage.js?v=1.9.43"></script>
-    <script src="./js/costi.js?v=1.9.43"></script>
-    <script src="./js/budget.js?v=1.9.43"></script>
-    <script src="./js/mutuo.js?v=1.9.43"></script>
-    <script src="./js/savings.js?v=1.9.43"></script>
-    <script src="./js/debiti.js?v=1.9.43"></script>
-    <script src="./js/notes.js?v=1.9.43"></script>
-    <script src="./js/app.js?v=1.9.43"></script>
+    <button
+      type="button"
+      id="scroll-top-fab"
+      class="scroll-top-fab"
+      onclick="scrollToTopMain()"
+      title="Torna su"
+      aria-label="Torna in cima"
+    >
+      <span class="material-symbols-outlined">arrow_upward</span>
+    </button>
+
+    <!-- Script modulari dell'applicazione (v2.0.0) -->
+    <script src="./js/config.js?v=2.0.0"></script>
+    <script src="./js/ui.js?v=2.0.0"></script>
+    <script src="./js/storage.js?v=2.0.0"></script>
+    <script src="./js/costi.js?v=2.0.0"></script>
+    <script src="./js/budget.js?v=2.0.0"></script>
+    <script src="./js/mutuo.js?v=2.0.0"></script>
+    <script src="./js/savings.js?v=2.0.0"></script>
+    <script src="./js/debiti.js?v=2.0.0"></script>
+    <script src="./js/notes.js?v=2.0.0"></script>
+    <script src="./js/expressive.js?v=2.0.0"></script>
+    <script src="./js/app.js?v=2.0.0"></script>
   </body>
 </html>

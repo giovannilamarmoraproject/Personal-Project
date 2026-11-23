@@ -537,30 +537,41 @@ function buildDynamicForms() {
   const costiCards = document.getElementById("costi-top-cards");
   if (costiCards) {
     let cardsHTML = `
-                    <div class="stat-card stat-card-full" style="background-color: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface);">
-                        <span class="stat-card-label" style="font-size: 14px; opacity: 0.9;">Costo Totale Stimato</span>
+                    <div class="stat-card tone-cost stat-card-full">
+                        <div class="stat-card-header">
+                          <span class="stat-card-label">Costo Totale Stimato</span>
+                          <span class="stat-card-icon"><span class="material-symbols-outlined">home_work</span></span>
+                        </div>
                         <div class="stat-value" id="stat-costi-page-tot">€ 0.00</div>
                     </div>
                 `;
-    appData.settings.users.forEach((u, i) => {
-      let colorClass = i % 2 === 0 ? "secondary" : "tertiary";
+    appData.settings.users.forEach((u) => {
       cardsHTML += `
-                        <div class="stat-card ${colorClass} stat-card-user">
-                            <span class="stat-card-label" style="font-size: 14px; opacity: 0.9;">Pagato ${u.name}</span>
+                        <div class="stat-card tone-budget stat-card-user">
+                            <div class="stat-card-header">
+                              <span class="stat-card-label">Pagato ${u.name}</span>
+                              <span class="stat-card-icon"><span class="material-symbols-outlined">payments</span></span>
+                            </div>
                             <div class="stat-value sensitive-value" id="stat-costi-page-${u.id}">€ 0.00</div>
                         </div>
                     `;
     });
     cardsHTML += `
-                    <div class="stat-card stat-card-full" style="background-color: var(--md-sys-color-primary-container);">
-                        <span class="stat-card-label" style="font-size: 14px; opacity: 0.9;">Da Pagare</span>
+                    <div class="stat-card tone-due stat-card-full">
+                        <div class="stat-card-header">
+                          <span class="stat-card-label">Da Pagare</span>
+                          <span class="stat-card-icon"><span class="material-symbols-outlined">pending_actions</span></span>
+                        </div>
                         <div class="stat-value sensitive-value" id="stat-costi-page-restante">€ 0.00</div>
                     </div>
                 `;
     appData.settings.users.forEach((u) => {
       cardsHTML += `
-                    <div class="stat-card stat-card-user" style="background-color: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface);">
-                        <span class="stat-card-label" style="font-size: 14px; opacity: 0.9;">Da Pagare ${u.name}</span>
+                    <div class="stat-card tone-due stat-card-user">
+                        <div class="stat-card-header">
+                          <span class="stat-card-label">Da Pagare ${u.name}</span>
+                          <span class="stat-card-icon"><span class="material-symbols-outlined">person_outline</span></span>
+                        </div>
                         <div class="stat-value sensitive-value" id="stat-costi-page-restante-${u.id}">€ 0.00</div>
                     </div>
                 `;
@@ -571,16 +582,21 @@ function buildDynamicForms() {
   const budgetCards = document.getElementById("budget-top-cards");
   if (budgetCards) {
     let bCardsHTML = `
-                    <div class="stat-card stat-card-full" style="background-color: var(--md-sys-color-primary-container);">
-                        <span class="stat-card-label" style="font-size: 14px; opacity: 0.9;">Budget Totale</span>
+                    <div class="stat-card tone-budget stat-card-full">
+                        <div class="stat-card-header">
+                          <span class="stat-card-label">Budget Totale</span>
+                          <span class="stat-card-icon"><span class="material-symbols-outlined">account_balance_wallet</span></span>
+                        </div>
                         <div class="stat-value sensitive-value" id="stat-budget-page-tot">€ 0.00</div>
                     </div>
                 `;
-    appData.settings.users.forEach((u, i) => {
-      let colorClass = i % 2 === 0 ? "secondary" : "tertiary";
+    appData.settings.users.forEach((u) => {
       bCardsHTML += `
-                        <div class="stat-card ${colorClass} stat-card-user">
-                            <span class="stat-card-label" style="font-size: 14px; opacity: 0.9;">Quota ${u.name}</span>
+                        <div class="stat-card tone-cost stat-card-user">
+                            <div class="stat-card-header">
+                              <span class="stat-card-label">Quota ${u.name}</span>
+                              <span class="stat-card-icon"><span class="material-symbols-outlined">savings</span></span>
+                            </div>
                             <div class="stat-value sensitive-value" id="stat-budget-page-${u.id}">€ 0.00</div>
                         </div>
                     `;
@@ -982,6 +998,7 @@ function renderCategoriesSection() {
       ctxCat.parentElement.style.height = `${dynHeight}px`;
     }
 
+    const m3Cat = typeof getM3ChartTheme === "function" ? getM3ChartTheme() : null;
     catBarChartInstance = new Chart(ctxCat.getContext("2d"), {
       type: "bar",
       data: {
@@ -991,17 +1008,19 @@ function renderCategoriesSection() {
             label: "Pagato Finora (€)",
             data: chartDataPaid,
             backgroundColor: chartColors,
-            borderRadius: 6,
-            categoryPercentage: 0.85,
-            barPercentage: 0.9,
+            borderRadius: 10,
+            borderSkipped: false,
+            categoryPercentage: 0.82,
+            barPercentage: 0.88,
           },
           {
             label: "Costo Totale (€)",
             data: chartDataTotal,
             backgroundColor: barBg,
-            borderRadius: 6,
-            categoryPercentage: 0.85,
-            barPercentage: 0.9,
+            borderRadius: 10,
+            borderSkipped: false,
+            categoryPercentage: 0.82,
+            barPercentage: 0.88,
           },
         ],
       },
@@ -1009,6 +1028,7 @@ function renderCategoriesSection() {
         indexAxis: "y",
         responsive: true,
         maintainAspectRatio: false,
+        animation: m3Cat ? m3Cat.barAnimation : undefined,
         layout: {
           padding: {
             left: 8,
@@ -1021,12 +1041,15 @@ function renderCategoriesSection() {
           legend: {
             position: "top",
             labels: {
-              font: { family: "'Google Sans Flex', sans-serif", size: isMobile ? 12 : 13 },
+              usePointStyle: true,
+              pointStyle: "circle",
+              font: { family: "'Google Sans Flex', sans-serif", size: isMobile ? 12 : 13, weight: 600 },
               color: textColor,
-              padding: 12,
+              padding: 14,
             },
           },
           tooltip: {
+            ...(m3Cat ? m3Cat.tooltip : {}),
             callbacks: {
               title: function (items) {
                 if (!items || !items.length) return "";
@@ -1256,21 +1279,47 @@ function updateChartsAndStats() {
     }
   });
 
-  const isDark = document.body.classList.contains("dark-mode");
-  const primaryColor = isDark ? "#D0BCFF" : "#6750A4";
-  const secondaryColor = isDark ? "#4F378B" : "#EADDFF";
-  const tertiaryColor = isDark ? "#633B48" : "#FFD8E4";
-  const surfaceContainerHigh = isDark ? "#302E34" : "#ECE6F0";
-  const fedeColor = isDark ? "#FFB1C8" : "#d81b60";
-  const textColor = isDark ? "#E6E1E5" : "#1C1B1F";
-  const gridColor = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)";
+  if (typeof updateRiepilogoInsights === "function") {
+    updateRiepilogoInsights({
+      budgetTotale,
+      budgetPianificatoTotale,
+      totRisparmiTutti,
+      costoTotale,
+      totalePagato,
+      restante,
+      progressoPercentuale,
+      liquiditaResiduaReale,
+      userBudgetTotali,
+      userSpesePagate,
+    });
+  }
+
+  const m3 = typeof getM3ChartTheme === "function" ? getM3ChartTheme() : null;
+  const isDark = m3 ? m3.isDark : document.body.classList.contains("dark-mode");
+  const primaryColor = m3 ? m3.primary : isDark ? "#cbb4ff" : "#6750A4";
+  const secondaryColor = m3 ? m3.secondary : isDark ? "#818cf8" : "#9a82db";
+  const tertiaryColor = m3 ? m3.tertiary : isDark ? "#f472b6" : "#d81b60";
+  const neutralColor = m3 ? m3.neutral : isDark ? "#64748b" : "#79747e";
+  const fedeColor = tertiaryColor;
+  const textColor = m3 ? m3.textColor : isDark ? "#E6E1E5" : "#1C1B1F";
+  const gridColor = m3 ? m3.gridColor : isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)";
 
   // Render Grafico a Barre Stato Finanziario
   if (barChartInstance) barChartInstance.destroy();
   const ctxBar = document.getElementById("barChart");
   if (ctxBar) {
+    const barCtx = ctxBar.getContext("2d");
+    const barBgColors = m3
+      ? [
+          m3.createBarGradient(barCtx, secondaryColor),
+          m3.createBarGradient(barCtx, tertiaryColor),
+          m3.createBarGradient(barCtx, primaryColor),
+          m3.createBarGradient(barCtx, neutralColor),
+        ]
+      : [secondaryColor, tertiaryColor, primaryColor, neutralColor];
+
     Chart.defaults.font.family = "'Google Sans Flex', sans-serif";
-    barChartInstance = new Chart(ctxBar.getContext("2d"), {
+    barChartInstance = new Chart(barCtx, {
       type: "bar",
       data: {
         labels: (window.innerWidth <= 600)
@@ -1280,36 +1329,50 @@ function updateChartsAndStats() {
           {
             label: "Importo in €",
             data: [budgetTotale, costoTotale, totalePagato, restante],
-            backgroundColor: [
-              secondaryColor,
-              tertiaryColor,
-              primaryColor,
-              surfaceContainerHigh,
-            ],
-            categoryPercentage: 0.85,
-            barPercentage: 0.9,
-            borderRadius: 8,
+            backgroundColor: barBgColors,
+            categoryPercentage: 0.78,
+            barPercentage: 0.85,
+            borderRadius: 12,
+            borderSkipped: false,
+            hoverBorderWidth: 0,
           },
         ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        layout: { padding: 0 },
-        plugins: { legend: { display: false } },
+        animation: m3 ? m3.barAnimation : undefined,
+        layout: { padding: { top: 6, right: 6, left: 0, bottom: 0 } },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            ...(m3 ? m3.tooltip : {}),
+            callbacks: {
+              label: (ctx) => ` ${formatter.format(ctx.parsed.y || 0)}`,
+            },
+          },
+        },
         scales: {
           y: {
             beginAtZero: true,
+            border: { display: false },
             grid: { color: gridColor },
             ticks: {
               color: textColor,
-              padding: 6,
+              padding: 8,
+              callback: (v) => {
+                if (v === 0) return "0 €";
+                if (v >= 1000000) return (v / 1000000).toLocaleString("it-IT") + "M €";
+                if (v >= 1000) return (v / 1000).toLocaleString("it-IT") + "k €";
+                return v + " €";
+              },
             },
             afterFit: function (axis) {
-              axis.width = Math.max(axis.width + 16, 75);
+              axis.width = Math.max(axis.width + 14, 72);
             },
           },
           x: {
+            border: { display: false },
             grid: { display: false },
             ticks: {
               color: textColor,
@@ -1318,6 +1381,7 @@ function updateChartsAndStats() {
               font: {
                 family: "'Google Sans Flex', sans-serif",
                 size: (window.innerWidth <= 600) ? 11 : 12,
+                weight: 600,
               },
             },
           },
@@ -1350,22 +1414,39 @@ function updateChartsAndStats() {
             data: pieData,
             backgroundColor: pieColors,
             borderWidth: 0,
-            hoverOffset: 4,
+            borderRadius: 8,
+            spacing: 4,
+            hoverOffset: 10,
           },
         ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        cutout: "75%",
+        cutout: "74%",
+        animation: m3 ? m3.doughnutAnimation : undefined,
         plugins: {
           legend: {
             display: true,
             position: "bottom",
             labels: {
-              boxWidth: 12,
-              padding: 12,
+              usePointStyle: true,
+              pointStyle: "circle",
+              boxWidth: 10,
+              padding: 16,
               color: textColor,
+              font: { family: "'Google Sans Flex', sans-serif", size: 12.5, weight: 600 },
+            },
+          },
+          tooltip: {
+            ...(m3 ? m3.tooltip : {}),
+            callbacks: {
+              label: (ctx) => {
+                const total = ctx.dataset.data.reduce((a, b) => a + b, 0) || 1;
+                const val = ctx.parsed || 0;
+                const pct = ((val / total) * 100).toFixed(1);
+                return ` ${ctx.label}: ${formatter.format(val)} (${pct}%)`;
+              },
             },
           },
         },
@@ -1806,7 +1887,13 @@ function renderPaymentList(item) {
         : "";
 
     const div = document.createElement("div");
-    div.className = "payment-item";
+    div.className = "payment-item clickable-info-card";
+    div.addEventListener("click", (e) => {
+      if (e.target.closest("button, a, input")) return;
+      if (typeof openItemDetailModal === "function") {
+        openItemDetailModal("payment", { costId: item.id, paymentId: p.id });
+      }
+    });
     div.innerHTML = `
             <span class="material-symbols-outlined payment-item-icon">payments</span>
             <div class="payment-item-body">
@@ -1816,7 +1903,7 @@ function renderPaymentList(item) {
                 <span class="payment-total-responsive">${formatCurrency(totPagamento)}</span>
               </div>
               <div class="payment-item-amounts">${amountChips}</div>
-              ${p.commento ? `<div class="payment-item-comment">${renderRichContent(p.commento, "costi", item.id, "payment")}</div>` : ""}
+              ${p.commento ? `<div class="payment-item-comment card-text-clamp">${renderRichContent(p.commento, "costi", item.id, "payment")}</div>` : ""}
               ${fattureHTML}
             </div>
             <div class="payment-item-actions">

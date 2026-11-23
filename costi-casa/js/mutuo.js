@@ -586,7 +586,7 @@ function calculateMortgage() {
                         <span class="material-symbols-outlined" style="font-size: 16px;">sync</span> Riporta nel Budget
                     </button>
                 </div>
-                <div class="stat-card secondary" title="Liquidità e fondi propri versati dai partecipanti per coprire la quota non finanziata dal mutuo">
+                <div class="stat-card tone-budget" title="Liquidità e fondi propri versati dai partecipanti per coprire la quota non finanziata dal mutuo">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <span style="font-size: 14px; opacity: 0.9;">Anticipo (Fondi Propri)</span>
                         ${
@@ -605,12 +605,12 @@ function calculateMortgage() {
                           .join("")}
                     </div>
                 </div>
-                <div class="stat-card tertiary">
+                <div class="stat-card tone-due">
                     <span style="font-size: 14px; opacity: 0.9;">Rata Mensile & Annuale</span>
-                    <div class="stat-value">${formatCurrency(rataTotale)} /mese</div>
+                    <div class="stat-value" style="color: var(--md-sys-color-error);">${formatCurrency(rataTotale)} /mese</div>
                     <div style="font-size: 13px; opacity: 0.9; margin-top: 2px;">All'anno: <b>${formatCurrency(rataAnnualeTotale)}</b></div>
                 </div>
-                <div class="stat-card" style="background-color: var(--md-sys-color-surface-container-high); color: var(--md-sys-color-on-surface);">
+                <div class="stat-card tone-due">
                     <span style="font-size: 14px; opacity: 0.9;">Interessi Totali Banca</span>
                     <div style="display: flex; align-items: baseline; gap: 8px;">
                         <div class="stat-value" style="color: var(--md-sys-color-error);">${formatCurrency(totaleInteressiComplessivo)}</div>
@@ -629,6 +629,16 @@ function calculateMortgage() {
   updateTableViewModeUI();
   updateMutuoParamsSummaryUI();
   renderLiquidityGuard();
+  if (typeof renderMutuoExtraChart === "function") {
+    const totaleMutuoVal = Object.values(userMutuo || {}).reduce((a, b) => a + (parseFloat(b) || 0), 0);
+    renderMutuoExtraChart({
+      totaleMutuo: totaleMutuoVal,
+      totalAnticipo,
+      totaleInteressi: totaleInteressiComplessivo,
+      totaleRestituito: totaleRestituitoComplessivo,
+      rataTotale,
+    });
+  }
 }
 
 /**

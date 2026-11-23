@@ -167,7 +167,13 @@ function createQACardElement(item, isInsideDetailView = false) {
   }
 
   const card = document.createElement("div");
-  card.className = "qa-card";
+  card.className = "qa-card clickable-info-card";
+  card.addEventListener("click", (e) => {
+    if (e.target.closest("button, a, input, .note-image-thumb")) return;
+    if (typeof openItemDetailModal === "function") {
+      openItemDetailModal("qa", item.id);
+    }
+  });
 
   // 1. Intestazione con Categoria, Status, data e pulsanti azione
   const headerDiv = document.createElement("div");
@@ -188,12 +194,12 @@ function createQACardElement(item, isInsideDetailView = false) {
 
   // 2. Argomento e Testo della Domanda
   const bodyDiv = document.createElement("div");
-  bodyDiv.style.marginTop = "4px";
+  bodyDiv.style.marginTop = "2px";
   bodyDiv.innerHTML = `
-      ${item.topic ? `<div style="font-size: 16px; font-weight: 700; color: var(--md-sys-color-on-surface); margin-bottom: 8px;">${escapeHTML(item.topic)}</div>` : ""}
-      <div style="font-size: 15px; color: var(--md-sys-color-on-surface); display: flex; gap: 8px; align-items: flex-start;">
-          <span class="material-symbols-outlined" style="color: var(--md-sys-color-primary); font-size: 20px; flex-shrink: 0; margin-top: 2px;">help</span>
-          <div style="flex: 1; min-width: 0; white-space: pre-wrap;">${renderRichContent(item.question, "qa", item.id, "question")}</div>
+      ${item.topic ? `<div style="font-size: 15.5px; font-weight: 700; color: var(--md-sys-color-on-surface); margin-bottom: 6px;">${escapeHTML(item.topic)}</div>` : ""}
+      <div style="font-size: 14.5px; color: var(--md-sys-color-on-surface); display: flex; gap: 8px; align-items: flex-start;">
+          <span class="material-symbols-outlined" style="color: var(--md-sys-color-primary); font-size: 19px; flex-shrink: 0; margin-top: 2px;">help</span>
+          <div class="card-text-clamp" style="flex: 1; min-width: 0; white-space: pre-wrap;">${renderRichContent(item.question, "qa", item.id, "question")}</div>
       </div>
   `;
   card.appendChild(bodyDiv);
@@ -260,21 +266,26 @@ function createQACardElement(item, isInsideDetailView = false) {
   const answerDiv = document.createElement("div");
   if (isAnswered) {
     answerDiv.style.cssText =
-      "background: var(--md-sys-color-surface-container-high); border-radius: var(--md-sys-shape-corner-medium); padding: 14px 16px; margin-top: 8px; border-left: 4px solid var(--md-sys-color-success);";
+      "background: var(--md-sys-color-surface-container-high); border-radius: var(--md-sys-shape-corner-medium); padding: 11px 14px; margin-top: 4px; border-left: 3.5px solid var(--md-sys-color-success);";
     answerDiv.innerHTML = `
         <div style="font-size: 12px; font-weight: 600; color: var(--md-sys-color-success); margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
-            <span class="material-symbols-outlined" style="font-size: 16px;">check_circle</span> Risposta:
+            <span class="material-symbols-outlined" style="font-size: 15px;">check_circle</span> Risposta:
         </div>
-        <div style="font-size: 14px; line-height: 1.5; white-space: pre-wrap;">${renderRichContent(item.answer, "qa", item.id, "answer")}</div>
+        <div class="card-answer-clamp" style="font-size: 13.5px; line-height: 1.45; white-space: pre-wrap;">${renderRichContent(item.answer, "qa", item.id, "answer")}</div>
     `;
   } else {
     answerDiv.style.cssText =
-      "font-size: 13px; color: var(--md-sys-color-outline); font-style: italic; display: flex; align-items: center; gap: 6px; margin-top: 8px;";
+      "font-size: 12.5px; color: var(--md-sys-color-outline); font-style: italic; display: flex; align-items: center; gap: 6px; margin-top: 4px;";
     answerDiv.innerHTML = `
-        <span class="material-symbols-outlined" style="font-size: 16px;">pending</span> In attesa di risposta dal fornitore o professionista.
+        <span class="material-symbols-outlined" style="font-size: 15px;">pending</span> In attesa di risposta dal fornitore o professionista.
     `;
   }
   card.appendChild(answerDiv);
+
+  const hintDiv = document.createElement("div");
+  hintDiv.className = "card-expand-hint";
+  hintDiv.innerHTML = `<span>Apri dettaglio</span><span class="material-symbols-outlined">open_in_full</span>`;
+  card.appendChild(hintDiv);
 
   return card;
 }
@@ -317,9 +328,12 @@ function renderQASection() {
       }
 
       const groupHeader = document.createElement("h3");
-      groupHeader.style.cssText =
-        "margin-top: 24px; margin-bottom: 12px; font-size: 18px; border-bottom: 1px solid var(--md-sys-color-outline-variant); padding-bottom: 8px; display: flex; align-items: center; gap: 8px;";
-      groupHeader.innerHTML = `<span style="display: inline-block; width: 14px; height: 14px; border-radius: 50%; background-color: ${catColor};"></span>${category}`;
+      groupHeader.className = "section-group-header";
+      groupHeader.innerHTML = `
+        <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background-color: ${catColor}; flex-shrink: 0;"></span>
+        <span>${category}</span>
+        <span class="section-group-count">${groupedQA[category].length}</span>
+      `;
       container.appendChild(groupHeader);
 
       groupedQA[category].sort((a, b) => {
@@ -329,9 +343,12 @@ function renderQASection() {
         return aAnswered ? 1 : -1;
       });
 
+      const groupGrid = document.createElement("div");
+      groupGrid.className = "section-cards-grid";
       groupedQA[category].forEach((item) => {
-        container.appendChild(createQACardElement(item, false));
+        groupGrid.appendChild(createQACardElement(item, false));
       });
+      container.appendChild(groupGrid);
     });
 }
 
@@ -663,8 +680,14 @@ function createTaskCardElement(item, isInsideDetailView = false) {
   }
 
   const card = document.createElement("div");
-  card.className = "qa-card";
-  card.style.opacity = item.completed ? "0.6" : "1";
+  card.className = "qa-card clickable-info-card";
+  card.addEventListener("click", (e) => {
+    if (e.target.closest("button, a, input, .note-image-thumb")) return;
+    if (typeof openItemDetailModal === "function") {
+      openItemDetailModal("task", item.id);
+    }
+  });
+  card.style.opacity = item.completed ? "0.65" : "1";
 
   const createdDateStr = new Date(item.id).toLocaleDateString("it-IT");
 
@@ -759,13 +782,18 @@ function createTaskCardElement(item, isInsideDetailView = false) {
   if (item.desc) {
     const descDiv = document.createElement("div");
     descDiv.style.cssText =
-      "font-size: 15px; color: var(--md-sys-color-on-surface); display: flex; gap: 8px; align-items: flex-start; margin-top: 6px;";
+      "font-size: 14px; color: var(--md-sys-color-on-surface); display: flex; gap: 8px; align-items: flex-start; margin-top: 2px;";
     descDiv.innerHTML = `
-        <span class="material-symbols-outlined" style="color: var(--md-sys-color-outline); font-size: 20px; flex-shrink: 0; margin-top: 2px;">notes</span>
-        <div style="flex: 1; min-width: 0; white-space: pre-wrap;">${renderRichContent(item.desc, "tasks", item.id, "desc")}</div>
+        <span class="material-symbols-outlined" style="color: var(--md-sys-color-outline); font-size: 19px; flex-shrink: 0; margin-top: 2px;">notes</span>
+        <div class="card-text-clamp" style="flex: 1; min-width: 0; white-space: pre-wrap;">${renderRichContent(item.desc, "tasks", item.id, "desc")}</div>
     `;
     card.appendChild(descDiv);
   }
+
+  const hintDiv = document.createElement("div");
+  hintDiv.className = "card-expand-hint";
+  hintDiv.innerHTML = `<span>Apri dettaglio</span><span class="material-symbols-outlined">open_in_full</span>`;
+  card.appendChild(hintDiv);
 
   return card;
 }
@@ -856,9 +884,12 @@ function renderTaskSection() {
         }
 
         const groupHeader = document.createElement("h3");
-        groupHeader.style.cssText =
-          "margin-top: 24px; margin-bottom: 12px; font-size: 18px; border-bottom: 1px solid var(--md-sys-color-outline-variant); padding-bottom: 8px; display: flex; align-items: center; gap: 8px;";
-        groupHeader.innerHTML = `<span style="display: inline-block; width: 14px; height: 14px; border-radius: 50%; background-color: ${catColor};"></span>${category}`;
+        groupHeader.className = "section-group-header";
+        groupHeader.innerHTML = `
+          <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background-color: ${catColor}; flex-shrink: 0;"></span>
+          <span>${category}</span>
+          <span class="section-group-count">${groupedTasks[category].length}</span>
+        `;
         container.appendChild(groupHeader);
 
         groupedTasks[category].sort((a, b) => {
@@ -870,9 +901,12 @@ function renderTaskSection() {
           return 0;
         });
 
+        const groupGrid = document.createElement("div");
+        groupGrid.className = "section-cards-grid";
         groupedTasks[category].forEach((item) => {
-          container.appendChild(createTaskCardElement(item, false));
+          groupGrid.appendChild(createTaskCardElement(item, false));
         });
+        container.appendChild(groupGrid);
       });
   };
 
@@ -1486,8 +1520,13 @@ async function deleteNoteImageDirect(noteId, imgIndex, event) {
  */
 function createNoteCardElement(item, isInsideDetailView = false) {
   const card = document.createElement("div");
-  card.style.cssText =
-    "background-color: var(--md-sys-color-surface-container-low); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);";
+  card.className = "qa-card clickable-info-card";
+  card.addEventListener("click", (e) => {
+    if (e.target.closest("button, a, input, .note-image-thumb")) return;
+    if (typeof openItemDetailModal === "function") {
+      openItemDetailModal("note", item.id);
+    }
+  });
 
   const dateStr = item.date
     ? new Date(item.date).toLocaleDateString("it-IT")
@@ -1569,11 +1608,17 @@ function createNoteCardElement(item, isInsideDetailView = false) {
   // 3. Testo dell'appunto
   if (item.content) {
     const contentDiv = document.createElement("div");
+    contentDiv.className = "card-text-clamp";
     contentDiv.style.cssText =
-      "font-size: 15px; color: var(--md-sys-color-on-surface); margin-top: 6px; line-height: 1.5; white-space: pre-wrap;";
+      "font-size: 14px; color: var(--md-sys-color-on-surface); margin-top: 2px; line-height: 1.5; white-space: pre-wrap;";
     contentDiv.innerHTML = renderRichContent(item.content, "notes", item.id, "content");
     card.appendChild(contentDiv);
   }
+
+  const hintDiv = document.createElement("div");
+  hintDiv.className = "card-expand-hint";
+  hintDiv.innerHTML = `<span>Apri dettaglio</span><span class="material-symbols-outlined">open_in_full</span>`;
+  card.appendChild(hintDiv);
 
   return card;
 }
@@ -1614,18 +1659,24 @@ function renderNoteSection() {
       }
 
       const groupHeader = document.createElement("h3");
-      groupHeader.style.cssText =
-        "margin-top: 24px; margin-bottom: 12px; font-size: 18px; border-bottom: 1px solid var(--md-sys-color-outline-variant); padding-bottom: 8px; display: flex; align-items: center; gap: 8px;";
-      groupHeader.innerHTML = `<span style="display: inline-block; width: 14px; height: 14px; border-radius: 50%; background-color: ${catColor};"></span>${category}`;
+      groupHeader.className = "section-group-header";
+      groupHeader.innerHTML = `
+        <span style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background-color: ${catColor}; flex-shrink: 0;"></span>
+        <span>${category}</span>
+        <span class="section-group-count">${groupedNotes[category].length}</span>
+      `;
       container.appendChild(groupHeader);
 
       groupedNotes[category].sort((a, b) => {
         return new Date(b.date) - new Date(a.date);
       });
 
+      const groupGrid = document.createElement("div");
+      groupGrid.className = "section-cards-grid";
       groupedNotes[category].forEach((item) => {
-        container.appendChild(createNoteCardElement(item, false));
+        groupGrid.appendChild(createNoteCardElement(item, false));
       });
+      container.appendChild(groupGrid);
     });
 }
 
